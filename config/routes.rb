@@ -98,4 +98,6 @@ Jobsworth::Application.routes.draw do
   get 'tasks/score/:task_num' => 'tasks#score'
 
   match ":controller(/:action(/:id(.:format)))"
+
+
 end

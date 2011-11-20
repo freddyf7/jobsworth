@@ -33,6 +33,7 @@ class MilestonesController < ApplicationController
     end
     logger.debug "Creating new milestone #{@milestone.name}"
     set_due_at
+    set_init_date_at
     @milestone.company_id = current_user.company_id
     @milestone.user = current_user
 
@@ -56,11 +57,13 @@ class MilestonesController < ApplicationController
 
   def edit
     @milestone.due_at = tz.utc_to_local(@milestone.due_at) unless @milestone.due_at.nil?
+    @milestone.init_date = tz.utc_to_local(@milestone.init_date) unless @milestone.init_date.nil?
   end
 
   def update
     @milestone.attributes = params[:milestone]
     set_due_at
+    set_init_date_at
     if @milestone.save
       flash[:notice] = _('Milestone was successfully updated.')
       redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
@@ -123,4 +126,15 @@ class MilestonesController < ApplicationController
       end
     end
   end
+
+  def set_init_date_at
+    unless params[:milestone][:init_date].blank?
+      begin
+        init_date = DateTime.strptime(params[:milestone][:init_date], current_user.date_format)
+        @milestone.init_date = tz.local_to_utc(init_date.to_time + 1.day - 1.minute) if init_date
+      rescue
+      end
+    end
+  end
+
 end
