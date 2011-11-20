@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111120020039) do
+ActiveRecord::Schema.define(:version => 20111120222356) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -347,6 +347,7 @@ ActiveRecord::Schema.define(:version => 20111120020039) do
     t.integer  "total_milestones"
     t.integer  "open_milestones"
     t.decimal  "default_estimate",                :precision => 5, :scale => 2, :default => 1.0
+    t.integer  "leader_id"
   end
 
   add_index "projects", ["company_id"], :name => "projects_company_id_index"
