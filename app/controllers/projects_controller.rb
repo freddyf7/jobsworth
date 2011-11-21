@@ -48,12 +48,14 @@ class ProjectsController < ApplicationController
 
       #add permision for leader
       if !@project.leader_id.nil?
-      @project_permission_l ||= ProjectPermission.new
-      @project_permission_l.user_id = @project.leader_id
-      @project_permission_l.project_id = @project.id
-      @project_permission_l.company_id = current_user.company_id
-      @project_permission_l.set('all')
-      @project_permission_l.save
+        if current_user.id != @project.leader_id
+          @project_permission_l ||= ProjectPermission.new
+          @project_permission_l.user_id = @project.leader_id
+          @project_permission_l.project_id = @project.id
+          @project_permission_l.company_id = current_user.company_id
+          @project_permission_l.set('all')
+          @project_permission_l.save
+        end
       end
 
 
@@ -142,8 +144,22 @@ class ProjectsController < ApplicationController
     @project = @project_relation.in_progress.find(params[:id])
     old_client = @project.customer_id
     old_name = @project.name
+    old_project = @project
 
     if @project.update_attributes(params[:project])
+
+      #Need to update leader? => add permision for project if no exist
+      if (leader_change(params[:project][:leader_id], old_project))
+        if (!leader_already_member(params[:project][:leader_id], old_project))
+          @project_permission = ProjectPermission.new
+          @project_permission.user_id = params[:project][:leader_id]
+          @project_permission.project_id = @project.id
+          @project_permission.company_id = current_user.company_id
+          @project_permission.set('all')
+          @project_permission.save
+        end
+      end
+      
       # Need to update work-sheet entries?
       if @project.customer_id != old_client
         WorkLog.update_all("customer_id = #{@project.customer_id}", "project_id = #{@project.id} AND customer_id != #{@project.customer_id}")
@@ -211,4 +227,16 @@ class ProjectsController < ApplicationController
     redirect_from_last
     return false
   end
+
+  def leader_change (form_leader_id, project)
+    old_project = Project.find project.id
+    actual_leader = old_project.leader_id
+    return form_leader_id != actual_leader
+  end
+
+  def leader_already_member(form_leader_id,project)
+    project_permissions = ProjectPermission.find(:first, :conditions => ['user_id = ? AND project_id = ?',form_leader_id,project.id])
+    return !project_permissions.nil?
+  end
+
 end
