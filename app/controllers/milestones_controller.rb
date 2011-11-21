@@ -7,6 +7,7 @@ class MilestonesController < ApplicationController
     @milestone = Milestone.new
     @milestone.user = current_user
     @milestone.project_id = params[:project_id]
+    @project_currency = @milestone.get_project_currency(params[:project_id])
     unless current_user.can?(@milestone.project, 'milestone')
       flash['notice'] = _ "You don't have access to milestones"
       if request.xhr?
@@ -39,7 +40,7 @@ class MilestonesController < ApplicationController
 
     if @milestone.save
       unless request.xhr?
-        flash[:notice] = _('Milestone was successfully created.')
+       flash[:notice] = _('Iteration was successfully created.')
         redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
       else
         #bind 'ajax:success' event
@@ -58,6 +59,7 @@ class MilestonesController < ApplicationController
   def edit
     @milestone.due_at = tz.utc_to_local(@milestone.due_at) unless @milestone.due_at.nil?
     @milestone.init_date = tz.utc_to_local(@milestone.init_date) unless @milestone.init_date.nil?
+    @project_currency = @milestone.get_project_currency(@milestone.project_id)
   end
 
   def update

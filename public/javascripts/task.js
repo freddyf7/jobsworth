@@ -299,6 +299,7 @@ function init_task_form() {
     jQuery('#add_milestone img').click(add_milestone_popup);
     jQuery('#task_project_id').change(function() {
       jQuery("#milestone_project_id").val(jQuery('#task_project_id').val());
+      appendPopup("/milestones/quick_new?project_id=" + jQuery("#task_project_id").val(), "body", false);
     });
 
     jQuery('div.file_thumbnail a').slimbox();
@@ -414,6 +415,7 @@ function add_milestone_popup() {
   } else {
     jQuery("#milestone_name").val(" ");
     jQuery("#milestone_due_at").val(" ");
+    jQuery("#milestone_init_date").val(" ");
     jQuery("#milestone_user_id").val(" ");
     jQuery("#milestone_description").val(" ");
     var popup = jQuery("span#ui_popup_dialog").dialog({

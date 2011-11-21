@@ -78,6 +78,10 @@ function addUserToProject(event, ui) {
     return false;
 }
 
+function addUserToProjectOnlyCompany(event,ui){
+jQuery('#project_leader_id').val(ui.item.id);
+}
+
 
 /*
   Requests the available attributes for the given resource type
@@ -397,6 +401,7 @@ jQuery(document).ready(function() {
   autocomplete('#user_project_name_autocomplete', '/users/auto_complete_for_project_name', addProjectToUser);
   autocomplete('#project_user_name_autocomplete', '/application/auto_complete_for_user_name', addUserToProject);
   autocomplete('#user_customer_name', '/users/auto_complete_for_customer_name', addCustomerToUser);
+  autocomplete('#auto_complete_for_user_name_only_company','/application/auto_complete_for_user_name_only_company',addUserToProjectOnlyCompany);
 
   jQuery(".datefield").datepicker({ constrainInput: false, dateFormat: userDateFormat});
 });

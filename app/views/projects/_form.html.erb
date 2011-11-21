@@ -32,6 +32,9 @@
   <option value="VEF"><%=_ 'Bolivar (VEF)' %></option>
 </select>
 
+<label for="project_cost_per_hour"><%=_ 'Cost/h' %></label>
+<%= text_field 'project', 'cost_per_hour', { :id => 'project_cost_per_hour', :size => 16, :value => @project.cost_per_hour } %>
+
 <label for="project_name"><%=_ 'Description' %></label>
 <%= text_area 'project', 'description', :rows => 5  %><br/>
 <label>&nbsp;</label>

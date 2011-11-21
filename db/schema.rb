@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111121161100) do
+ActiveRecord::Schema.define(:version => 20111121204240) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -224,6 +224,7 @@ ActiveRecord::Schema.define(:version => 20111121161100) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.datetime "init_date"
+    t.float    "budget",          :default => 0.0
   end
 
   add_index "milestones", ["company_id", "project_id"], :name => "milestones_company_project_index"
@@ -349,6 +350,7 @@ ActiveRecord::Schema.define(:version => 20111121161100) do
     t.decimal  "default_estimate",                 :precision => 5, :scale => 2, :default => 1.0
     t.integer  "leader_id"
     t.string   "currency_iso_code"
+    t.float    "cost_per_hour",                                                  :default => 0.0
   end
 
   add_index "projects", ["company_id"], :name => "projects_company_id_index"
@@ -634,6 +636,7 @@ ActiveRecord::Schema.define(:version => 20111121161100) do
     t.integer  "points_expert_judgment",                                              :default => 0
     t.integer  "points_team_velocity",                                                :default => 0
     t.integer  "points_planning_poker",                                               :default => 0
+    t.integer  "business_value"
   end
 
   add_index "tasks", ["company_id"], :name => "tasks_company_id_index"

@@ -7,6 +7,9 @@
       :autocomplete => "off" }.merge( perms['edit'])) %>
   <br />
 
+  <label for="task_business_value"><%=_ 'Business Value' %></label>
+  <%= text_field("task","business_value", {:value => @task.business_value.nil? ? 0 : @task.business_value}) %>
+  <br />
 
   <% current_user.company.properties.each do |p|
        selected = @task.new_record? ? p.default_value : @task.property_value(p)
