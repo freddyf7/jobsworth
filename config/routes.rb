@@ -1,5 +1,7 @@
 Jobsworth::Application.routes.draw do
 
+#  resources :roadmap_milestones
+
   devise_for  :users, 
               :controllers => { :sessions  => "auth/sessions", 
                                 :passwords => "auth/passwords" }

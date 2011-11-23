@@ -7,6 +7,7 @@ gem 'icalendar',         '>=1.1.5'
 gem 'tzinfo'
 gem 'RedCloth',          '>=4.2.7', :require=>'redcloth'
 gem 'gchartrb',          '>=0.8', :require=>"google_chart"
+gem 'money',		 '3.1.5'
 gem 'smurf'
 gem 'paperclip',         '>=2.3.3'
 gem 'json'
@@ -20,6 +21,7 @@ gem "rufus-scheduler"
 gem 'net-ldap'
 gem 'devise',             '1.1.9'
 gem 'sass'
+gem 'google_currency',    '1.0.2'
 
 group :test do
   gem "shoulda",          '>=2.11.3'

@@ -8,6 +8,11 @@ class MilestonesController < ApplicationController
     @milestone.user = current_user
     @milestone.project_id = params[:project_id]
     @project_currency = @milestone.get_project_currency(params[:project_id])
+
+    if !params[:redirect].nil?
+    session[:redirect_rm] = params[:redirect]
+    end
+
     unless current_user.can?(@milestone.project, 'milestone')
       flash['notice'] = _ "You don't have access to milestones"
       if request.xhr?
@@ -26,7 +31,9 @@ class MilestonesController < ApplicationController
 
   # Ajax callback from milestone popup window to create a new milestone on submitting the form
   def create
+
     @milestone = Milestone.new(params[:milestone])
+    @project_currency = @milestone.get_project_currency(@milestone.project_id)
     unless current_user.can?(@milestone.project, 'milestone')
       flash['notice'] = _ "You don't have access to milestones"
       redirect_to "/activities/list"
@@ -41,7 +48,13 @@ class MilestonesController < ApplicationController
     if @milestone.save
       unless request.xhr?
        flash[:notice] = _('Iteration was successfully created.')
-        redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
+       if session[:redirect_rm].nil?
+          redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
+        else
+          ruta = session[:redirect_rm]
+          session[:redirect_rm] = nil
+          redirect_to ruta
+        end
       else
         #bind 'ajax:success' event
         #return json to provide refreshMilestones parameters
@@ -53,6 +66,7 @@ class MilestonesController < ApplicationController
       else
         render :action => 'new'
       end
+      render :template => 'milestones/new'
     end
   end
 
@@ -60,15 +74,25 @@ class MilestonesController < ApplicationController
     @milestone.due_at = tz.utc_to_local(@milestone.due_at) unless @milestone.due_at.nil?
     @milestone.init_date = tz.utc_to_local(@milestone.init_date) unless @milestone.init_date.nil?
     @project_currency = @milestone.get_project_currency(@milestone.project_id)
+    if !params[:redirect].nil?
+    session[:redirect_rm] = params[:redirect]
+    end
   end
 
   def update
     @milestone.attributes = params[:milestone]
+    @project_currency = @milestone.get_project_currency(@milestone.project_id)
     set_due_at
     set_init_date_at
     if @milestone.save
       flash[:notice] = _('Milestone was successfully updated.')
-      redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
+      if session[:redirect_rm].nil?
+          redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
+        else
+          ruta = session[:redirect_rm]
+          session[:redirect_rm] = nil
+          redirect_to ruta
+        end
     else
       render :action => 'edit'
     end

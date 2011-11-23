@@ -9,6 +9,14 @@
 #
 class Task < AbstractTask
 
+  validate :validate_limit_of_points_business_value
+
+  validate :validate_limit_of_points_user_stories
+
+  validates_numericality_of :business_value, :greater_than_or_equal_to => 0, :message => "Must be greater than or equal to 0 "
+
+  validates_numericality_of :points_expert_judgment, :greater_than_or_equal_to => 0, :message => "Must be greater than or equal to 0 "
+
   after_validation :fix_work_log_error
 
   after_save { |r|
@@ -161,6 +169,14 @@ class Task < AbstractTask
     sort_rank.to_f / company.maximum_sort_rank.to_f > 0.80
   end
 
+  # a task is closed, status == 1
+  ###
+  def closed?
+    return self.status == 1
+  end
+
+  ###
+
   ###
   # A task is normal if it is not critical or low.
   ###
@@ -306,6 +322,25 @@ class Task < AbstractTask
     score_rules
   end
 
+  protected
+
+  #validate limit of business value points
+  def validate_limit_of_points_business_value
+    if self.project_id
+      project = Project.find self.project_id
+      limit = project.limit_points_per_business_value_stories
+      errors.add(:business_value, "Must be less than or equal #{limit}") if business_value > limit.to_i
+    end
+  end
+  #validate limit of stories value points
+  def validate_limit_of_points_user_stories
+    if self.project_id
+      project = Project.find self.project_id
+      limit = project.limit_points_per_user_stories
+      errors.add(:points_expert_judgment, "Must be less than or equal #{limit}") if points_expert_judgment > limit.to_i
+    end
+  end
+  
   private
 
   def calculate_score

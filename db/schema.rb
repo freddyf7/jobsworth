@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111121204240) do
+ActiveRecord::Schema.define(:version => 20111123160029) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -225,6 +225,7 @@ ActiveRecord::Schema.define(:version => 20111121204240) do
     t.datetime "created_at"
     t.datetime "init_date"
     t.float    "budget",          :default => 0.0
+    t.string   "color",           :default => "blue"
   end
 
   add_index "milestones", ["company_id", "project_id"], :name => "milestones_company_project_index"
@@ -333,24 +334,27 @@ ActiveRecord::Schema.define(:version => 20111121204240) do
   add_index "project_permissions", ["user_id"], :name => "project_permissions_user_id_index"
 
   create_table "projects", :force => true do |t|
-    t.string   "name",              :limit => 200,                               :default => "",  :null => false
-    t.integer  "company_id",                                                     :default => 0,   :null => false
-    t.integer  "customer_id",                                                    :default => 0,   :null => false
+    t.string   "name",                                    :limit => 200,                               :default => "",  :null => false
+    t.integer  "company_id",                                                                           :default => 0,   :null => false
+    t.integer  "customer_id",                                                                          :default => 0,   :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "completed_at"
-    t.integer  "critical_count",                                                 :default => 0
-    t.integer  "normal_count",                                                   :default => 0
-    t.integer  "low_count",                                                      :default => 0
+    t.integer  "critical_count",                                                                       :default => 0
+    t.integer  "normal_count",                                                                         :default => 0
+    t.integer  "low_count",                                                                            :default => 0
     t.text     "description"
     t.integer  "open_tasks"
     t.integer  "total_tasks"
     t.integer  "total_milestones"
     t.integer  "open_milestones"
-    t.decimal  "default_estimate",                 :precision => 5, :scale => 2, :default => 1.0
+    t.decimal  "default_estimate",                                       :precision => 5, :scale => 2, :default => 1.0
     t.integer  "leader_id"
     t.string   "currency_iso_code"
-    t.float    "cost_per_hour",                                                  :default => 0.0
+    t.float    "cost_per_hour",                                                                        :default => 0.0
+    t.integer  "limit_points_per_user_stories",                                                        :default => 100
+    t.integer  "limit_points_per_business_value_stories",                                              :default => 100
+    t.float    "inflation_rate",                                                                       :default => 0.0
   end
 
   add_index "projects", ["company_id"], :name => "projects_company_id_index"
@@ -438,6 +442,15 @@ ActiveRecord::Schema.define(:version => 20111121204240) do
 
   add_index "resources_tasks", ["resource_id"], :name => "index_resources_tasks_on_resource_id"
   add_index "resources_tasks", ["task_id"], :name => "index_resources_tasks_on_task_id"
+
+  create_table "roadmap_milestones", :force => true do |t|
+    t.string   "title"
+    t.string   "description"
+    t.string   "color_code"
+    t.datetime "date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "scm_changesets", :force => true do |t|
     t.integer  "user_id"

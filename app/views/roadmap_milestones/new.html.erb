@@ -1,0 +1,10 @@
+<fieldset>
+  <%= "<legend>#{_ 'New Milestone' }</legend>".html_safe %>
+
+<%#= render 'form' %>
+
+<% form_tag :action => 'create' do %>
+    <%= render :partial => 'form' %>
+    <%= submit_tag _("Create"), :class => 'nolabel' %>
+  <% end %>
+  </fieldset>

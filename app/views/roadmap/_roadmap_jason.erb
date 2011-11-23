@@ -1,0 +1,32 @@
+<%= data = "{'dateTimeFormat': 'iso8601', 'events':["
+
+flag = false;
+@milestones.each do |milestone|
+  data << "," if flag == true
+  data << "{"
+  data << "'start':" + milestone.date.to_json.gsub('"',"'")
+  data << ",'title':" + "'" + milestone.title + "'"
+  data << ",'durationEvent':" + false.to_s
+  data << ",'description':" + "'" + milestone.description_presentation + "'}"
+  flag = true;
+  flag = true;
+end
+
+if @iterations.size > 0 && @milestones.size > 0
+  data << ","
+end
+
+flag = false;
+@iterations.each do |iteration|
+  data << "," if flag == true
+  data << "{"
+  data << "'start':" + iteration.init_date.to_json.gsub('"',"'")
+  data << ",'end':" + iteration.due_at.to_json.gsub('"',"'")
+  data << ",'title':" + "'" + iteration.name + "'"
+  data << ",'color':" + "'" + iteration.color + "'"
+  data << ",'description':" + "'" + iteration.description_presentation + "'}"
+  flag = true;
+end
+data << "]}"
+
+%>

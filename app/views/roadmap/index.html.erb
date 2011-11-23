@@ -1,0 +1,136 @@
+<div id="content">
+  <ul class="tabs">
+    <%
+    links = []
+    links << [ "List", { :controller => "tasks", :action => "list" } ]
+    links << [ "RoadMap", { :controller => "roadmap", :action => "index" } ]
+    links << [ "Schedule", { :controller => "tasks", :action => "calendar" } ]
+    links << [ "Gantt", { :controller => "schedule", :action => "gantt" } ]
+
+    link_list = ""
+    links.each_with_index do |opts, i|
+      name, url_opts = opts
+      link = link_to(name, url_opts)
+      class_names = []
+      class_names << "first" if i == 0
+      class_names << "last" if i == links.length - 1
+      class_names << "active" if params.merge(url_opts) == params
+
+      link_list += content_tag(:li, link, :class => class_names.join(" "))
+    end
+    -%>
+    <%= link_list.html_safe %>
+  </ul>
+  <div id="roadmap">
+    <%
+    roadmap_timeline = ::Simile::Timeline::Timeline.new(
+      :name => "Roadmap",
+      :event_source => {
+        :controller => 'roadmap',
+        :action => 'recent'
+      },
+      :event_band => :days,
+      :bands => {
+        :weeks => {
+          :trackGap => '0.1',
+          :trackHeight => '0.2',
+          :showEventText => 'false',
+          :width => '"10%"',
+          :intervalUnit => 'Timeline.DateTime.WEEK',
+          :intervalPixels => '200'
+        },
+        :months => {
+          :trackGap => '0.1',
+          :trackHeight    => '0.2',
+          :showEventText => 'false',
+          :width => '"8%"',
+          :intervalUnit => 'Timeline.DateTime.MONTH',
+          :intervalPixels => '200'
+        },
+        :days => {
+          :trackGap => '0.1',
+          :showEventText => 'true',
+          :width => '"80%"',
+          :intervalUnit => 'Timeline.DateTime.DAY',
+          :intervalPixels => '50'
+        }
+      },
+      :bands_order => [:months, :weeks, :days],
+      :synchronize => {
+        :months => :weeks,
+        :weeks => :days
+      },
+      :highlight => [ :months, :days ]
+    )
+
+  %>
+
+    <%= simile_timeline(roadmap_timeline, { :class => 'default_timeline' } ) %>
+  </div>
+  <div id="project_select">
+    <fieldset>
+      <label>Project</label><select id="project_id" name="project_id" onchange="reload_roadmap(this.value)"><%= options_for_user_projects(session[:id_prj]) %> </select>
+    </fieldset>
+
+    <table cellpadding="0" cellspacing="0" width="95%" style="padding-left:1em;">
+        <tr>
+          <td align="left" class="page_header">
+          <% if current_user.can?( @project, 'milestone' ) %>
+            <div style="float:right;padding-top:0.1em;"><%= link_to _('New'), :controller => "milestones", :action => 'new', :project_id => @project, :redirect => '/roadmap/index?id=' << @project.id.to_s %></div>
+          <% end %>
+            <div><%=_ 'Iterations' %></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <% if @project.milestones %>
+              <%= render :partial => "activities/overall_progress", :locals => { :project => @project } %>
+
+              <% for milestone in @project.milestones.find(:all, :order => "due_at, milestones.name", :include => [:user]) %>
+                <%= render :partial => "roadmap/milestone_row", :locals => { :milestone => milestone } %>
+
+              <% end %>
+              <% @completed_milestones = Milestone.count(:conditions => ["project_id = ? AND completed_at IS NOT NULL", @project.id])
+                 if @completed_milestones.to_i > 0
+               %>
+              <tr><td colspan=2 align=right class="milestone_completed"><%= link_to _('%d completed milestone', @completed_milestones), :controller => 'milestones', :action => 'list_completed', :id => @project %></td></tr>
+              <% end %>
+              <% else %>
+              <tr><td>&nbsp;</td></tr>
+
+              <% end %>
+          </table>
+        </td>
+      </tr>
+    </table>
+<%#*Milestones for roadMap%>
+    <table cellpadding="0" cellspacing="0" width="95%" style="padding-left:1em;">
+      <tr>
+        <td align="left" class="page_header">
+          <% if current_user.can?( @project, 'milestone' ) %>
+            <div style="float:right;padding-top:0.1em;"><%= link_to _('New'), :controller => "roadmap_milestones", :action => 'new', :project_id => @project %></div>
+          <% end %>
+          <div><%=_ 'Milestones' %></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <% if @project.milestones %>
+              <% @project.roadmap_milestones.find(:all,:order => "date").each do |rmilestone| %>
+               <%= render :partial => "roadmap/roadmapm_row", :locals => { :milestone => rmilestone } %>
+
+              <% end %>
+
+            <% else %>
+              <tr><td>&nbsp;</td></tr>
+            <% end %>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+
+  </div>
+</div>

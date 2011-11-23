@@ -1,3 +1,4 @@
+require 'simile_timeline'
 # encoding: UTF-8
 # Logical grouping of tasks from one project.
 #
@@ -7,9 +8,10 @@ class Milestone < ActiveRecord::Base
   belongs_to :company
   belongs_to :project
   belongs_to :user
-
   has_many :tasks, :dependent => :nullify
   validates_presence_of :name
+  validate :validate_dates
+  
 
   after_save { |r|
     r.project.total_milestones = nil
@@ -27,18 +29,37 @@ class Milestone < ActiveRecord::Base
   def complete?
     (self.completed_tasks == self.total_tasks) || (!self.completed_at.nil?)
   end
+
+  def description_presentation
+    result = "<p>ROI: "
+    result << get_roi.to_s + " %</p><p>"
+    result << self.description + "<p>"
+  end
   
   def escape_twice(attr)
     h(String.new(h(attr)))
   end
   def to_tip(options = { })
+    balance = get_balance
     res = "<table cellpadding=0 cellspacing=0>"
     res << "<tr><th>#{_('Name')}</th><td> #{escape_twice(self.name)}</td></tr>"
     res << "<tr><th>#{_('Begin Date')}</th><td> #{options[:user].tz.utc_to_local(init_date).strftime_localized("%A, %d %B %Y")}</td></tr>" unless self.init_date.nil?
     res << "<tr><th>#{_('Due Date')}</th><td> #{options[:user].tz.utc_to_local(due_at).strftime_localized("%A, %d %B %Y")}</td></tr>" unless self.due_at.nil?
     res << "<tr><th>#{_('Project')}</th><td> #{escape_twice(self.project.name)}</td></tr>"
     res << "<tr><th>#{_('Client')}</th><td> #{escape_twice(self.project.customer.name)}</td></tr>"
-    res << "<tr><th>#{_('Budget')}</th><td> #{escape_twice(self.budget) << ' ' << get_project_currency(self.project_id) }</td></tr>" unless self.budget.nil?
+    res << "<tr><th>#{_('Budget')}</th><td> #{escape_twice(self.get_estimate_cost) << ' ' << get_project_currency(self.project_id) }</td></tr>" unless self.budget.nil?
+    res << "<tr><th>#{_('Real Cost')}</th><td> #{escape_twice(self.get_real_cost) << ' ' << get_project_currency(self.project_id) }</td></tr>" unless self.budget.nil?
+    res << "<tr><th>#{_('EV')}</th><td> #{escape_twice(self.get_earned_value) << ' ' << get_project_currency(self.project_id) }</td></tr>" unless self.budget.nil?
+    res << "<tr><th>"
+    if balance < 0
+      res << "<div style = 'color:red'>"
+    end
+    res << "#{_('Balance')}</th><td> #{escape_twice(self.get_balance_presentation) << ' ' << '%' }</td></tr>" unless self.budget.nil?
+    if balance < 0
+      res << "</div>"
+    end
+    res << "<tr><th>#{_('ROI')}</th><td> #{escape_twice(self.get_roi) << ' %' }</td></tr>" unless self.budget.nil?
+    res << "<tr><th>#{_('B/CR')}</th><td> #{escape_twice(self.get_ratio_cost_benefist) << ':1' }</td></tr>" unless self.budget.nil?
     res << "<tr><th>#{_('Owner')}</th><td> #{escape_twice(self.user.name)}</td></tr>" unless self.user.nil?
     res << "<tr><th>#{_('Progress')}</th><td> #{self.completed_tasks.to_i} / #{self.total_tasks.to_i} #{_('Complete')}</td></tr>"
     res << "<tr><th>#{_('Description')}</th><td class=\"tip_description\">#{escape_twice(self.description_wrapped).gsub(/\n/, '<br/>').gsub(/\"/,'&quot;')}</td></tr>" unless self.description.blank?
@@ -53,6 +74,108 @@ class Milestone < ActiveRecord::Base
       nil
     end
   end
+
+  # get the estimate cost of iteration by adding user stories for iteration
+  def get_estimate_cost
+    if self.id
+      total_cost = 0.0
+      user_stories = self.tasks
+      user_stories.each do |user_story|
+        total_cost += ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
+      end
+      return total_cost
+    end
+  end
+
+  # get the real cost of iteration by adding user stories worked minutos per iteration
+  def get_real_cost
+    if self.id
+      total_cost = 0.0
+      user_stories = self.tasks
+      user_stories.each do |user_story|
+        total_cost += ((user_story.worked_minutes / 60.0) * self.project.cost_per_hour) rescue 0
+      end
+      return total_cost
+    end
+  end
+
+  #return benefist of milestone
+  def get_benefist
+    return get_estimate_cost - get_real_cost
+  end
+
+  # The earned value for iteration
+  def get_earned_value
+    if self.id
+      total_ev = 0.0
+      user_stories = self.tasks
+      user_stories.each do |user_story|
+        if user_story.closed?
+          total_ev = ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
+        end
+      end
+      return total_ev
+    end
+  end
+
+  # get the balance of estimate cost and real cost in percent
+  def get_balance
+    estimate_cost = get_estimate_cost
+    real_cost = get_real_cost
+    balance = ((estimate_cost - real_cost)/estimate_cost) * 100 rescue 0
+    if balance.nan?
+      balance = 0.0
+    end
+    return balance
+  end
+  #get the balance in presentation for user interface
+  def get_balance_presentation
+    balance_amount = get_balance
+    word = 'Profit '
+    if balance_amount < 0
+      word = 'Deficit '
+      balance_amount = balance_amount * -1
+    else if balance_amount == 0
+        word = ""
+      end
+    end
+    return word + balance_amount.to_i.to_s
+  end
+
+  #return the roi of the itaration
+  def get_roi
+    estimate_cost = get_estimate_cost
+    real_cost = get_real_cost
+    benefist = estimate_cost
+    roi = ((benefist - real_cost)/ real_cost) * 100 rescue 0
+    if roi.nan? || roi.infinite?
+      roi = 0.0
+    end
+    return (roi * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
+  # return ratio of benefist/costr
+  def get_ratio_cost_benefist
+    estimate_cost = get_estimate_cost
+    real_cost = get_real_cost
+    benefist = estimate_cost - real_cost
+    cb = benefist / real_cost
+    if cb.nan? || cb.infinite?
+      cb = 0.0
+    end
+    return (cb * 10**1).round.to_f / 10**1 #round one decimals
+  end
+
+  #return de net present value in one year projection
+  def get_npv
+    benefist = get_estimate_cost - get_real_cost
+    npv = benefist / (1 + (self.project.inflation_rate/100))
+    if npv.nan?
+      npv = 0.0
+    end
+    return (npv * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
 
   def due_date
     unless @due_date
@@ -100,6 +223,11 @@ class Milestone < ActiveRecord::Base
   def get_project_currency(project_id)
     project = Project.find project_id
     project.currency_iso_code
+  end
+
+  private
+  def validate_dates
+     errors.add(:init_date, "Must be before due date ") if self.due_at < self.init_date
   end
 
 end

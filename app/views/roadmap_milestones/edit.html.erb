@@ -1,0 +1,18 @@
+<fieldset>
+<legend><%=_ 'Edit Milestone' %></legend>
+
+<%#*comentado por que esta es la nueva forma de generar forms, probando con la antigua forma%>
+<%#= render 'form' %>
+
+<% form_tag :action => 'update', :id => @roadmap_milestone do %>
+  <%= render :partial => 'form' %>
+  <label>&nbsp;</label>
+  <%= submit_tag _('Save'), :class => 'nolabel' %>
+
+<% end %>
+<br/>
+  <% if current_user.can?( @roadmap_milestone.project, 'milestone' ) %>
+  <div style="clear:both;"></div>
+  <div style="float:right;"><%= link_to _("Delete Milestone"), {:controller => 'roadmap_milestones', :action => 'destroy', :id => @roadmap_milestone}, :confirm => "Really delete #{@roadmap_milestone.title}?" %></div>
+  <% end %>
+</fieldset>

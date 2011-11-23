@@ -6,7 +6,7 @@ jQuery.noConflict();
 
 jQuery(function() {
   jQuery("input:submit").button();
-  //jQuery("#tabmenu").tabs();
+//jQuery("#tabmenu").tabs();
 });
 
 
@@ -20,6 +20,17 @@ function showProgress() {
 }
 function hideProgress() {
   jQuery('#loading').hide('fast');
+}
+
+function inline_image(el) {
+    $(el).setStyle({
+        width:'auto',
+        visibility:'hidden'
+    });
+    if (el.width > 500) {
+        el.style.width = '500px';
+    }
+    el.style.visibility = 'visible';
 }
 
 jQuery(document).mousemove(function(e) {
@@ -520,6 +531,9 @@ function mark_as_default(sender) {
    jQuery("span#user_email_addresses span b").replaceWith("<span class='email_link_actions'><a class='action_email' href='#' onclick='mark_as_default(this); return false;'>Mark As Default</a><a class='action_email' href='#' onclick='jQuery(this).parent().parent().remove(); return false;'>Remove</a></span>");
    jQuery(sender).parent().parent().prependTo("span#user_email_addresses");
    jQuery(sender).parent().replaceWith("<b>Default</b>");
+}
+function reload_roadmap(sender){
+    window.location = "/roadmap/index?id=" + sender;
 }
 
 // Update the sheet at the top of the page every 90 seconds
