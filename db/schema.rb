@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111125002044) do
+ActiveRecord::Schema.define(:version => 20111125151339) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -133,6 +133,15 @@ ActiveRecord::Schema.define(:version => 20111125002044) do
     t.datetime "updated_at"
     t.string   "email"
     t.integer  "user_id"
+  end
+
+  create_table "estimation_settings", :force => true do |t|
+    t.float    "velocity",        :default => 30.0
+    t.float    "expert_judgment", :default => 20.0
+    t.float    "planning_poker",  :default => 50.0
+    t.integer  "project_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "event_logs", :force => true do |t|
@@ -265,6 +274,24 @@ ActiveRecord::Schema.define(:version => 20111125002044) do
   add_index "pages", ["company_id"], :name => "pages_company_id_index"
   add_index "pages", ["notable_id", "notable_type"], :name => "index_pages_on_notable_id_and_notable_type"
   add_index "pages", ["user_id"], :name => "fk_pages_user_id"
+
+  create_table "planning_poker_games", :force => true do |t|
+    t.datetime "due_at"
+    t.boolean  "locked",     :default => false
+    t.boolean  "closed",     :default => false
+    t.integer  "task_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "planning_poker_votes", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.float    "vote"
+    t.datetime "vote_date"
+    t.integer  "user_id"
+    t.integer  "planning_poker_game_id"
+  end
 
   create_table "preferences", :force => true do |t|
     t.integer  "preferencable_id"

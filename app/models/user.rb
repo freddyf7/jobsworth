@@ -46,6 +46,8 @@ class User < ActiveRecord::Base
 
   has_many      :email_deliveries
 
+  has_many      :planning_poker_votes, :dependent=>:destroy
+
   has_attached_file :avatar, :whiny => false , :styles=>{ :small=> "25x25>", :large=>"50x50>"}, :path => File.join(Rails.root.to_s, 'store', 'avatars')+ "/:id_:basename_:style.:extension"
 
   include PreferenceMethods
@@ -209,6 +211,12 @@ class User < ActiveRecord::Base
 
     (@perm_cache[project.id][perm] || false)
   end
+
+  def is_leader_for?(project)
+    return self.id == project.leader_id
+  end
+
+
 
   def can_all?(projects, perm)
     projects.all? {|p| can?(p, perm)}

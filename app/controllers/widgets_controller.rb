@@ -44,6 +44,12 @@ class WidgetsController < ApplicationController
       sheets_extracted_from_show
     when 12 then
       ev_extracted_from_show
+    when 13 then
+      ev_rc_pv_extracted_from_show
+    when 14 then
+      velocity_from_show
+    when 15 then
+      user_stories_type_from_show
     end
 
     case @widget.widget_type
@@ -51,7 +57,7 @@ class WidgetsController < ApplicationController
         render :partial => 'tasks/task_list', :locals => { :tasks => @items }
       when 1 then
         render :partial => 'activities/project_overview'
-      when 12 then
+      when 12..15 then
         page.replace_html "content_#{@widget.dom_id}", :partial => "widgets/widget_#{@widget.widget_type}"
       when 2 then
         # Recent Activities : already removed
@@ -291,11 +297,102 @@ class WidgetsController < ApplicationController
       count = count + 1
     end
     @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
+    acum = @max.to_i / 6
+    @mid = (@max.to_i / 2).ceil.to_s
+    @mid_1 = acum.to_s
+    @mid_2 = (@mid_1.to_i + acum).to_s
+    @mid_4 = (@mid.to_i + acum).to_s
+    @mid_5 = (@mid_4.to_i + acum).to_s
+  end
+
+
+  def ev_rc_pv_extracted_from_show
+    project = Project.find @widget.filter_by.gsub('p', '').to_i
+    iterations = project.milestones
+    values_col = Array.new
+    @currency = project.currency_iso_code
+    values_ev = ""
+    values_rc = ""
+    values_pc = ""
+    @iterations = ""
+    count = 1
+    iterations.each do |i|
+      if i.get_estimate_cost > 0
+      values_col << i.get_earned_value
+      values_col << i.get_real_cost
+      values_col << i.get_estimate_cost
+      values_ev += i.get_earned_value > 0 ? (i.get_earned_value).to_s : 0.to_s
+      values_rc += i.get_real_cost > 0 ? (i.get_real_cost).to_s : 0.to_s
+      values_pc += i.get_estimate_cost > 0 ? (i.get_estimate_cost).to_s : 0.to_s
+      if count < iterations.size
+        values_ev += ","
+        values_rc += ","
+        values_pc += ","
+      end
+      @iterations += "|Iter" + count.to_s+ "|"
+      count = count + 1
+      end
+    end
+    @values = values_rc.chop + '|' + values_ev.chop + '|' + values_pc.chop
+    @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
+    acum = @max.to_i / 6
+    @mid = (@max.to_i / 2).ceil.to_s
+    @mid_1 = acum.to_s
+    @mid_2 = (@mid_1.to_i + acum).to_s
+    @mid_4 = (@mid.to_i + acum).to_s
+    @mid_5 = (@mid_4.to_i + acum).to_s
+  end
+
+
+  def velocity_from_show
+    project = Project.find @widget.filter_by.gsub('p', '').to_i
+    iterations = project.milestones
+    values_col = Array.new
+    values_velocity = ""
+    values_target = ""
+    @iterations = ""
+    count = 1
+    iterations.each do |i|
+      if i.get_estimate_cost > 0
+        values_col << i.get_team_velocity
+        values_col << i.total_points
+        values_velocity += i.get_team_velocity > 0 ? (i.get_team_velocity).to_s : 0.to_s
+        values_target += i.total_points > 0 ? (i.total_points).to_s : 0.to_s
+        if count < iterations.size
+          values_velocity += ","
+          values_target += ","
+        end
+        @iterations += "Iter" + count.to_s+ "|"
+        count = count + 1
+      end
+    end
+    @values = values_velocity.chop + '|' + values_target.chop
+    @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
+    acum = @max.to_i / 6
+    @mid = (@max.to_i / 2).ceil.to_s
+    @mid_1 = acum.to_s
+    @mid_2 = (@mid_1.to_i + acum).to_s
+    @mid_4 = (@mid.to_i + acum).to_s
+    @mid_5 = (@mid_4.to_i + acum).to_s
+  end
+
+  def user_stories_type_from_show
+    project = Project.find @widget.filter_by.gsub('p', '').to_i
+    values_col = Array.new
+    @task_type = project.tasks.find_all_by_type("Task").count
+    values_col << @task_type
+    @epic_type = project.tasks.find_all_by_type("Epic").count
+    values_col << @epic_type
+    @improvement_type = project.tasks.find_all_by_type("Improvement").count
+    values_col << @improvement_type
+    @nf_type = project.tasks.find_all_by_type("New Feature").count
+    values_col << @nf_type
+    @defect_type = project.tasks.find_all_by_type("New Feature").count
+    values_col << @defect_type
+    @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 100.to_s
     @mid = (@max.to_i / 2).ceil.to_s
   end
 
-   
-  
 
   def burnup_extracted_from_show
     start, step, interval, range, tick = @widget.calculate_start_step_interval_range_tick(tz)

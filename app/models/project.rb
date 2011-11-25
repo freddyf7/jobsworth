@@ -19,7 +19,7 @@ class Project < ActiveRecord::Base
   has_many      :project_folders, :dependent => :destroy
   has_many      :milestones, :dependent => :destroy, :order => "due_at asc, lower(name) asc"
   has_many      :roadmap_milestones, :dependent => :nullify
-
+  has_one       :estimation_setting
 
   scope :completed, where("projects.completed_at is not NULL")
   scope :in_progress, where("projects.completed_at is NULL")
@@ -58,6 +58,19 @@ class Project < ActiveRecord::Base
     tasks.where("worked_minutes > duration").sum('worked_minutes - duration').to_i
   end
 
+  def percent_desviation
+    total_points = 0
+    closed_points = 0
+    self.milestones.each do |i|
+      if i.get_real_cost > 0
+        total_points += i.total_points
+        closed_points += i.total_points_execute
+      end
+    end
+    total = 100.to_f - ((closed_points.to_f/total_points.to_f) * 100)
+    return (total * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
   def total_tasks_count
     if self.total_tasks.nil?
        self.total_tasks = tasks.count
@@ -65,6 +78,23 @@ class Project < ActiveRecord::Base
     end
     total_tasks
   end
+
+  def end_date_estimate
+    end_date = self.created_at
+    self.milestones.each do |i|
+      end_date = i.due_date > end_date ? i.due_date : end_date
+    end
+    return end_date
+  end
+
+  def variaton_schedule
+    return (self.get_earned_value - self.get_estimate_cost)
+  end
+
+  def variation_cost
+    return (self.get_earned_value - self.get_real_cost)
+  end
+
 
   def open_tasks_count
     if self.open_tasks.nil?

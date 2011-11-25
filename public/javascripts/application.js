@@ -551,6 +551,14 @@ function reload_roadmap(sender){
     window.location = "/roadmap/index?id=" + sender;
 }
 
+function reload_estimation_settings(sender) {
+    window.location ="/estimation_settings/edit?project_id=" + sender
+}
+
+function copyDateTime(dateTime){
+    jQuery("#copiedDateTime").val(dateTime)
+}
+
 // Update the sheet at the top of the page every 90 seconds
 //
 jQuery(document).ready(function(){

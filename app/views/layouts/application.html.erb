@@ -30,6 +30,12 @@
       <%= javascript_include_tag 'http://simile.mit.edu/timeline/api/timeline-api.js' -%>
       <%= javascript_include_tag 'prototype' -%>
     <% end %>
+
+    <% if controller.controller_name == "planning_poker" %>
+      <%= javascript_include_tag 'jquery-ui.slider' -%>
+      <%= javascript_include_tag 'jquery-ui.timepicker' -%>
+    <% end %>
+
     <% if ['activities'].include? controller.controller_name %>
       <!--[if IE]><%= javascript_include_tag "excanvas" %><![endif]-->
         <%= javascript_include_tag "builder", "portal", "flotr" %>
@@ -53,6 +59,11 @@
       :cache => true
     ) %>
     <%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
+
+    <script src="<%=("http://"+CONFIG[:server][:production]+":8080/application.js")%>" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      var jug = new Juggernaut("<%=(CONFIG[:server][:production])%>");
+    </script>
 
     <%= csrf_meta_tag %>
     <title><%= $CONFIG[:productName] %></title>
