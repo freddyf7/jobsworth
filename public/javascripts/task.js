@@ -89,6 +89,25 @@ function addAutoAddUsersToTask(clientId, taskId, projectId) {
     addUser(url, params);
 }
 
+function addVelocityToTask(milestoneId) {
+    var url = tasks_path("add_velocity_for_client");
+    var params = {milesonte_id : milestoneId};
+    addVelocity(url, params);
+    addVelocityDesviation("velocity_deviation_for_client", params)
+}
+
+function addVelocity(url, params){
+    jQuery.get(url, params, function(data) {
+        jQuery("#task_points_team_velocity").val(data);
+    });
+}
+
+function addVelocityDesviation(url, params){
+    jQuery.get(url, params, function(data) {
+        jQuery("#task_points_team_velocity_desviation").html("Standard Desviation: " + data);
+    });
+}
+
 function addUser(url, params){
     jQuery.get(url, params, function(data) {
         jQuery("#task_notify").append(data);
@@ -259,6 +278,7 @@ function init_task_form() {
     });
 
     attach_behaviour_to_project_select();
+    attach_behaviour_to_milestone_select();
     jQuery("div.log_history").tabs();
     jQuery('.autogrow').autogrow();
     jQuery('#comment').keyup(function() {

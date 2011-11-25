@@ -18,20 +18,6 @@ body {
   font-family: "Lucida Grande", Verdana, Arial, sans-serif;
   font-size: 12px; }
 
-.default_timeline{
-    width: 100%;
-    height: 300px;
-}
-
-#finance_list tbody tr td img {
-/* centre the image */
-display: block;
-margin: 0 auto;
-float: none;
-}
-
-
-
 /* Global */
 .left {
   float: left; }
@@ -2315,3 +2301,16 @@ div#snooze_until {
 .score-rules-container .form-actions input {
   /** Rules for fixing style on the properties values page **/
   float: none; }
+
+.roadmap_panel{
+    width: 50%;
+    float: left;
+}
+
+.row_stripe{
+    background-color: #eaeaea;
+}
+
+.row_total{
+    background-color: #e5eaef;
+}

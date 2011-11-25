@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111123160029) do
+ActiveRecord::Schema.define(:version => 20111125002044) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -355,6 +355,7 @@ ActiveRecord::Schema.define(:version => 20111123160029) do
     t.integer  "limit_points_per_user_stories",                                                        :default => 100
     t.integer  "limit_points_per_business_value_stories",                                              :default => 100
     t.float    "inflation_rate",                                                                       :default => 0.0
+    t.float    "tir_per_hour",                                                                         :default => 0.0
   end
 
   add_index "projects", ["company_id"], :name => "projects_company_id_index"
@@ -450,6 +451,7 @@ ActiveRecord::Schema.define(:version => 20111123160029) do
     t.datetime "date"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "project_id"
   end
 
   create_table "scm_changesets", :force => true do |t|
@@ -650,6 +652,7 @@ ActiveRecord::Schema.define(:version => 20111123160029) do
     t.integer  "points_team_velocity",                                                :default => 0
     t.integer  "points_planning_poker",                                               :default => 0
     t.integer  "business_value"
+    t.integer  "total_points",                                                        :default => 0
   end
 
   add_index "tasks", ["company_id"], :name => "tasks_company_id_index"

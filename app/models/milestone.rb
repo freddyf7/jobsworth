@@ -87,6 +87,16 @@ class Milestone < ActiveRecord::Base
     end
   end
 
+  #return total points per iteration
+  def total_points
+    total_points = 0
+    tasks = self.tasks
+    tasks.each do |task|
+      total_points += task.total_points
+    end
+    return total_points
+  end
+
   # get the real cost of iteration by adding user stories worked minutos per iteration
   def get_real_cost
     if self.id
@@ -101,7 +111,8 @@ class Milestone < ActiveRecord::Base
 
   #return benefist of milestone
   def get_benefist
-    return get_estimate_cost - get_real_cost
+    real_cost = get_real_cost * (1 - (self.project.tir_per_hour/100)) # add the roi per hour of company
+    return (get_estimate_cost - real_cost)
   end
 
   # The earned value for iteration
@@ -111,7 +122,8 @@ class Milestone < ActiveRecord::Base
       user_stories = self.tasks
       user_stories.each do |user_story|
         if user_story.closed?
-          total_ev = ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
+          #total_ev = ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
+          total_ev += ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
         end
       end
       return total_ev
@@ -122,7 +134,7 @@ class Milestone < ActiveRecord::Base
   def get_balance
     estimate_cost = get_estimate_cost
     real_cost = get_real_cost
-    balance = ((estimate_cost - real_cost)/estimate_cost) * 100 rescue 0
+    balance = ((get_benefist)/estimate_cost) * 100 rescue 0
     if balance.nan?
       balance = 0.0
     end
@@ -146,8 +158,8 @@ class Milestone < ActiveRecord::Base
   def get_roi
     estimate_cost = get_estimate_cost
     real_cost = get_real_cost
-    benefist = estimate_cost
-    roi = ((benefist - real_cost)/ real_cost) * 100 rescue 0
+    benefist = get_benefist
+    roi = (benefist/ real_cost) * 100 rescue 0
     if roi.nan? || roi.infinite?
       roi = 0.0
     end
@@ -156,10 +168,8 @@ class Milestone < ActiveRecord::Base
 
   # return ratio of benefist/costr
   def get_ratio_cost_benefist
-    estimate_cost = get_estimate_cost
-    real_cost = get_real_cost
-    benefist = estimate_cost - real_cost
-    cb = benefist / real_cost
+    benefist = get_benefist
+    cb = benefist / get_real_cost
     if cb.nan? || cb.infinite?
       cb = 0.0
     end
@@ -168,12 +178,34 @@ class Milestone < ActiveRecord::Base
 
   #return de net present value in one year projection
   def get_npv
-    benefist = get_estimate_cost - get_real_cost
+    benefist = get_benefist
     npv = benefist / (1 + (self.project.inflation_rate/100))
     if npv.nan?
       npv = 0.0
     end
     return (npv * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
+  # return a cost program index
+  def get_cpi
+    earned_value = get_earned_value
+    real_cost = get_real_cost
+    cpi = earned_value / real_cost
+    if cpi.nan? || cpi.infinite?
+      cpi = 0.0
+    end
+    return (cpi * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
+  #return a plan program index
+  def get_spi
+    earned_value = get_earned_value
+    estimate_cost = get_estimate_cost
+    spi = earned_value / estimate_cost
+    if spi.nan? || spi.infinite?
+      spi = 0.0
+    end
+    return (spi * 10**2).round.to_f / 10**2 #round two decimals
   end
 
 
