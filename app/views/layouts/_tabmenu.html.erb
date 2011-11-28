@@ -21,10 +21,13 @@
         <li>
           <%= link_to _("New US"), :controller => 'tasks', :action => 'new' %>
         </li>
-        <% current_templates.each do |t| %>
-        <li class="task_template">
-          <%= link_to t, '#', :'data-tasknum' => t.task_num %>
+         <li<%= " class='active'" if active.starts_with?('clients/') %>>
+          <%= link_to "#{_('Planning Poker')}", :controller => "planning_poker", :action => 'historial' %>
         </li>
+        <% current_templates.each do |t| %>
+          <li class="task_template">
+            <%= link_to t, '#', :'data-tasknum' => t.task_num %>
+          </li>
         <% end %>
       </ul>
     </li>

@@ -63,6 +63,9 @@
     <script src="<%=("http://"+CONFIG[:server][:production]+":8080/application.js")%>" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
       var jug = new Juggernaut("<%=(CONFIG[:server][:production])%>");
+      jug.subscribe("user-channel-<%= current_user.id %>", function(data){
+          alert(data);
+        });
     </script>
 
     <%= csrf_meta_tag %>
@@ -81,6 +84,8 @@
           jQuery.jgrid.useJSON = true;
     </script>
 
+
+
     <script type="text/javascript">
       // Ugly, yes, but gets the job done.
       jQuery(document).ajaxError(function(event, request, settings){
@@ -91,8 +96,22 @@
         }
       });
     </script>
+    <% if controller.controller_name == "planning_poker" && controller.action_name == "table" %>
+      <script type="text/javascript">
+        function desconectar_jug(){
+          var url = "/planning_poker/ajax_exit_game";
+          var params = {game: <%= @game.id.to_s%>, user: <%= current_user.id %> };
+          jQuery.get(url, params, function(data){
+            alert ('data');
+          });
+        }
+      </script>
+    <% end %>
+
   </head>
-  <body>
+    <body
+      <% if controller.controller_name == "planning_poker" && controller.action_name == "table"%>
+      onunload="desconectar_jug();"<% end %>>
     <div id="page_header">
       <div id="loading">
         <%= image_tag('spinner.gif', :border => 0) %>

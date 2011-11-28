@@ -1,7 +1,7 @@
 Jobsworth::Application.routes.draw do
 
   #map.resources :estimation_settings
-  resources :estimation_settings
+#  resources :estimation_settings
 
 #  resources :roadmap_milestones
 

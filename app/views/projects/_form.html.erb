@@ -3,7 +3,17 @@
 <!--[form:project]-->
 <label for="project_name"><%=_ 'Name ' %></label><%= text_field 'project', 'name' %><br/>
 <label for="auto_complete_for_user_name_only_company"><%=_'Leader' %></label>
-<%= text_field :user, :name, { :id=>"auto_complete_for_user_name_only_company",:size => 16,:value => @project.leader_id.nil? ? "" : get_leader_name(@project.leader_id) } %>
+
+<%= text_field :user, :name, { 
+  :id=>"auto_complete_for_user_name_only_company",
+  :size => 16,
+  :value => @project.leader_id.nil? ? "" :get_leader_name(@project.leader_id),
+  :autocomplete => "off",
+  :class => "tooltip",
+  :title => "Please enter the leader name by the autocomplete."
+}
+%>
+
 <br/>
 <label for="project_customer_name"><%=_ 'Client ' %></label>
 

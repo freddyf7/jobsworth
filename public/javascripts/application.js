@@ -89,10 +89,6 @@ function addUserToProject(event, ui) {
     return false;
 }
 
-function addUserToProjectOnlyCompany(event,ui){
-jQuery('#project_leader_id').val(ui.item.id);
-}
-
 
 /*
   Requests the available attributes for the given resource type
@@ -431,6 +427,10 @@ jQuery(document).ready(function() {
 
   jQuery(".datefield").datepicker({ constrainInput: false, dateFormat: userDateFormat});
 });
+
+function addUserToProjectOnlyCompany(event, ui){
+    jQuery('#project_leader_id').val(ui.item.id);
+}
 
 /*Adds the selected customer to the new project*/
 function addCustomerToProject(event, ui){

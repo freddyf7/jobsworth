@@ -1,12 +1,16 @@
 require 'juggernaut'
 class PlanningPokerController < ApplicationController
+  
   def config
     game = PlanningPokerGame.new
-    game.task_id = params[:us_id]
-    if !game_exist?(params[:us_id])
+#    game.task_id = params[:us_id]
+    game.task_id = 5
+#    if !game_exist?(params[:us_id])
+    if !game_exist?(5)
       game.save!
     else
-      game = PlanningPokerGame.find_by_task_id params[:us_id]
+#      game = PlanningPokerGame.find_by_task_id(params[:us_id])
+      game = PlanningPokerGame.find_by_task_id(5)
     end
     @game_config = game
     @game_config.due_at = tz.utc_to_local(@game_config.due_at) unless @game_config.due_at.nil?
@@ -35,25 +39,171 @@ class PlanningPokerController < ApplicationController
     ppoker_game.due_at = tz.local_to_utc Time.parse params[:due_at] if params[:due_at]
     ppoker_game.save!
     send_invitations_mail(id_users_to_play, game)
+    send_invitations_notify(id_users_to_play, game)
+    redirect_to :controller => 'planning_poker', :action => 'table', :id => planning_poker_game_id.to_i
   end
 
+  
+
   def table
+    planning_poker_id = params[:id]
+    @game = PlanningPokerGame.find planning_poker_id
+    if (!@game.closed? && user_permision_for_game(@game.id, current_user.id) && !@game.undate?(tz))
+    actual_vote = @game.planning_poker_votes.find_by_user_id current_user.id
+    actual_vote.status = true
+    actual_vote.save!
+    player_id_list = users_ids_for_game(@game.planning_poker_votes)
+    @player_list = get_player_list player_id_list
+    @user_id = current_user.id
+    @actual_users = actual_users_conected planning_poker_id.to_i
+    @votes = PlanningPokerVote.find(:all, :conditions => ['vote IS NOT NULL and planning_poker_game_id = ?', @game.id])
+    else
+      flash['notice'] = _("El juego ya ha finalizado. No se pude volver a jugar")
+      redirect_to :controller => 'planning_poker', :action => 'historial'
+    end
   end
 
   def historial
+    @games_historial = Array.new
+    votes = PlanningPokerVote.find(:all, :conditions => ['user_id = ?', current_user.id])
+    votes.each do |vote|
+      game = PlanningPokerGame.find vote.planning_poker_game_id
+      actual_time = Time.now
+      if  (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
+        @games_historial << game
+      end
+    end
   end
 
   def send_message
-    Juggernaut.publish(params[:channel], current_user.name + ": " + params[:message])
+   Juggernaut.publish(params[:channel], "<b>" + current_user.name + ":</b>" + params[:current_message])
+   render :nothing => true
   end
 
+  def send_status
+    Juggernaut.publish(params[:channel], params[:current_message])
+    render :nothing => true
+  end
+
+  def ajax_exit_game
+    game_id = params[:game].to_i
+    user_exit_id = params[:user]
+    game = PlanningPokerGame.find game_id
+    actual_vote = game.planning_poker_votes.find_by_user_id user_exit_id.to_i
+    actual_vote.status = false
+    actual_vote.save!
+    Juggernaut.publish('list-' + game_id.to_s, user_exit_id + '-0')
+    render :nothing => true
+  end
+
+  def exit_game
+    game_id = params[:id].to_i
+    game = PlanningPokerGame.find game_id
+    actual_vote = game.planning_poker_votes.find_by_user_id current_user.id
+    actual_vote.status = false
+    actual_vote.save!
+    Juggernaut.publish('list-' + game_id.to_s, current_user.id.to_s + '-0')
+    user_stroy = game.task
+    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.id
+  end
+
+  #eventos para el juego
+
+  def vote
+    value_vote = params[:value_vote]
+    game_id = params[:game_id]
+    user = current_user;
+    game = PlanningPokerGame.find game_id.to_i
+    user_vote = game.planning_poker_votes.find_by_user_id user.id
+    user_vote.vote = value_vote.to_f
+    actual_time = Time.now
+    user_vote.vote_date = tz.local_to_utc(actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time)
+    user_vote.save!
+    render :nothing => true
+  end
+
+  def repeat_game
+
+    game_id = params[:game_id]
+    game = PlanningPokerGame.find game_id.to_i
+    game.planning_poker_votes.each do |pvote|
+      pvote.vote = nil
+      pvote.vote_date = nil
+      pvote.save!
+    end
+    render :nothing => true
+
+  end
+
+  def resume_game
+    game_id = params[:game_id]
+    game = PlanningPokerGame.find game_id.to_i
+    list_votes = Array.new
+    game.planning_poker_votes.each do |pvote|
+      list_votes << pvote.vote
+    end
+    @mean_result = Statistics.mean(list_votes)
+    @standard_desviation = Statistics.standard_desviation(list_votes)
+    render :update do |page|
+        page.insert_html :before, "#", :partial => "resume_game"
+     end
+  end
+
+  def update_user_story_whit_points
+    points = params[:points]
+    game_id = params[:game_id]
+    game = PlanningPokerGame.find game_id.to_i
+    user_stroy = game.task
+    user_stroy.points_planning_poker = points.to_f
+    user_stroy.save!
+    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.id
+
+  end
+
+
   private
+
+  def user_permision_for_game (id_game, user_id)
+    game = PlanningPokerGame.find id_game
+    project = game.task.project
+    user = project.users.find_by_id user_id
+    if user.nil?
+      return false
+    else return true
+    end
+  end
+
+  def actual_users_conected (game_id)
+    actual_users = Array.new
+    game = PlanningPokerGame.find game_id
+    game.planning_poker_votes.each do |vote|
+      if vote.status == true
+      actual_users << User.find(vote.user_id)
+      end
+    end
+    return actual_users
+  end
+
+  def get_player_list (player_id_list)
+    player_list = Array.new
+    player_id_list.each do |player_id|
+      player_list << User.find(player_id)
+    end
+    return player_list
+  end
 
   def send_invitations_mail (id_users_to_play, game)
     task = Task.find game.task_id
     id_users_to_play.each do |id_user|
       user = User.find id_user
       Notifications::deliver_planning_poker_invitation(game, task, user)
+    end
+  end
+
+  def send_invitations_notify (id_users_to_play, game)
+    task = Task.find game.task_id
+    id_users_to_play.each do |id_user|
+      Juggernaut.publish('user-channel-' + id_user.to_s, task.id.to_s + '-' + game.id.to_s)
     end
   end
 

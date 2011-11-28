@@ -50,6 +50,8 @@ class WidgetsController < ApplicationController
       velocity_from_show
     when 15 then
       user_stories_type_from_show
+    when 20 then
+      planning_poker_games_from_show
     end
 
     case @widget.widget_type
@@ -63,6 +65,8 @@ class WidgetsController < ApplicationController
         # Recent Activities : already removed
       when 3..10 then
         render :partial => "widgets/widget_#{@widget.widget_type}"
+      when 20 then
+        page.replace_html "content_#{@widget.dom_id}", :partial => "widgets/widget_#{@widget.widget_type}"
     end
 
   end
@@ -393,6 +397,17 @@ class WidgetsController < ApplicationController
     @mid = (@max.to_i / 2).ceil.to_s
   end
 
+  def planning_poker_games_from_show
+    @games_historial = Array.new
+    votes = PlanningPokerVote.find(:all, :conditions => ['user_id = ?', current_user.id])
+    votes.each do |vote|
+      game = PlanningPokerGame.find vote.planning_poker_game_id
+      actual_time = Time.now
+        if (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
+        @games_historial << game
+      end
+    end
+  end
 
   def burnup_extracted_from_show
     start, step, interval, range, tick = @widget.calculate_start_step_interval_range_tick(tz)
