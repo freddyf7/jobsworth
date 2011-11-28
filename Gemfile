@@ -22,7 +22,7 @@ gem 'net-ldap'
 gem 'devise',             '1.1.9'
 gem 'sass'
 gem 'google_currency',    '1.0.2'
-gem 'juggernaut', 	  '2.0.0.beta3'
+gem 'juggernaut', 	  '2.1.0'
 
 group :test do
   gem "shoulda",          '>=2.11.3'

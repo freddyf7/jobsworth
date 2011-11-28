@@ -28,6 +28,8 @@
     <%= yield :head %>
     <% if controller.controller_name == "roadmap" %>
       <%= javascript_include_tag 'http://simile.mit.edu/timeline/api/timeline-api.js' -%>
+      <%#= javascript_include_tag 'http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js' -%>
+
       <%= javascript_include_tag 'prototype' -%>
     <% end %>
 

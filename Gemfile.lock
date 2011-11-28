@@ -87,7 +87,7 @@ GEM
     icalendar (1.1.6)
     json (1.5.3)
     json_pure (1.5.3)
-    juggernaut (2.0.0.beta3)
+    juggernaut (2.1.0)
       redis
     launchy (0.4.0)
       configuration (>= 0.0.5)
@@ -196,7 +196,7 @@ DEPENDENCIES
   google_currency (= 1.0.2)
   icalendar (>= 1.1.5)
   json
-  juggernaut (= 2.0.0.beta3)
+  juggernaut (= 2.1.0)
   launchy
   machinist (= 1.0.6)
   money (= 3.1.5)

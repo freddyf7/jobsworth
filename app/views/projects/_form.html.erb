@@ -5,13 +5,13 @@
 <label for="auto_complete_for_user_name_only_company"><%=_'Leader' %></label>
 
 <%= text_field :user, :name, { 
-  :id=>"auto_complete_for_user_name_only_company",
-  :size => 16,
-  :value => @project.leader_id.nil? ? "" :get_leader_name(@project.leader_id),
-  :autocomplete => "off",
-  :class => "tooltip",
-  :title => "Please enter the leader name by the autocomplete."
-}
+                    :id=>"auto_complete_for_user_name_only_company",
+                    :size => 16,
+                    :value => @project.leader_id.nil? ? "" :get_leader_name(@project.leader_id),
+                    :autocomplete => "off",
+                    :class => "tooltip",
+                    :title => "Please enter the leader name by the autocomplete."
+               }
 %>
 
 <br/>

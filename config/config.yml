@@ -1,3 +1,3 @@
 ## YAML Template.
 :server:
-  :production: 10.0.2.15
+  :production: 192.168.10.53

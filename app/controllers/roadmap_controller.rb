@@ -16,9 +16,11 @@ class RoadmapController < ApplicationController
   def recent
     if session[:id_prj].nil?
       roadmap_project = current_user.projects.find :first
-      project_id = roadmap_project.id
+#      project_id = roadmap_project.id
+       project_id = 1
     else
-      project_id = session[:id_prj]
+#      project_id = session[:id_prj]
+       project_id = 1
     end
     @milestones = RoadmapMilestone.find(:all, :conditions => ["date > ? and date < ? and project_id = ?", params[:start].to_time, params[:end].to_time, project_id])
     @iterations =  Milestone.find(:all, :conditions => ["due_at > ? and init_date < ? and project_id = ?",params[:start].to_time, params[:end].to_time,project_id])

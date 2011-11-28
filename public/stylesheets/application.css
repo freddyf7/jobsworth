@@ -2360,3 +2360,8 @@ div#snooze_until {
 .row_total{
     background-color: #e5eaef;
 }
+
+.default_timeline{
+    width: 100%;
+    height: 300px;
+}
