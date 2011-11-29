@@ -132,7 +132,8 @@
   </tr>
   <tr>
     <td>
-      <% form_remote_tag(:url => {:action => 'send_message'}, :success => "document.getElementById('current_message').value = ''") do %>
+      <%  form_tag :url => {:action => 'send_message'},:success => "document.getElementById('current_message').value = ''" , :remote => true do%>
+      <%# form_remote_tag(:url => {:action => 'send_message'}, :success => "document.getElementById('current_message').value = ''") do %>
         <table style="width: 100%">
           <tr>
             <td>

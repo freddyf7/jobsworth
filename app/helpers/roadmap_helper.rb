@@ -1,5 +1,5 @@
 module RoadmapHelper
-  def options_for_user_projects (selected_project)
+  def options_for_user_projects_roadmap (selected_project)
     projects = current_user.projects.find(:all, :include => "customer", :order => "customers.name, projects.name")
 
     last_customer = nil

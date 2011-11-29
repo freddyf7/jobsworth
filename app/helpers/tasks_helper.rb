@@ -119,7 +119,7 @@ module TasksHelper
   def options_for_user_projects(task)
     projects = current_user.projects.includes(:customer).except(:order).order("customers.name, projects.name")
 
-    unless  task.new_record? or projects.include?(task.project)   
+    unless  task.new_record? or projects.include?(task.project)
       projects<< task.project
       projects=projects.sort_by { |project| project.customer.name + project.name }
     end
@@ -127,6 +127,7 @@ module TasksHelper
 
     return grouped_options_for_select(options, task.project_id, "Please select").html_safe
   end
+
 
   # Returns html to display the due date selector for task
   def due_date_field(task, permissions)

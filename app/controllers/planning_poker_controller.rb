@@ -3,14 +3,14 @@ class PlanningPokerController < ApplicationController
   
   def config
     game = PlanningPokerGame.new
-#    game.task_id = params[:us_id]
-    game.task_id = 5
+ #   game.task_id = params[:us_id]
+    game.task_id = 6
 #    if !game_exist?(params[:us_id])
-    if !game_exist?(5)
+    if !game_exist?(6)
       game.save!
     else
 #      game = PlanningPokerGame.find_by_task_id(params[:us_id])
-      game = PlanningPokerGame.find_by_task_id(5)
+      game = PlanningPokerGame.find_by_task_id(6)
     end
     @game_config = game
     @game_config.due_at = tz.utc_to_local(@game_config.due_at) unless @game_config.due_at.nil?
@@ -65,7 +65,7 @@ class PlanningPokerController < ApplicationController
 
   def historial
     @games_historial = Array.new
-    votes = PlanningPokerVote.find(:all, :conditions => ['user_id = ?', current_user.id])
+    votes = PlanningPokerVote.find(:all, :conditions => ['user_id = ?', current_user.id])   
     votes.each do |vote|
       game = PlanningPokerGame.find vote.planning_poker_game_id
       actual_time = Time.now

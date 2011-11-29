@@ -59,10 +59,9 @@
     <%= simile_timeline(roadmap_timeline, { :class => 'default_timeline' } ) %>
   </div>
   <div id="project_select">
-    <%#*<fieldset>%>
-      <%#*<label>Project</label><select id="project_id" name="project_id" onchange="reload_roadmap(this.value)"><%= options_for_user_projects(session[:id_prj])%>
-      <%#*</select>%>
-    <%#*</fieldset>%>
+    <fieldset>
+      <label>Project</label><select id="project_id" name="project_id" onchange="reload_roadmap(this.value)"><%= options_for_user_projects_roadmap(session[:id_prj])%></select>
+    </fieldset>
 
     <div class="roadmap_panel">
       <table cellpadding="0" cellspacing="0" width="95%" style="padding-left:1em;">

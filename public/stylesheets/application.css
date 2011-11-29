@@ -25,6 +25,11 @@ body {
 .right {
   float: right; }
 
+.default_timeline{
+    width: 100%;
+    height: 300px;
+}
+
 span.clear-both {
   display: block;
   clear: both; }
@@ -2361,7 +2366,3 @@ div#snooze_until {
     background-color: #e5eaef;
 }
 
-.default_timeline{
-    width: 100%;
-    height: 300px;
-}
