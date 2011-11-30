@@ -70,8 +70,10 @@ class EstimationSettingsController < ApplicationController
 
     respond_to do |format|
       if @estimation_setting.update_attributes(params[:estimation_setting])
-        format.html { redirect_to(@estimation_setting, :notice => 'Estimation setting was successfully updated.') }
-        format.xml  { head :ok }
+        format.html {
+          flash['notice'] = _("Estimation Settings was successfully saved")
+          redirect_to(:action => "edit") }
+        format.xml { head :ok }
       else
         format.html { render :action => "edit" }
         format.xml  { render :xml => @estimation_setting.errors, :status => :unprocessable_entity }

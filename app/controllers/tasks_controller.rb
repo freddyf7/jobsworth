@@ -38,6 +38,8 @@ class TasksController < ApplicationController
     end
   end
 
+
+
   def list
     @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
     @tasks = tasks_for_list

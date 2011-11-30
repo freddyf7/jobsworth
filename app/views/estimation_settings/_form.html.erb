@@ -1,22 +1,12 @@
-<%= form_for(@estimation_setting) do |f| %>
-  <% if @estimation_setting.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@estimation_setting.errors.count, "error") %> prohibited this estimation_setting from being saved:</h2>
+<%= error_messages_for :estimation_setting %>
 
-      <ul>
-      <% @estimation_setting.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<label for="estimation_setting_expertjudgment"><%=_ 'Expert Judgment Points' %></label><%= text_field 'estimation_setting', 'expert_judgment' %><br/>
+<label for="estimation_setting_velocity"><%=_ 'Team Velocity Points' %></label><%= text_field 'estimation_setting', 'velocity' %><br/>
+<label for="estimation_setting_planning_poker"><%=_ 'Planning Pojer Points' %></label><%= text_field 'estimation_setting', 'planning_poker' %><br/>
+<label for="estimation_setting_points_per_hour"><%=_ 'Initial Points/Hour' %></label><%= text_field 'estimation_setting', 'points_per_hour' %><br/>
+<br/>
 
-  <label for="estimation_setting_expertjudgment"><%=_ 'Expert Judgment Points' %></label><%= text_field 'estimation_setting', 'expert_judgment' %><br/>
-  <label for="estimation_setting_velocity"><%=_ 'Team Velocity Points' %></label><%= text_field 'estimation_setting', 'velocity' %><br/>
-  <label for="estimation_setting_planning_poker"><%=_ 'Planning Pojer Points' %></label><%= text_field 'estimation_setting', 'planning_poker' %><br/>
+<%= hidden_field_tag "estimation_setting[project_id]", @estimation_setting.project_id %>
 
-  <%= hidden_field_tag "estimation_setting[project_id]", @estimation_setting.project_id %>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-<% end %>
+
+

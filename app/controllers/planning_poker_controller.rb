@@ -1,16 +1,16 @@
 require 'juggernaut'
 class PlanningPokerController < ApplicationController
   
-  def config
+  def pokerconf
     game = PlanningPokerGame.new
- #   game.task_id = params[:us_id]
-    game.task_id = 6
-#    if !game_exist?(params[:us_id])
-    if !game_exist?(6)
+    game.task_id = params[:us_id]
+ #   game.task_id = 6
+    if !game_exist?(params[:us_id])
+ #   if !game_exist?(6)
       game.save!
     else
-#      game = PlanningPokerGame.find_by_task_id(params[:us_id])
-      game = PlanningPokerGame.find_by_task_id(6)
+      game = PlanningPokerGame.find_by_task_id params[:us_id]
+#      game = PlanningPokerGame.find_by_task_id(6)
     end
     @game_config = game
     @game_config.due_at = tz.utc_to_local(@game_config.due_at) unless @game_config.due_at.nil?
@@ -48,15 +48,16 @@ class PlanningPokerController < ApplicationController
   def table
     planning_poker_id = params[:id]
     @game = PlanningPokerGame.find planning_poker_id
-    if (!@game.closed? && user_permision_for_game(@game.id, current_user.id) && !@game.undate?(tz))
-    actual_vote = @game.planning_poker_votes.find_by_user_id current_user.id
-    actual_vote.status = true
-    actual_vote.save!
-    player_id_list = users_ids_for_game(@game.planning_poker_votes)
-    @player_list = get_player_list player_id_list
-    @user_id = current_user.id
-    @actual_users = actual_users_conected planning_poker_id.to_i
-    @votes = PlanningPokerVote.find(:all, :conditions => ['vote IS NOT NULL and planning_poker_game_id = ?', @game.id])
+    #if (!@game.closed? && user_permision_for_game(@game.id, current_user.id) && !@game.undate?(tz))
+    if (!@game.closed? && user_permision_for_game(@game.id, current_user.id))
+      actual_vote = @game.planning_poker_votes.find_by_user_id current_user.id
+      actual_vote.status = true
+      actual_vote.save!
+      player_id_list = users_ids_for_game(@game.planning_poker_votes)
+      @player_list = get_player_list player_id_list
+      @user_id = current_user.id
+      @actual_users = actual_users_conected planning_poker_id.to_i
+      @votes = PlanningPokerVote.find(:all, :conditions => ['vote IS NOT NULL and planning_poker_game_id = ?', @game.id])
     else
       flash['notice'] = _("El juego ya ha finalizado. No se pude volver a jugar")
       redirect_to :controller => 'planning_poker', :action => 'historial'
@@ -69,7 +70,8 @@ class PlanningPokerController < ApplicationController
     votes.each do |vote|
       game = PlanningPokerGame.find vote.planning_poker_game_id
       actual_time = Time.now
-      if  (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
+#      if  (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
+      if  (!game.closed?)
         @games_historial << game
       end
     end
@@ -169,7 +171,8 @@ class PlanningPokerController < ApplicationController
     user = project.users.find_by_id user_id
     if user.nil?
       return false
-    else return true
+    else
+      return true
     end
   end
 
