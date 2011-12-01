@@ -374,6 +374,7 @@ function attach_behaviour_to_milestone_select() {
         milestoneSelect.change(function(){
             milestoneId=jQuery('#task_milestone_id option:selected').val();
             addVelocityToTask(milestoneId);
+            addPointsPerHourToTask(milestoneId);
         });
     }
 }
@@ -556,7 +557,7 @@ function reload_estimation_settings(sender) {
 }
 
 function copyDateTime(dateTime){
-    jQuery("#copiedDateTime").val(dateTime)
+    jQuery("#copiedDateTime").val(dateTime + " 23:59:00");
 }
 
 // Update the sheet at the top of the page every 90 seconds

@@ -1,0 +1,81 @@
+<table class="content" id="points_table" width="100%" style="margin-left:0;margin-right:0;">
+  <tr>
+    <th title="Iteraciones"><%=_ 'Iterations' %></th>
+    <th><%=_ 'Estimate' %></th>
+    <th><%=_ 'Real' %></th>
+    <th><%=_ 'Points/h' %></th>
+    <th><%=_ 'Velocity' %></th>
+    <th><%=_ 'Planed Business Value' %></th>
+    <th><%=_ 'Real Business Value' %></th>
+    <th><%=_ 'Costo/Beneficio' %></th>
+    <th><%=_ 'Efectivity' %></th>
+
+  </tr>
+
+  <% count = 1 %>
+  <% @project.milestones.each do |iteration| %>
+    <% if count % 2 == 0 %>
+      <tr id="p" class="row_stripe" style="text-align: right"/>
+      <% else %>
+      <tr id="p1" style="text-align: right">
+      <% end %>
+      <td style="text-align: center">
+        <%= 'Iteration ' + count.to_s %>
+      </td>
+      <td>
+        <%= iteration.total_points %>
+      </td>
+      <td>
+        <%= iteration.get_real_points %>
+      </td>
+      <td>
+        <%= iteration.points_per_hour_iteration %>
+      </td>
+      <td>
+        <%= iteration.total_points_execute %>
+      </td>
+      <td>
+        <%= iteration.total_business_value %>
+      </td>
+      <td>
+        <%= iteration.real_business_value %>
+      </td>
+      <td>
+        <%= iteration.benefist_cost_points_presentation %>
+      </td>
+      <td>
+        <%= iteration.points_balance %>
+      </td>
+    </tr>
+    <%count = count + 1%>
+  <% end %>
+  <tr style="text-align: right" class="row_total">
+    <td style="text-align: center">
+      <%= 'Total' %>
+    </td>
+    <td>
+      <%= @project.total_points %>
+    </td>
+    <td>
+      <%= @project.get_real_points %>
+    </td>
+    <td title="Promedio de puntos por hora en el proyecto con desviaci&oacute;n de <%= @project.desviation_points_per_hour%> ">
+      <%= @project.average_points_per_hour %>
+    </td>
+    <td>
+      <%= @project.total_points_execute %>
+    </td>
+    <td>
+      <%= @project.total_business_value %>
+    </td>
+    <td>
+      <%= @project.real_business_value %>
+    </td>
+    <td>
+      <%= @project.benefist_cost_points %>
+    </td>
+    <td>
+      <%= @project.points_balance %>
+    </td>
+  </tr>
+</table>

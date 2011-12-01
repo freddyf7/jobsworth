@@ -2,15 +2,19 @@
 # and open the template in the editor.
 module Statistics
     def self.mean(array)
-      result = array.inject(0) {|sum, x| sum +=x } /array.size
+      result = array.inject(0) {|sum, x| sum +=x } /array.size.to_f
       return result.ceil
     end
 
     def self.standard_desviation(array)
       m = mean(array)
       variance = array.inject(0) {|variance,x| variance += (x-m) ** 2}
-      result = Math.sqrt(variance/(array.size - 1))
-      return (result * 10**2).round.to_f / 10**2 #round two decimals
+      if (array.size - 1) == 0
+         result = 0;
+      else
+         result = Math.sqrt(variance/(array.size - 1))
+      end
+        return (result * 10**2).round.to_f / 10**2 #round two decimals
     end
 
     def self.greather_num (array)

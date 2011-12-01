@@ -33,10 +33,8 @@
       <%= javascript_include_tag 'prototype' -%>
     <% end %>
 
-    <% if controller.controller_name == "planning_poker" %>
-      <%= javascript_include_tag 'jquery-ui.slider' -%>
-      <%= javascript_include_tag 'jquery-ui.timepicker' -%>
-    <% end %>
+    <%= javascript_include_tag 'jquery.pnotify' %>
+    
 
     <% if ['activities'].include? controller.controller_name %>
       <!--[if IE]><%= javascript_include_tag "excanvas" %><![endif]-->
@@ -57,18 +55,19 @@
       "ui.multiselect",
       "ui.jqgrid",
       "fullcalendar",
+      "jquery.pnotify.default",
       "jquery.ganttView",
       :cache => true
     ) %>
     <%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 
-    <script src="<%=("http://"+CONFIG[:server][:production]+":8080/application.js")%>" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" charset="utf-8">
-      var jug = new Juggernaut("<%=(CONFIG[:server][:production])%>");
-      jug.subscribe("user-channel-<%= current_user.id %>", function(data){
-          alert(data);
-        });
+    <% if (CONFIG[:server][:production].to_s != "0") %>
+      <script src="<%=("http://"+CONFIG[:server][:production]+":8080/application.js")%>" type="text/javascript" charset="utf-8"></script>
+      <script type="text/javascript" charset="utf-8">
+        var jug = new Juggernaut("<%=(CONFIG[:server][:production])%>");
+        
     </script>
+      <%end%>
 
     <%= csrf_meta_tag %>
     <title><%= $CONFIG[:productName] %></title>
@@ -99,6 +98,7 @@
       });
     </script>
     <% if controller.controller_name == "planning_poker" && controller.action_name == "table" %>
+      <%= javascript_include_tag 'jquery.flip.min.js' -%>
       <script type="text/javascript">
         function desconectar_jug(){
           var url = "/planning_poker/ajax_exit_game";
@@ -131,9 +131,9 @@
       </tr>
     </table>
 
-    <div id="contact">
+    <%#*<div id="contact">%>
         <%= link_to "[Admin]", :controller => "admin", :action => "index" if current_user.admin == 10 %>
-    </div>
+    <%#*</div>%>
 
     <script type="text/javascript" language="javascript" charset="utf-8">
       // <![CDATA[

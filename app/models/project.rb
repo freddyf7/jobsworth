@@ -19,7 +19,7 @@ class Project < ActiveRecord::Base
   has_many      :project_folders, :dependent => :destroy
   has_many      :milestones, :dependent => :destroy, :order => "due_at asc, lower(name) asc"
   has_many      :roadmap_milestones, :dependent => :nullify
-  has_one       :estimation_setting
+  has_one       :estimation_setting, :dependent => :destroy
 
   scope :completed, where("projects.completed_at is not NULL")
   scope :in_progress, where("projects.completed_at is NULL")
@@ -68,7 +68,11 @@ class Project < ActiveRecord::Base
       end
     end
     total = 100.to_f - ((closed_points.to_f/total_points.to_f) * 100)
-    return (total * 10**2).round.to_f / 10**2 #round two decimals
+    if !total.nan?
+      return (total * 10**2).round.to_f / 10**2 #round two decimals
+    else
+      return 0
+    end
   end
 
   def total_tasks_count
@@ -119,6 +123,79 @@ class Project < ActiveRecord::Base
     end
     open_milestones
   end
+
+  def total_points
+    total_points = 0
+    self.milestones.each do |iteration|
+      total_points += iteration.total_points
+    end
+    return (total_points * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
+  def total_points_execute
+    total_points = 0
+    self.milestones.each do |iteration|
+      total_points += iteration.total_points_execute
+    end
+    return (total_points * 10**2).round.to_f / 10**2
+  end
+
+  def total_business_value
+    total = 0
+    self.milestones.each do |iteration|
+      total += iteration.total_business_value
+    end
+    return total
+  end
+
+  def real_business_value
+    total = 0
+    self.milestones.each do |iteration|
+      total += iteration.real_business_value
+    end
+    return total
+  end
+
+  def points_balance
+    total_points_planed = total_points
+    total_points_exe = total_points_execute
+    if total_points_exe > 0
+      result = total_points_exe.to_f / total_points_planed.to_f
+      return (result * 10**2).round.to_f / 10**2 #round two decimals
+    else
+      return 0
+    end
+  end
+
+  def average_points_per_hour
+    points_per_hour_list = Array.new
+    self.milestones.each do |iteration|
+      points_per_hour_list << iteration.points_per_hour_iteration
+    end
+    average_result = Statistics.mean(points_per_hour_list)
+    return average_result
+  end
+
+  def desviation_points_per_hour
+    points_per_hour_list = Array.new
+    self.milestones.each do |iteration|
+      points_per_hour_list << iteration.points_per_hour_iteration
+    end
+    result = Statistics.standard_desviation(points_per_hour_list)
+    return result
+  end
+
+  def benefist_cost_points
+    total_points = total_points_execute
+    total_business_value = real_business_value
+    if total_points > 0
+      result = total_business_value.to_f / total_points.to_f
+       return ((result * 10**2).round.to_f / 10**2).to_s + ":1" #round two decimals
+    else
+      return "0:1"
+    end
+  end
+
 
   ###
   # Updates the critical, normal and low counts for this project.
@@ -177,6 +254,18 @@ class Project < ActiveRecord::Base
       total_ev = 0.0
     end
     return (total_ev * 10**2).round.to_f / 10**2 #round two decimals
+  end
+
+  def get_real_points
+    total_ev = 0.0
+    iterations = self.milestones
+    iterations.each do |iteration|
+      total_ev += iteration.get_real_points
+    end
+    if total_ev.nan? || total_ev.infinite?
+      total_ev = 0.0
+    end
+    return (total_ev * 10**2).round.to_f / 10**2
   end
 
   #return the cost/benefist ratio

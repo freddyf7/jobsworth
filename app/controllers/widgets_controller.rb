@@ -50,6 +50,10 @@ class WidgetsController < ApplicationController
       velocity_from_show
     when 15 then
       user_stories_type_from_show
+    when 16 then
+      bvp_ep_er_extracted_from_show
+    when 17 then
+      roi_extracted_from_show
     when 20 then
       planning_poker_games_from_show
     end
@@ -59,7 +63,7 @@ class WidgetsController < ApplicationController
         render :partial => 'tasks/task_list', :locals => { :tasks => @items }
       when 1 then
         render :partial => 'activities/project_overview'
-      when 12..15 then
+      when 12..17 then
         page.replace_html "content_#{@widget.dom_id}", :partial => "widgets/widget_#{@widget.widget_type}"
       when 2 then
         # Recent Activities : already removed
@@ -310,6 +314,33 @@ class WidgetsController < ApplicationController
   end
 
 
+   def roi_extracted_from_show
+    project = Project.find @widget.filter_by.gsub('p', '').to_i
+    iterations = project.milestones
+    values_col = Array.new
+    @currency = project.currency_iso_code
+    @values = "";
+    @iterations = "";
+    count = 1
+    iterations.each do |i|
+      values_col << i.get_roi
+      @values += i.get_roi > 0 ? (i.get_roi).to_s : 0.to_s
+      if count < iterations.size
+        @values += ","
+      end
+      @iterations += "|Iter" + count.to_s+ "|"
+      count = count + 1
+    end
+    @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
+    acum = @max.to_i / 6
+    @mid = (@max.to_i / 2).ceil.to_s
+    @mid_1 = acum.to_s
+    @mid_2 = (@mid_1.to_i + acum).to_s
+    @mid_4 = (@mid.to_i + acum).to_s
+    @mid_5 = (@mid_4.to_i + acum).to_s
+  end
+
+
   def ev_rc_pv_extracted_from_show
     project = Project.find @widget.filter_by.gsub('p', '').to_i
     iterations = project.milestones
@@ -328,7 +359,7 @@ class WidgetsController < ApplicationController
       values_ev += i.get_earned_value > 0 ? (i.get_earned_value).to_s : 0.to_s
       values_rc += i.get_real_cost > 0 ? (i.get_real_cost).to_s : 0.to_s
       values_pc += i.get_estimate_cost > 0 ? (i.get_estimate_cost).to_s : 0.to_s
-      if count < iterations.size
+      if count <= iterations.size
         values_ev += ","
         values_rc += ","
         values_pc += ","
@@ -338,6 +369,42 @@ class WidgetsController < ApplicationController
       end
     end
     @values = values_rc.chop + '|' + values_ev.chop + '|' + values_pc.chop
+    @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
+    acum = @max.to_i / 6
+    @mid = (@max.to_i / 2).ceil.to_s
+    @mid_1 = acum.to_s
+    @mid_2 = (@mid_1.to_i + acum).to_s
+    @mid_4 = (@mid.to_i + acum).to_s
+    @mid_5 = (@mid_4.to_i + acum).to_s
+  end
+
+  def bvp_ep_er_extracted_from_show
+    project = Project.find @widget.filter_by.gsub('p', '').to_i
+    iterations = project.milestones
+    values_col = Array.new
+    values_bvp = ""
+    values_ep = ""
+    values_er = ""
+    @iterations = ""
+    count = 1
+    iterations.each do |i|
+      if i.total_points > 0
+        values_col << i.total_points
+        values_col << i.total_points_execute
+        values_col << i.real_business_value
+        values_bvp += i.real_business_value > 0 ? (i.real_business_value).to_s : 0.to_s
+        values_ep += i.total_points > 0 ? (i.total_points).to_s : 0.to_s
+        values_er += i.total_points_execute > 0 ? (i.total_points_execute).to_s : 0.to_s
+        if count <= iterations.size
+          values_bvp += ","
+          values_ep += ","
+          values_er += ","
+        end
+        @iterations += "|Iter" + count.to_s+ "|"
+        count = count + 1
+      end
+    end
+    @values = values_bvp.chop + '|' + values_ep.chop + '|' + values_er.chop
     @max = Statistics.greather_num(values_col) > 0 ? Statistics.greather_num(values_col).to_s : 1000.to_s
     acum = @max.to_i / 6
     @mid = (@max.to_i / 2).ceil.to_s
@@ -362,7 +429,7 @@ class WidgetsController < ApplicationController
         values_col << i.total_points
         values_velocity += i.get_team_velocity > 0 ? (i.get_team_velocity).to_s : 0.to_s
         values_target += i.total_points > 0 ? (i.total_points).to_s : 0.to_s
-        if count < iterations.size
+        if count <= iterations.size
           values_velocity += ","
           values_target += ","
         end

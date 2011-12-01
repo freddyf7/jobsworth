@@ -84,7 +84,7 @@ class Milestone < ActiveRecord::Base
       user_stories.each do |user_story|
         total_cost += ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
       end
-      return total_cost
+      return (total_cost * 10**2).round.to_f / 10**2 #round two decimals
     end
   end
 
@@ -95,7 +95,7 @@ class Milestone < ActiveRecord::Base
     tasks.each do |task|
       total_points += task.total_points
     end
-    return total_points
+    return (total_points * 10**2).round.to_f / 10**2 #round two decimals
   end
 
   #return total points closed
@@ -107,7 +107,17 @@ class Milestone < ActiveRecord::Base
       total_points += task.total_points
       end
     end
-    return total_points
+    return (total_points * 10**2).round.to_f / 10**2
+  end
+
+  def total_task_execute
+    total_task = 0
+    self.tasks.each do |task|
+      if task.closed?
+        total_task += 1
+      end
+    end
+    return total_task
   end
 
   #return total points due per iteration
@@ -130,7 +140,7 @@ class Milestone < ActiveRecord::Base
       user_stories.each do |user_story|
         total_cost += ((user_story.worked_minutes / 60.0) * self.project.cost_per_hour) rescue 0
       end
-      return total_cost
+      return (total_cost * 10**2).round.to_f / 10**2
     end
   end
 
@@ -151,7 +161,20 @@ class Milestone < ActiveRecord::Base
           total_ev += ((user_story.duration / 60.0) * self.project.cost_per_hour) rescue 0
         end
       end
-      return total_ev
+      return (total_ev * 10**2).round.to_f / 10**2
+    end
+  end
+
+  def get_real_points
+    if self.id
+      total_ev = 0.0
+      user_stories = self.tasks
+      user_stories.each do |user_story|
+        if user_story.closed?
+          total_ev += ((user_story.duration / 60.0) * self.points_per_hour) rescue 0
+        end
+      end
+      return (total_ev * 10**2).round.to_f / 10**2
     end
   end
 
@@ -163,7 +186,7 @@ class Milestone < ActiveRecord::Base
     if balance.nan?
       balance = 0.0
     end
-    return balance
+    return (balance * 10**2).round.to_f / 10**2
   end
   #get the balance in presentation for user interface
   def get_balance_presentation
@@ -236,15 +259,83 @@ class Milestone < ActiveRecord::Base
   def points_per_hour
     last_iteration = self.project.get_iteration_before(self.init_date)
     if !last_iteration.nil?
-      worked_minutes = last_iteration.worked_minutes
+      worked_minutes = last_iteration.get_worked_minutes
       total_points = last_iteration.get_total_points
       if worked_minutes <= 0
-        worked_minutes = get_iterations_days
+        worked_minutes = last_iteration.get_iterations_days * 480 #horas y dias habiles de conversion
       end
-      return ((((total_points/worked_minutes).to_f / 60.to_f ).to_f) * 10**2).round.to_f / 10**2 #round two decimals
+      return (((total_points/(worked_minutes/60.to_f)).to_f ) * 10**2).round.to_f / 10**2 #round two decimals
     else
       return self.project.estimation_setting.points_per_hour
     end
+  end
+
+  def points_per_hour_iteration
+    if !self.nil?
+      worked_minutes = self.get_worked_minutes
+      total_points = self.get_total_points
+      if worked_minutes <= 0
+        worked_minutes = get_iterations_days * 480 # horas y dias habiles de conversion
+      end
+      return (((total_points/(worked_minutes/60.to_f)).to_f ) * 10**2).round.to_f / 10**2 #round two decimals
+    else
+      return self.project.estimation_setting.points_per_hour
+    end
+  end
+
+  def total_business_value
+    total = 0
+    self.tasks.each do |task|
+      total += task.business_value
+    end
+    return total
+  end
+
+
+  def real_business_value
+    total = 0
+    self.tasks.each do |task|
+      if task.closed?
+        total += task.business_value
+      end
+    end
+    return total
+  end
+
+  def benefist_cost_points
+    total_points = total_points_execute
+    total_business_value = real_business_value
+    if total_points > 0
+      result = total_business_value.to_f / total_points.to_f
+      return (result * 10**2).round.to_f / 10**2 #round two decimals
+    else
+      return 0
+    end
+  end
+
+  def benefist_cost_points_presentation
+    result = benefist_cost_points
+    return result.to_s + ":1"
+  end
+
+  def points_balance
+    total_points_planed = total_points
+    total_points_exe = total_points_execute
+    if total_points_exe > 0
+      result = total_points_exe.to_f / total_points_planed.to_f
+      return (result * 10**2).round.to_f / 10**2 #round two decimals
+    else
+      return 0
+    end
+  end
+
+
+  def get_worked_minutes
+    result = 0
+    self.tasks.each do |task|
+      result += task.worked_minutes
+    end
+    return result
   end
 
   def get_total_points

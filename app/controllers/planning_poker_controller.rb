@@ -1,4 +1,5 @@
 require 'juggernaut'
+require 'business_time'
 class PlanningPokerController < ApplicationController
   
   def pokerconf
@@ -58,6 +59,7 @@ class PlanningPokerController < ApplicationController
       @user_id = current_user.id
       @actual_users = actual_users_conected planning_poker_id.to_i
       @votes = PlanningPokerVote.find(:all, :conditions => ['vote IS NOT NULL and planning_poker_game_id = ?', @game.id])
+      @vote = PlanningPokerVote.find(:first,:conditions => ['planning_poker_game_id = ? and user_id =?', @game.id, current_user.id])
     else
       flash['notice'] = _("El juego ya ha finalizado. No se pude volver a jugar")
       redirect_to :controller => 'planning_poker', :action => 'historial'
@@ -78,7 +80,9 @@ class PlanningPokerController < ApplicationController
   end
 
   def send_message
-   Juggernaut.publish(params[:channel], "<b>" + current_user.name + ":</b>" + params[:current_message])
+    actual_time = tz.local_to_utc(Time.now)
+    actual_time_chat_format = actual_time.strftime("%H:%M:%S").to_s
+    Juggernaut.publish(params[:channel],"<b>" + current_user.name + "(" + actual_time_chat_format + "): </b>" + params[:current_message])
    render :nothing => true
   end
 
@@ -106,7 +110,7 @@ class PlanningPokerController < ApplicationController
     actual_vote.save!
     Juggernaut.publish('list-' + game_id.to_s, current_user.id.to_s + '-0')
     user_stroy = game.task
-    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.id
+    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.task_num
   end
 
   #eventos para el juego
@@ -121,6 +125,7 @@ class PlanningPokerController < ApplicationController
     actual_time = Time.now
     user_vote.vote_date = tz.local_to_utc(actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time)
     user_vote.save!
+    Juggernaut.publish('vote-' + game.id.to_s, current_user.id.to_s + '-' + value_vote.to_s + '-' + current_user.name)
     render :nothing => true
   end
 
@@ -128,11 +133,20 @@ class PlanningPokerController < ApplicationController
 
     game_id = params[:game_id]
     game = PlanningPokerGame.find game_id.to_i
+    game.closed = false
+    game_due_at_date = Date.parse(game.due_at.to_s)
+    game_created_at_date = Date.parse(game.created_at.to_s)
+    date_original_days_distance = game_created_at_date.business_days_until(game_due_at_date)
+    game.due_at = tz.local_to_utc Time.parse(date_original_days_distance.business_days.after(game_due_at_date).to_s)
+    game.save!
     game.planning_poker_votes.each do |pvote|
       pvote.vote = nil
       pvote.vote_date = nil
       pvote.save!
     end
+    Juggernaut.publish('repeat-' + game_id, 1)
+    actual_users_id = users_ids_for_game(game.planning_poker_votes)
+    send_repeat_notification(actual_users_id, game)
     render :nothing => true
 
   end
@@ -140,15 +154,28 @@ class PlanningPokerController < ApplicationController
   def resume_game
     game_id = params[:game_id]
     game = PlanningPokerGame.find game_id.to_i
+    game.closed = true #game closed
+    game.save!
     list_votes = Array.new
     game.planning_poker_votes.each do |pvote|
-      list_votes << pvote.vote
+     if !pvote.vote.nil?
+        if pvote.vote <= 100
+          list_votes << pvote.vote
+        end
+      end
+    end
+    #arreglado para los votos interrogantes
+    if list_votes.empty?
+      list_votes << 0
     end
     @mean_result = Statistics.mean(list_votes)
+    @game = game
     @standard_desviation = Statistics.standard_desviation(list_votes)
+    Juggernaut.publish('turn-' + game.id.to_s, 1);
+    Juggernaut.publish('chat-' + game.id.to_s, '<b>La partida ha finalizado, promedio: ' + @mean_result.to_s + ', desviacion: ' + @standard_desviation.to_s + '<b>');
     render :update do |page|
-        page.insert_html :before, "#", :partial => "resume_game"
-     end
+      page.insert_html :before, "#planning-poker-results", :partial => "resume_game"
+    end
   end
 
   def update_user_story_whit_points
@@ -158,7 +185,7 @@ class PlanningPokerController < ApplicationController
     user_stroy = game.task
     user_stroy.points_planning_poker = points.to_f
     user_stroy.save!
-    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.id
+    redirect_to :controller => 'tasks', :action => 'edit', :id => user_stroy.task_num
 
   end
 
@@ -203,10 +230,18 @@ class PlanningPokerController < ApplicationController
     end
   end
 
+  def send_repeat_notification (id_users_to_play, game)
+    task = Task.find game.task_id
+    id_users_to_play.each do |id_user|
+      user = User.find id_user
+      Notifications::deliver_planning_poker_repeat(game, task, user)
+    end
+  end
+
   def send_invitations_notify (id_users_to_play, game)
     task = Task.find game.task_id
     id_users_to_play.each do |id_user|
-      Juggernaut.publish('user-channel-' + id_user.to_s, task.id.to_s + '-' + game.id.to_s)
+      Juggernaut.publish('user-channel-' + id_user.to_s, task.name)
     end
   end
 
