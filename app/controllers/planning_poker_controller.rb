@@ -83,7 +83,7 @@ class PlanningPokerController < ApplicationController
     actual_time = tz.local_to_utc(Time.now)
     actual_time_chat_format = actual_time.strftime("%H:%M:%S").to_s
     Juggernaut.publish(params[:channel],"<b>" + current_user.name + "(" + actual_time_chat_format + "): </b>" + params[:current_message])
-   render :nothing => true
+    render :nothing => true
   end
 
   def send_status

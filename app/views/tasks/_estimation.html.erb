@@ -12,7 +12,7 @@
     
     <% if controller.action_name != 'new' %>
       <% if current_user.is_leader_for?( Project.find(selected_project)) %>
-        <span id="play_planning_poker"><a href="/planning_poker/config?us_id=<%= @task.id.to_s %> "><img alt=""title="Go to play"src="/images/add.png" style="margin-top: 2px;padding:4px 0 0 0;cursor:pointer"/></a></span>
+        <span id="play_planning_poker"><a href="/planning_poker/pokerconf?us_id=<%= @task.id.to_s %> "><img alt=""title="Go to play"src="/images/add.png" style="margin-top: 2px;padding:4px 0 0 0;cursor:pointer"/></a></span>
           <% end %>
         <%end%>
          <label for="task_total_points"><%=_ 'Total Points' %></label>

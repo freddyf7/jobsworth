@@ -23,6 +23,7 @@ gem 'devise',             '1.1.9'
 gem 'sass'
 gem 'google_currency',    '1.0.2'
 gem 'juggernaut', 	  '2.1.0'
+gem 'business_time', 	  '0.3.1'
 
 group :test do
   gem "shoulda",          '>=2.11.3'

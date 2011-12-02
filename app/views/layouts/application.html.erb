@@ -64,9 +64,8 @@
     <% if (CONFIG[:server][:production].to_s != "0") %>
       <script src="<%=("http://"+CONFIG[:server][:production]+":8080/application.js")%>" type="text/javascript" charset="utf-8"></script>
       <script type="text/javascript" charset="utf-8">
-        var jug = new Juggernaut("<%=(CONFIG[:server][:production])%>");
-        
-    </script>
+        var jug = new Juggernaut;
+      </script>
       <%end%>
 
     <%= csrf_meta_tag %>

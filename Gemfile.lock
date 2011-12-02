@@ -40,6 +40,8 @@ GEM
       ZenTest
     bcrypt-ruby (2.1.4)
     builder (2.1.2)
+    business_time (0.3.1)
+      activesupport (>= 2.0.0)
     capybara (0.4.0)
       celerity (>= 0.7.9)
       culerity (>= 0.2.4)
@@ -182,6 +184,7 @@ DEPENDENCIES
   annotate
   autotest
   autotest-rails
+  business_time (= 0.3.1)
   capybara (= 0.4.0)
   ci_reporter
   cucumber (>= 0.8.5)

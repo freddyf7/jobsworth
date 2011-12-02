@@ -87,6 +87,7 @@
         
         var chatElement = document.getElementById("chat-messages");
         chatElement.innerHTML = "";
+
         var chat = function(data){
           var messages = chatElement.innerHTML;
           chatElement.innerHTML = messages + ("<div class='message'>" + data + "</div>\n");
@@ -96,47 +97,47 @@
         var status = function(data){
           var dataArray = data.split('-');
           statusElement = document.getElementById("user-" + dataArray[0]);
-          if (dataArray[1] == 0){
-            statusElement.innerHTML = "<img src='/images/offline.png' alt='offline' />";
-          }
-          else if (dataArray[1] == 1){
-            statusElement.innerHTML = "<img src='/images/online.png' alt='online' />";
-
-  
-          }
-
+            if (dataArray[1] == 0){
+              statusElement.innerHTML = "<img src='/images/offline.png' alt='offline' />";
+            }
+            else if (dataArray[1] == 1){
+              statusElement.innerHTML = "<img src='/images/online.png' alt='online' />";
+            }
           }
 
           var showVote = function (data) {
-
             var dataArray = data.split('-');
-          var showVoteElement = document.getElementById("planning-poker-votes");
-          var innerHtml = showVoteElement.innerHTML;
-          var newVote = "<div class='planning-poker-card-wrapper'><div class='planning-poker-card'>";
-          if (dataArray[0] == "<%=current_user.id%>"){
-            newVote += "<div class='inner front'>"
-            if (dataArray[1] == 1000){
-              newVote += '?';
-            } else {
-              newVote += dataArray[1];
+            var showVoteElement = document.getElementById("planning-poker-votes");
+            var innerHtml = showVoteElement.innerHTML;
+            var newVote = "<div class='planning-poker-card-wrapper'><div class='planning-poker-card'>";
+
+            if (dataArray[0] == "<%=current_user.id%>"){
+              newVote += "<div class='inner front'>"
+              if (dataArray[1] == 1000){
+                newVote += '?';
+              }
+              else {
+                newVote += dataArray[1];
+              }
+            newVote += "</div>";
+            }
+            else {
+              newVote += "<div class='inner back'><img src='/images/card.png' alt=''/></div>";
+              newVote += '<input class="voted-value" type="hidden" value="';
+              if (dataArray[1] == 1000){
+                newVote += '?';
+              }
+              else {
+                newVote += dataArray[1];
+              }
+              newVote += '"/>';
             }
             newVote += "</div>";
-          } else {
-            newVote += "<div class='inner back'><img src='/images/card.png' alt=''/></div>";
-            newVote += '<input class="voted-value" type="hidden" value="';
-            if (dataArray[1] == 1000){
-              newVote += '?';
-            } else {
-              newVote += dataArray[1];
-            }
-            newVote += '"/>';
-          }
-          newVote += "</div>";
-          newVote += "<center><b>";
-          newVote += dataArray[2];
-          newVote += "</b></center>";
-          newVote += "</div>";
-          showVoteElement.innerHTML = newVote + innerHtml;
+            newVote += "<center><b>";
+            newVote += dataArray[2];
+            newVote += "</b></center>";
+            newVote += "</div>";
+            showVoteElement.innerHTML = newVote + innerHtml;
 
           }
 
@@ -195,6 +196,7 @@
         });
 
         chat("Suscrito a chat-<%= @game.id %>");
+        
 
          window.jug = jug;
 
@@ -208,13 +210,13 @@
         }
 
         function finishGame(){
-    var url = "/planning_poker/resume_game";
-    var data = {game_id:<%= @game.id%>};
-    jQuery.get(url, data,
-      function(){
-        jQuery("#finish-button").attr("disabled", "true");
-      });
-  }
+          var url = "/planning_poker/resume_game";
+          var data = {game_id:<%= @game.id%>};
+          jQuery.get(url, data,
+          function(){
+            jQuery("#finish-button").attr("disabled", "true");
+          });
+        }
 
   function refreshTable(data){
     if (data == 1)
@@ -242,13 +244,13 @@
       })
     }
   }
-
-      </script>
+</script>
     </td>
   </tr>
   <tr>
     <td>
-      <%  form_tag :url => {:action => 'send_message'},:success => "document.getElementById('current_message').value = ''" , :remote => true do%>
+      <% form_tag("/planning_poker/send_message",:success => "document.getElementById('current_message').value = ''", :remote => true ) do %>
+      <%#  form_tag :url => {:action => 'send_message'},:success => "document.getElementById('current_message').value = ''" ,:id => @game.id do%>
       <%# form_remote_tag(:url => {:action => 'send_message'}, :success => "document.getElementById('current_message').value = ''") do %>
         <table style="width: 100%">
           <tr>
