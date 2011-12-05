@@ -34,7 +34,8 @@
     <td>    
      Due at: <input type="text" name="example1" id="example1" value="<%=@game_config.due_at %>" class="" onchange="copyDateTime(this.value);"/>
   <script type="text/javascript">
-    jQuery('#example1').datepicker({ minDate: new Date()});
+    <%#*jQuery('#example1').datepicker({ minDate: new Date()});%>
+    jQuery('#example1').datepicker({ minDate: new Date(),dateFormat: '<%= current_user.dateFormat %>'});
   </script>
 </td>
 </tr>

@@ -24,6 +24,7 @@ gem 'sass'
 gem 'google_currency',    '1.0.2'
 gem 'juggernaut', 	  '2.1.0'
 gem 'business_time', 	  '0.3.1'
+gem 'jrails',           '0.6.0'
 
 group :test do
   gem "shoulda",          '>=2.11.3'

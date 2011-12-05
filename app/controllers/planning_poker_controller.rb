@@ -49,8 +49,8 @@ class PlanningPokerController < ApplicationController
   def table
     planning_poker_id = params[:id]
     @game = PlanningPokerGame.find planning_poker_id
-    #if (!@game.closed? && user_permision_for_game(@game.id, current_user.id) && !@game.undate?(tz))
-    if (!@game.closed? && user_permision_for_game(@game.id, current_user.id))
+    if (!@game.closed? && user_permision_for_game(@game.id, current_user.id) && !@game.undate?(tz))
+ #   if (!@game.closed? && user_permision_for_game(@game.id, current_user.id))
       actual_vote = @game.planning_poker_votes.find_by_user_id current_user.id
       actual_vote.status = true
       actual_vote.save!
@@ -72,8 +72,8 @@ class PlanningPokerController < ApplicationController
     votes.each do |vote|
       game = PlanningPokerGame.find vote.planning_poker_game_id
       actual_time = Time.now
-#      if  (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
-      if  (!game.closed?)
+      if  (tz.utc_to_local(game.due_at) > actual_time.strftime("%Y-%m-%d %H:%M:%S").to_time && !game.closed?)
+#      if  (!game.closed?)
         @games_historial << game
       end
     end
@@ -174,7 +174,7 @@ class PlanningPokerController < ApplicationController
     Juggernaut.publish('turn-' + game.id.to_s, 1);
     Juggernaut.publish('chat-' + game.id.to_s, '<b>La partida ha finalizado, promedio: ' + @mean_result.to_s + ', desviacion: ' + @standard_desviation.to_s + '<b>');
     render :update do |page|
-      page.insert_html :before, "#planning-poker-results", :partial => "resume_game"
+      page.insert_html :before, "planning-poker-results", :partial => "resume_game"
     end
   end
 

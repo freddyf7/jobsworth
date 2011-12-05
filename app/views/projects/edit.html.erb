@@ -23,22 +23,21 @@
                   <%= link_to_tasks_filtered_by(_("View User stories"), @project) %>
                 </div>
                 <%# if @project.user_id == current_user.id || current_user.admin > 0%>
-                  <%#*<div style="float: left; margin-left: 30px"><%= link_to( _("View RoadMap"), {:controller => 'roadmap', :action => 'index', :id => @project}) %></div>%>
-                <%# end %>
+                <% if current_user.admin > 0%>
+                  <div style="float: left; margin-left: 30px"><%= link_to( _("View RoadMap"), {:controller => 'roadmap', :action => 'index', :id => @project}) %></div>
+                <% end %>
                   <div style="float: left; margin-left: 30px">
-                    <%#= link_to 'Reporte Completo', '/projects/config_full_report?id_prj=' + @project.id.to_s, :popup => ['Report','height=600,width=800,resizable=yes,scrollbars=yes'] %>
-                    <%= link_to( 'Reporte Completo', {:controller => 'projects', :action => 'config_full_report', :id_prj=> @project.id.to_s}, :popup => ['Report','height=600,width=800,resizable=yes,scrollbars=yes']) %>
+                    <%= link_to 'Reporte Completo', '/projects/config_full_report?id_prj=' + @project.id.to_s, :popup => ['Report','height=600,width=800,resizable=yes,scrollbars=yes'] %>
+                    <%#= link_to( 'Reporte Completo', {:controller => 'projects', :action => 'config_full_report', :id_prj=> @project.id.to_s}, :popup => ['Report','height=600,width=800,resizable=yes,scrollbars=yes']) %>
                   </div>
                 <% if current_user.can?( @project, 'grant' ) || current_user.admin > 0 %>
-                  <div style="float: left; margin-left: 30px"> <%= link_to( _("Complete Project"), {:controller => 'projects', :action => 'complete', :id => @project}, :confirm => "Really complete #{@project.name}?") %> <%= "&nbsp;".html_safe  %></div>
+                  <div style="float: left; margin-left: 30px"> 
+                    <%= link_to( _("Complete Project"), {:controller => 'projects', :action => 'complete', :id => @project}, :confirm => "Really complete #{@project.name}?") %> <%= "&nbsp;".html_safe  %>
+                  </div>
                   <%#*<div style="float: left; margin-left: 30px"> <%= link_to( _("Complete Project"), {:controller => 'projects', :action => 'complete', :id => @project}, :confirm => "Really complete #{@project.name}?") %>%>
                     <%#= "&nbsp;".html_safe if @project.user_id == current_user.id  %>
                   <%#*</div>%>
                 <% end %>
-                <%# if @project.user_id == current_user.id || current_user.admin > 0%>
-                  <%#*<div style="float: left; margin-left: 30px"><%= link_to( _("Delete Project"), {:controller => 'projects', :action => 'destroy', :id => @project}, :confirm => "Really delete #{@project.name}?") %>
-                  <%#*</div>%>
-                <%# end %>
               </div>
             </fieldset>
             </td>

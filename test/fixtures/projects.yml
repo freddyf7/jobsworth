@@ -1,27 +1,28 @@
 test_project:
-  name: Test Project
-  company: cit
-  customer: internal_customer
+  name: Proyecto UCAB
+  company: asgard
+  customer: asgard
   completed_at: null
   critical_count: 0
   normal_count: 0
   low_count: 0
-fudge_project:
-  name: Tester Project
-  company: fudge
-  customer: fudge_internal_customer
-  completed_at: null
-  critical_count: 0
-  normal_count: 0
-  low_count: 0
-completed_project:
-  name: Completed Project
-  company: cit
-  customer: internal_customer
-  completed_at: <%= Time.now.utc - 1.day %>
-  critical_count: 0
-  normal_count: 0
-  low_count: 0
+  leader_id: 1
+#fudge_project:
+#  name: Tester Project
+#  company: fudge
+#  customer: fudge_internal_customer
+#  completed_at: null
+#  critical_count: 0
+#  normal_count: 0
+#  low_count: 0
+#completed_project:
+#  name: Completed Project
+#  company: cit
+#  customer: internal_customer
+#  completed_at: <%= Time.now.utc - 1.day %>
+#  critical_count: 0
+#  normal_count: 0
+#  low_count: 0
 
 
 
