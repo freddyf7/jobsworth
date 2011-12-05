@@ -5,6 +5,10 @@ Jobsworth::Application.routes.draw do
 
 #  resources :roadmap_milestones
 
+  match '/projects/config_full_report', :controller => 'projects', :action => 'config_full_report'
+  match '/projects/full_report', :controller => 'projects', :action => 'full_report'
+  
+
   devise_for  :users, 
               :controllers => { :sessions  => "auth/sessions", 
                                 :passwords => "auth/passwords" }

@@ -43,6 +43,10 @@ module Jobsworth
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
+    # Custom directories with classes and modules you want to be autoloadable.
+     config.autoload_paths += %W(#{config.root}/lib)
+
+
     # This code is for forcing spork to use 'load' when requiring model classes
     # this avoids a sort of 'cache effect'
     if Rails.env.test?

@@ -5,6 +5,7 @@ class Project < ActiveRecord::Base
   # Creates a score_rules association and updates the score
   # of all the task when adding a new score rule
   include Scorable
+  
 
   belongs_to    :company
   belongs_to    :customer
@@ -350,8 +351,6 @@ class Project < ActiveRecord::Base
     iterations = Milestone.find(:all, :conditions => ["due_at < ?",date_before])
     return iterations
   end
-
-  i = Milestone.find 3
 
    # return first iteration before a paramater date
   def get_iteration_before (date_before)
