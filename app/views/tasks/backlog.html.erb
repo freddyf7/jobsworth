@@ -1,4 +1,6 @@
 <div id="content">
+
+  <p>BACKLOG</p>
 	<%= render(:partial => "task_filters/search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
 	<%= render(:partial => "task_filters/panel") %>
 
@@ -9,7 +11,7 @@
         links << [ "RoadMap", { :controller => "roadmap", :action => "index" } ]
 	links << [ "Schedule", { :controller => "tasks", :action => "calendar" } ]
 	links << [ "Gantt", { :controller => "schedule", :action => "gantt" } ]
-	
+
 	link_list = ""
 	links.each_with_index do |opts, i|
 	name, url_opts = opts
@@ -18,7 +20,7 @@
 	class_names << "first" if i == 0
 	class_names << "last" if i == links.length - 1
 	class_names << "active" if params.merge(url_opts) == params
-	
+
 	link_list += content_tag(:li, link, :class => class_names.join(" "))
 	end
 	-%>
@@ -29,14 +31,41 @@
        </div>
        <div id="savefilter" style="display:none"></div>
 
-       <%= yield(:task_list) %>
+       <%= yield(:backlog_list) %>
 
 	<div id="task">
 	  <%= render_last_task %>
 	</div>
 </div>
+
 <td id="side_panel">
-          <% # use content_for(:side_panel) to add extra content to this sidebar -%>
-          <%= yield(:side_panel) %>
-          <%= render :partial => "/tags/panel" %>
-        </td>
+  <%#  use content_for(:side_panel) to add extra content to this sidebar -%>
+  <%= yield(:side_panel) %>
+  <%= render :partial => "/tags/panel" %>
+  <fieldset>
+    <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+  </fieldset>
+</td>
+
+<h1>Listing tasks</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>project</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @tasks.each do |task| %>
+  <tr>
+    <td><%= task.name %></td>
+    <td><%= task.project_id %></td>
+    <td><%= task.description %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />

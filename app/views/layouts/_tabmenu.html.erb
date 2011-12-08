@@ -16,8 +16,11 @@
       <% end %>
     </li>
     <li<%= " class='active'" if active.starts_with?('tasks/') %>>
-      <%= link_to(_("Plan"), :controller => "tasks", :action => "list" ) %>
+      <%= link_to(_("Plan"), :controller => "tasks", :action => "list") %>
       <ul>
+        <li>
+          <%= link_to _("Product Backlog"), :controller => "tasks", :action => "backlog" %>
+        </li>
         <li>
           <%= link_to _("New US"), :controller => 'tasks', :action => 'new' %>
         </li>

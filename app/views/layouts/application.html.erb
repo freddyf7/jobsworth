@@ -15,7 +15,6 @@
       "json2",
       "rails",
       "application",
-      "tasklist",
       "task",
       "trigger",
       "filter",
@@ -108,6 +107,14 @@
         }
       </script>
     <% end %>
+
+    <% if controller.controller_name == "tasks" && controller.action_name == "backlog"%>
+      <%= javascript_include_tag 'backlog_list.js' -%>
+    <% end %>
+     <% if controller.controller_name == "tasks" && controller.action_name == "list"%>
+      <%= javascript_include_tag 'tasklist.js' -%>
+    <% end %>
+
 
   </head>
     <body

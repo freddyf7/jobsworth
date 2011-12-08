@@ -552,6 +552,10 @@ function reload_roadmap(sender){
     window.location = "/roadmap/index?id=" + sender;
 }
 
+function reload_backlog(sender){
+    window.location.href = "/tasks/backlog?id="+ sender;
+}
+
 function reload_estimation_settings(sender) {
     window.location ="/estimation_settings/edit?project_id=" + sender
 }

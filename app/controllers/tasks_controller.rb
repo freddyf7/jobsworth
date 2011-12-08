@@ -41,11 +41,42 @@ class TasksController < ApplicationController
 
 
   def list
+    #    task_res = Task.where("milestone_id = '0'")
     @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
     @tasks = tasks_for_list
     respond_to do |format|
       format.html { render :action => "grid" }
       format.json { render :template => "tasks/list.json"}
+    end
+  end
+
+  def backlog
+    @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
+
+
+   if (params[:id].nil? or params[:id] == 0)
+      backlog_project = current_user.projects.find :first
+      project_id = backlog_project.id
+      session[:id_prj] = project_id
+      bandera ='FALSO'
+    else
+      session[:id_prj] = params[:id]
+      project_id = params[:id]
+      bandera ='VERDAD'
+    end
+
+    task_prueba = Array.new
+    task_prueba = Task.find_all_by_project_id(project_id)
+    @tasks = task_prueba
+
+#    respond_to do |format|
+#      format.html  # backlog.html.erb
+#      format.json  { render :json => @tasks }
+#    end
+    respond_to do |format|
+      flash['notice'] = _(bandera)
+      format.html { render :action => "backlog_grid" }
+      format.json { render :template => "tasks/backlog_list.json"}
     end
   end
 
@@ -488,6 +519,7 @@ class TasksController < ApplicationController
   
   
 protected
+
   def task_due_calculation(params, task, tz)
     if !params[:task].nil? && !params[:task][:due_at].nil? && params[:task][:due_at].length > 0
       begin
