@@ -38,10 +38,7 @@ class TasksController < ApplicationController
     end
   end
 
-
-
   def list
-    #    task_res = Task.where("milestone_id = '0'")
     @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
     @tasks = tasks_for_list
     respond_to do |format|
@@ -53,16 +50,15 @@ class TasksController < ApplicationController
   def backlog
     @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
 
-
    if (params[:id].nil? or params[:id] == 0)
       backlog_project = current_user.projects.find :first
       project_id = backlog_project.id
       session[:id_prj] = project_id
-      bandera ='FALSO'
+
     else
       session[:id_prj] = params[:id]
       project_id = params[:id]
-      bandera ='VERDAD'
+ 
     end
 
     task_prueba = Array.new
@@ -74,7 +70,6 @@ class TasksController < ApplicationController
 #      format.json  { render :json => @tasks }
 #    end
     respond_to do |format|
-      flash['notice'] = _(bandera)
       format.html { render :action => "backlog_grid" }
       format.json { render :template => "tasks/backlog_list.json"}
     end
