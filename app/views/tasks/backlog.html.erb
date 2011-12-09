@@ -1,8 +1,8 @@
 <div id="content">
 
   
-	<%#= render(:partial => "task_filters/search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
-	<%#= render(:partial => "task_filters/panel") %>
+	<%= render(:partial => "task_filters/search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
+	<%= render(:partial => "task_filters/panel") %>
 
 	<ul class="tabs">
 	<%
@@ -33,9 +33,26 @@
 
        <%= yield(:backlog_list) %>
 
-	<div id="task">
-	  <%= render_last_task %>
-	</div>
+
+       <%#*<fieldset>%>
+          <%#*<label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%>
+<%#*</select>%>
+       <%#*</fieldset>%>
+
+       <%= link_to(_("New User Story"), :controller => "tasks", :action => "backlog", :new_us => "true") %>
+
+        <% if params[:new_us]== "true" %>
+          <% form_tag({ :action => 'create'}, { :multipart => "true", :id => "taskform" }) do %>
+            <% render :partial => "tasks/form" %>
+          <% end %>
+        <% else %>
+          <div id="task">
+            <%= render_last_task %>
+          </div>
+        <% end  %>
+        
+       
+       
 </div>
 
 <td id="side_panel">

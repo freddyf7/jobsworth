@@ -4,7 +4,7 @@ class TaskFilterQualifier < ActiveRecord::Base
 
   belongs_to :task_filter, :touch => true
   belongs_to :qualifiable, :polymorphic => true
-  validates_presence_of :qualifiable
+#  validates_presence_of :qualifiable
 
   before_validation :set_qualifiable_from_task_num
 

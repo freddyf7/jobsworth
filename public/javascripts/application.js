@@ -553,8 +553,7 @@ function reload_roadmap(sender){
 }
 
 function reload_backlog(sender){
-    window.location.href = "/task_filters/update_current_filter?task_filter[qualifiers_attributes][][qualifiable_id]="+sender+"&task_filter[qualifiers_attributes][][qualifiable_type]=Project&backlog=backlog&project_id="+sender;
-
+    window.location.href = "/task_filters/update_current_filter?task_filter[qualifiers_attributes][][qualifiable_id]="+sender+"&task_filter[qualifiers_attributes][][qualifiable_type]=Project&task_filter[qualifiers_attributes][][qualifiable_id]=0&task_filter[qualifiers_attributes][][qualifiable_type]=Milestone&backlog=backlog&project_id="+sender;
 
 }
 
