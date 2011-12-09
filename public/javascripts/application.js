@@ -553,7 +553,9 @@ function reload_roadmap(sender){
 }
 
 function reload_backlog(sender){
-    window.location.href = "/tasks/backlog?id="+ sender;
+    window.location.href = "/task_filters/update_current_filter?task_filter[qualifiers_attributes][][qualifiable_id]="+sender+"&task_filter[qualifiers_attributes][][qualifiable_type]=Project&backlog=backlog&project_id="+sender;
+
+
 }
 
 function reload_estimation_settings(sender) {

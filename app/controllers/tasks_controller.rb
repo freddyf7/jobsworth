@@ -50,19 +50,19 @@ class TasksController < ApplicationController
   def backlog
     @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
 
-   if (params[:id].nil? or params[:id] == 0)
+   if (params[:project_id].nil? or params[:project_id] == 0)
       backlog_project = current_user.projects.find :first
       project_id = backlog_project.id
       session[:id_prj] = project_id
 
     else
-      session[:id_prj] = params[:id]
-      project_id = params[:id]
+      session[:id_prj] = params[:project_id]
+      project_id = params[:project_id]
     end
 
     task_prueba = Array.new
     task_prueba = Task.find_all_by_project_id(project_id)
-    @tasks = task_prueba
+    @tasks = tasks_for_list
 
 #    respond_to do |format|
 #      format.html  # backlog.html.erb

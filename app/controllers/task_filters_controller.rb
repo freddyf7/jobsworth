@@ -127,7 +127,11 @@ class TaskFiltersController < ApplicationController
     if request.xhr?
       render :partial => 'search_filter_keys'
     else
-      redirect_to(params[:redirect_action] || "/tasks/list")
+      if params[:backlog] == 'backlog'
+        redirect_to(params[:redirect_action] || "/tasks/backlog?project_id="+params[:project_id])
+      else
+        redirect_to(params[:redirect_action] || "/tasks/list")
+      end
     end
   end
 
