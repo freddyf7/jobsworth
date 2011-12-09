@@ -42,8 +42,7 @@
   <%#  use content_for(:side_panel) to add extra content to this sidebar -%>
   <%#= yield(:side_panel) %>
   <%#= render :partial => "/tags/panel" %>
-  <%#*<fieldset>%>
-    <%#*<label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%>
-<%#*</select>%>
-  <%#*</fieldset>%>
+  <fieldset>
+    <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+  </fieldset>
 </td>

@@ -58,7 +58,6 @@ class TasksController < ApplicationController
     else
       session[:id_prj] = params[:id]
       project_id = params[:id]
- 
     end
 
     task_prueba = Array.new
