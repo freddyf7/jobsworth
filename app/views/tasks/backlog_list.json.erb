@@ -34,7 +34,9 @@
 "time":<%= task.minutes_left.to_i.to_json.html_safe rescue "\"\"".html_safe %>,
 "assigned":<%= h(task.owners.map{ |u| u.name }.join(", ")).to_json.html_safe %>,
 "resolution":<%= task.status_type.to_json.html_safe %>,
-"updated_at":<%= distance_of_time_in_words(Time.now.utc, task.updated_at).to_json.html_safe %>
+"updated_at":<%= distance_of_time_in_words(Time.now.utc, task.updated_at).to_json.html_safe %>,
+"business_value":<%= task.business_value.to_json.to_i %>,
+"points":<%= task.total_points.to_json.to_i %>
 }<% end -%><%= "," unless @tasks.size - 1 == idx  %>
     <% end -%>
 ],

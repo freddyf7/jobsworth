@@ -1,57 +1,36 @@
+<br />
+<div class="page_header">
+  <%=_ 'Product Backlog' %>
+</div>
+   
 <div id="content">
+  <br />
+  <%= render(:partial => "task_filters/search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
+  <%= render(:partial => "task_filters/panel") %>
 
-  
-	<%= render(:partial => "task_filters/search_filter", :locals => { :redirect_params => { :tag => params[:tag] }}) %>
-	<%= render(:partial => "task_filters/panel") %>
+  <div id="groupby" style="display:none">
+    <%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
+  </div>
 
-	<ul class="tabs">
-	<%
-	links = []
-	links << [ "List", { :controller => "tasks", :action => "list" } ]
-        links << [ "RoadMap", { :controller => "roadmap", :action => "index" } ]
-	links << [ "Schedule", { :controller => "tasks", :action => "calendar" } ]
-	links << [ "Gantt", { :controller => "schedule", :action => "gantt" } ]
+  <div id="savefilter" style="display:none"></div>
 
-	link_list = ""
-	links.each_with_index do |opts, i|
-	name, url_opts = opts
-	link = link_to(name, url_opts)
-	class_names = []
-	class_names << "first" if i == 0
-	class_names << "last" if i == links.length - 1
-	class_names << "active" if params.merge(url_opts) == params
+  <%= yield(:backlog_list) %>
 
-	link_list += content_tag(:li, link, :class => class_names.join(" "))
-	end
-	-%>
-	<%= link_list.html_safe %>
-	</ul>
-   	<div id="groupby" style="display:none">
-        	<%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
-       </div>
-       <div id="savefilter" style="display:none"></div>
+  <fieldset>
+    <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+  </fieldset>
 
-       <%= yield(:backlog_list) %>
+  <%= link_to(_("New User Story"), :controller => "tasks", :action => "backlog", :new_us => "true") %>
 
-
-       <%#*<fieldset>%>
-          <%#*<label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%>
-<%#*</select>%>
-       <%#*</fieldset>%>
-
-       <%= link_to(_("New User Story"), :controller => "tasks", :action => "backlog", :new_us => "true") %>
-
-        <% if params[:new_us]== "true" %>
-          <% form_tag({ :action => 'create'}, { :multipart => "true", :id => "taskform" }) do %>
-            <% render :partial => "tasks/form" %>
-          <% end %>
-        <% else %>
-          <div id="task">
-            <%= render_last_task %>
-          </div>
-        <% end  %>
-        
-       
+  <% if params[:new_us]== "true" %>
+    <% form_tag({ :action => 'create'}, { :multipart => "true", :id => "taskform" }) do %>
+      <% render :partial => "tasks/form" %>
+    <% end %>
+  <% else %>
+    <div id="task">
+      <%= render_last_task %>
+    </div>
+  <% end  %>
        
 </div>
 
@@ -59,7 +38,6 @@
   <%#  use content_for(:side_panel) to add extra content to this sidebar -%>
   <%#= yield(:side_panel) %>
   <%#= render :partial => "/tags/panel" %>
-  <fieldset>
-    <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
-  </fieldset>
+  
 </td>
+

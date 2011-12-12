@@ -230,7 +230,9 @@ class UsersController < ApplicationController
   end
 
   def get_tasklistcols
+    Rails.cache.clear
     colModel = Rails.cache.read("get_tasklistcols_#{current_user.id}")
+    
     unless colModel
       defaultCol = Array.new
       defaultCol << {'name' => 'read', 'label' => ' ', 'formatter' => 'read', 'resizable' => false, 'sorttype' => 'boolean', 'width' => 16}
@@ -243,6 +245,8 @@ class UsersController < ApplicationController
       defaultCol << {'name' => 'assigned', 'width' => 60}
       defaultCol << {'name' => 'resolution', 'width' => 60}
       defaultCol << {'name' => 'updated_at', 'width' => 60, 'label'=>'last comment date'}
+      defaultCol << {'name' => 'total_points', 'sorttype' => 'int', 'width' => 60, 'label'=>'points'}
+      defaultCol << {'name' => 'business_value', 'sorttype' => 'int', 'width' => 60, 'label'=>'business_value'}
       colModel = JSON.parse(current_user.preference('tasklistcols')) rescue nil
       colModel = Array.new if (! colModel.kind_of? Array)
 

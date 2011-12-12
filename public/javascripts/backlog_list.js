@@ -103,7 +103,6 @@ jQuery(document).ready(function() {
 
 function initTaskList() {
   jQuery('#backlog_list').jqGrid({
- //       url : '/tasks/list?format=json',
         url : '/tasks/backlog?format=json',
         datatype: 'json',
         jsonReader: {
