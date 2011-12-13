@@ -14,13 +14,24 @@
 
   <div id="savefilter" style="display:none"></div>
 
-  <%= yield(:backlog_list) %>
-
   <fieldset>
     <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
   </fieldset>
 
-  <%= link_to(_("New User Story"), :controller => "tasks", :action => "backlog", :new_us => "true") %>
+  <%= yield(:backlog_list) %>
+
+  <br />
+  <br />
+
+  <%= link_to(_("New User Story"),{:controller => "tasks", :action => "backlog", :new_us => "true",:project_id =>session[:id_prj]},:class=>'backlog_link') %>
+
+  <a class="backlog_link"> | </a>
+
+  <%= link_to(_("Edit User Story"),{:controller => "tasks", :action => "backlog", :new_us => "false",:project_id =>session[:id_prj]}, :class=>'backlog_link') %>
+
+  <br />
+  <br />
+  
 
   <% if params[:new_us]== "true" %>
     <% form_tag({ :action => 'create'}, { :multipart => "true", :id => "taskform" }) do %>

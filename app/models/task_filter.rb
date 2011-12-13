@@ -415,6 +415,10 @@ private
         tasks_params[:order]="(select  CONCAT(projects.name, '/', if(isnull(milestones.name), '', milestones.name)) from tasks as ts inner join  projects on ts.project_id = projects.id left join milestones on ts.milestone_id = milestones.id where ts.id = tasks.id)"
       when 'client'
         tasks_params[:order]='if( exists(select  customers.name as client   from task_customers left outer join customers on task_customers.customer_id=customers.id where task_customers.task_id=tasks.id limit 1), (select  customers.name as client  from task_customers left outer join customers on task_customers.customer_id=customers.id where task_customers.task_id=tasks.id limit 1), (select customers.name from projects left outer join customers on projects.customer_id= customers.id where projects.id=tasks.project_id limit 1))'
+      when 'points'
+        tasks_params[:order]='tasks.total_points'
+      when 'business_value'
+        tasks_params[:order]='tasks.business_value'
       else
       if self.company.properties.collect{|p| p.name.downcase }.include?(jqgrid_params[:sidx])
         self.company.properties.each do|p|

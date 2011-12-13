@@ -146,6 +146,11 @@ class TasksController < ApplicationController
     @task.duration = 0 if @task.duration.nil?
     params[:todos].collect { |todo| @task.todos.build(todo) } if params[:todos]
 
+#   si es un new_us para product backlog entonces milestone = 0
+    if !@task.milestone_id
+      @task.milestone_id=0
+    end
+
     unless current_user.can?(@task.project, 'create')
       flash['notice'] = _("You don't have access to create user stories on this project.")
       return if request.xhr?
@@ -169,7 +174,14 @@ class TasksController < ApplicationController
       flash['notice'] ||= (link_to_task(@task) + " - #{_('User story was successfully created.')}")
       Trigger.fire(@task, Trigger::Event::CREATED)
       return if request.xhr?
-      redirect_to :action => :list
+
+      #si es un us para backlog entonces redirecciona a backlog
+       if params[:new_us]!= "true"
+        redirect_to :action=> "backlog"
+       else
+        redirect_to :action => :list
+       end
+      
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
       return if request.xhr?
       render :template => 'tasks/new'
@@ -252,8 +264,14 @@ class TasksController < ApplicationController
       notice=link_to_task(@task) + " - #{_('Task was successfully updated.')}"
       respond_to do |format|
         format.html {
-          flash['notice'] ||= notice
-          redirect_to :action=> "list"
+          #si es un edit de backlog redirecciona a backlog
+          if params[:redireccion] == 'backlog'
+            flash['notice'] ||= notice
+            redirect_to :action=> "backlog"
+          else
+            flash['notice'] ||= notice
+            redirect_to :action=> "list"
+          end
         }
         format.js {
           render :json => {:status => :success, :tasknum => @task.task_num,
@@ -264,8 +282,8 @@ class TasksController < ApplicationController
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
       respond_to do |format|
-        format.html {
-          render :template => 'tasks/edit'
+        format.html {  
+        render :template => 'tasks/edit'
         }
         format.js {
           render :json => {:status => :error, :messages => @task.errors.full_messages}.to_json

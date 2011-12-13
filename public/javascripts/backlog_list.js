@@ -37,7 +37,7 @@ function taskListConfigSerialise() {
 
         jQuery.ajax({
                 type: "POST",
-                url: '/users/set_tasklistcols',
+                url: '/users/set_backloglistcols',
                 data: { model : JSON.stringify(model)},
                 dataType: 'json',
                 success: function(msg) {
@@ -72,7 +72,7 @@ jQuery(document).ready(function() {
   if (jQuery('#backlog_list').length) {
     jQuery.ajax({
       async: false,
-      url: '/users/get_tasklistcols',
+      url: '/users/get_backloglistcols',
       dataType: 'json',
       success:function(response) {
         columnModel = response;
@@ -115,7 +115,7 @@ function initTaskList() {
         sortname: columnModel.currentSort.column,
         sortorder: columnModel.currentSort.order,
 
-        caption: "Tasks",
+        caption: "Product Backlog",
         viewrecords: true,
         multiselect: false,
 
@@ -191,15 +191,16 @@ function initTaskList() {
     maxHeight: 1000
   });
 
-  jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
-    caption: "Columns",
-    title: "Show/hide columns",
-    onClickButton : function () {
-      jQuery("#backlog_list").jqGrid('columnChooser', {
-        done: function (id) { taskListConfigSerialise(); }
-      });
-    }
-  });
+//boton para agregar columnas a la tabla
+//  jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
+//    caption: "Columns",
+//    title: "Show/hide columns",
+//    onClickButton : function () {
+//      jQuery("#backlog_list").jqGrid('columnChooser', {
+//        done: function (id) { taskListConfigSerialise(); }
+//      });
+//    }
+//  });
 
   jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
         caption: "Export",

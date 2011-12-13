@@ -11,6 +11,7 @@
   <div>
     <% if controller.controller_name == "tasks" && controller.action_name == "backlog" %>
 
+    <input type = "hidden" id = "task_milestone_id" value="0"></input>
     <%else%>
 
       <label for="task_milestone_id"><%=_ 'Iteration' %></label>

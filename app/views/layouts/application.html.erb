@@ -21,7 +21,7 @@
       "template",
       "project_file",
       "widget",
-      :cache => "main"
+      :cache => "false"
     ) %>
     <%= javascript_include_tag "fullcalendar.min" %>
     <%= yield :head %>
@@ -56,7 +56,7 @@
       "fullcalendar",
       "jquery.pnotify.default",
       "jquery.ganttView",
-      :cache => true
+      :cache => false
     ) %>
     <%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 

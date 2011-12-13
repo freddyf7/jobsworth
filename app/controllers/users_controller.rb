@@ -229,8 +229,14 @@ class UsersController < ApplicationController
     render :nothing => true
   end
 
+  def set_backloglistcols
+    current_user.preference_attributes = [ [ 'backloglistcols', params[:model] ] ]
+    Rails.cache.delete("get_backloglistcols_#{current_user.id}")
+    render :nothing => true
+  end
+
   def get_tasklistcols
-    Rails.cache.clear
+
     colModel = Rails.cache.read("get_tasklistcols_#{current_user.id}")
     
     unless colModel
@@ -245,8 +251,6 @@ class UsersController < ApplicationController
       defaultCol << {'name' => 'assigned', 'width' => 60}
       defaultCol << {'name' => 'resolution', 'width' => 60}
       defaultCol << {'name' => 'updated_at', 'width' => 60, 'label'=>'last comment date'}
-      defaultCol << {'name' => 'total_points', 'sorttype' => 'int', 'width' => 60, 'label'=>'points'}
-      defaultCol << {'name' => 'business_value', 'sorttype' => 'int', 'width' => 60, 'label'=>'business_value'}
       colModel = JSON.parse(current_user.preference('tasklistcols')) rescue nil
       colModel = Array.new if (! colModel.kind_of? Array)
 
@@ -269,6 +273,43 @@ class UsersController < ApplicationController
     column = session[:jqgrid_sort_column].nil? ?  'id' : session[:jqgrid_sort_column]
     render :json => { :colModel=>colModel, :currentSort=>{ :order=>order, :column => column}}
   end
+  
+  def get_backloglistcols
+
+   colModel = Rails.cache.read("get_backloglistcols_#{current_user.id}")
+
+    unless colModel
+      defaultCol = Array.new
+      defaultCol << {'name' => 'read', 'label' => ' ', 'formatter' => 'read', 'resizable' => false, 'sorttype' => 'boolean', 'width' => 16}
+      defaultCol << {'name' => 'id', 'key' => true, 'sorttype' => 'int', 'width' => 30}
+      defaultCol << {'name' => 'summary', 'width' => 200}
+      defaultCol << {'name' => 'points', 'sorttype' => 'int', 'width' => 120, 'label'=>'points'}
+      defaultCol << {'name' => 'business_value', 'sorttype' => 'int', 'width' => 120, 'label'=>'business value'}
+      colModel = JSON.parse(current_user.preference('backloglistcols')) rescue nil
+      colModel = Array.new if (! colModel.kind_of? Array)
+
+      #ensure all default columns are in the model
+      defaultCol.each do |attr|
+        next if colModel.detect { |c| c['name'] == attr['name'] }
+        colModel << attr
+        logger.info "Property '#{attr['name']}' missing, adding to task list model."
+      end
+
+      #ensure all custom properties are in the model
+      current_user.company.properties.each do |attr|
+        next if colModel.detect { |c| c['name'] == attr.name.downcase }
+        colModel << {'name' => attr.name.downcase}
+        logger.info "Property '#{attr.name}' missing, adding to task list model."
+      end
+      
+      Rails.cache.write("get_backloglistcols_#{current_user.id}", colModel)
+    end
+    order = session[:jqgrid_sort_order].nil? ?  'asc': session[:jqgrid_sort_order]
+    column = session[:jqgrid_sort_column].nil? ?  'id' : session[:jqgrid_sort_column]
+    render :json => { :colModel=>colModel, :currentSort=>{ :order=>order, :column => column}}
+  end
+
+
 
   def set_task_grouping_preference
     current_user.preference_attributes = [ [ 'task_grouping', params[:id] ] ]

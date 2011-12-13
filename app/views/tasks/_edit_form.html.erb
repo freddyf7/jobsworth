@@ -6,6 +6,8 @@
 <%# end -%>
 <%#= javascript_tag "ajax_update_task_callback();" if controller.controller_name == "tasks" %>
 
-<% form_tag({ :action => 'update', :id => @task}, { :multipart => "true", :id => "taskform", :target => "upload_frame" }) do %>
-  <%= render :partial => "tasks/form" %>
-<% end %>
+  <% form_tag({ :action => 'update', :id => @task}, { :multipart => "true", :id => "taskform", :target => "upload_frame" }) do %>
+    <%= render :partial => "tasks/form" %>
+  <% end %>
+
+
