@@ -50,34 +50,22 @@ class TasksController < ApplicationController
   def backlog
     #para que el combobox de proyecto cargue con un proyecto
     if (params[:project_id].nil? or params[:project_id] == 0)
-      backlog_project = current_user.projects.find :first
-      session[:id_prj] = backlog_project.id
+#      backlog_project = current_user.projects.find :first
+      backlog_project = current_task_filter.tasks[0].project.id
+      session[:id_prj] = backlog_project
     else
       session[:id_prj] = params[:project_id]
     end
 
-    if(params[:new_us]=='true')
+    if(params[:us_action]=='nueva')
       @task = current_company_task_new
     else
-      @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
+#      @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
+      @task=current_task_filter.tasks[0]
     end
     
     @tasks = tasks_for_list
-#    task_prueba = Array.new
-#   if (params[:project_id].nil? or params[:project_id] == 0)
-#      backlog_project = current_user.projects.find :first
-#      project_id = backlog_project.id
-##      session[:id_prj] = project_id
-#      task_prueba = Task.find_all_by_project_id(project_id)
-#      @tasks = task_prueba
-#    else
-#      session[:id_prj] = params[:project_id]
-#      project_id = params[:project_id]
-      
-#    respond_to do |format|
-#      format.html  # backlog.html.erb
-#      format.json  { render :json => @tasks }
-#    end
+
     respond_to do |format|
       format.html { render :action => "backlog_grid" }
       format.json { render :template => "tasks/backlog_list.json"}
@@ -177,7 +165,7 @@ class TasksController < ApplicationController
       return if request.xhr?
 
       #si es un us para backlog entonces redirecciona a backlog
-       if params[:new_us]!= "true"
+       if params[:redireccion]== "nueva"
         redirect_to :action=> "backlog"
        else
         redirect_to :action => :list

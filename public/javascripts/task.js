@@ -12,6 +12,15 @@ function loadTask(id) {
   });
 }
 
+function loadBacklogTask(id) {
+	jQuery("#task").fadeOut();
+	jQuery.get("/tasks/edit/" + id + "?format=js&redireccion=edit", {}, function(data) {
+		jQuery("#task").html(data);
+		jQuery("#task").fadeIn('slow');
+		init_task_form();
+  });
+}
+
 // refresh the milestones select menu for all milestones from project pid, setting the selected milestone to mid
 // also old /milestones/get_milestones returns line of javascript code `jQuery('#add_milestone').[show()|hide]`
 // new /milestones/get_milestones returns flag add_milestone_visible

@@ -1,6 +1,6 @@
 <br />
 <div class="page_header">
-  <%=_ 'Product Backlog' %>
+  <%=_ 'Product Backlog - '+ current_task_filter.tasks[0].project.name %>
 </div>
    
 <div id="content">
@@ -14,28 +14,45 @@
 
   <div id="savefilter" style="display:none"></div>
 
-  
-
   <%= yield(:backlog_list) %>
+  
+<%#*<table class="content" id="finance_table" width="100%" style="margin-left:0;margin-right:0;">%>
 
+  <%#*<tr>%>
+      <%#*<th title="Total stories">%>
+<%#=_ 'Total stories' %>
+      <%#*</th>%>
+      <%#*<th title="Total points">%>
+<%#=_ 'Total points' %>
+      <%#*</th>%>
+      <%#*<th title="Total business value">%>
+<%#=_ "Total business value" %>
+      <%#*</th>%>
+  <%#*</tr>%>
+  <%#*<tr>%>
+      <%#*<td align="right">7</td>%>
+      <%#*<td align="right">8</td>%>
+      <%#*<td align="right">9</td>%>
+  <%#*</tr>%>
+
+<%#*</table>%>
   <br />
   <br />
 
-  <%= link_to(_("New User Story"),{:controller => "tasks", :action => "backlog", :new_us => "nueva",:project_id =>session[:id_prj]},:class=>'backlog_link') %>
+  <%= link_to(_("New User Story"),{:controller => "tasks", :action => "backlog", :us_action => "nueva",:project_id =>session[:id_prj]},:class=>'backlog_link') %>
 
   <a class="backlog_link"> | </a>
 
-  <%= link_to(_("Edit User Story"),{:controller => "tasks", :action => "backlog", :new_us => "edit",:project_id =>session[:id_prj]}, :class=>'backlog_link') %>
+  <%= link_to(_("Edit User Story"),{:controller => "tasks", :action => "backlog", :us_action => "edit",:project_id =>session[:id_prj]}, :class=>'backlog_link') %>
 
   <br />
   <br />
   
-
-  <% if params[:new_us]== "nueva" %>
-    <% form_tag({ :action => 'create'}, { :multipart => "true", :id => "taskform" }) do %>
+  <% if params[:us_action]== "nueva" %>
+    <% form_tag({ :action => 'create',:redireccion=>'nueva'}, { :multipart => "true", :id => "taskform" }) do %>
       <% render :partial => "tasks/form" %>
     <% end %>
-  <% else %>
+  <% elsif params[:us_action]== "edit" %>
     <div id="task">
       <%= render_last_task %>
     </div>
@@ -44,13 +61,10 @@
 </div>
 
 <td id="side_panel">
-  <br />
-  <br />
-  <br />
-  <br />
-  <fieldset>
+  <fieldset style="margin-top:62px;">
     <label>Project</label><select id="project_id" name="project_id" onchange="reload_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
   </fieldset>
+  
   <%#  use content_for(:side_panel) to add extra content to this sidebar -%>
   <%#= yield(:side_panel) %>
   <%#= render :partial => "/tags/panel" %>

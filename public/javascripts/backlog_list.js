@@ -20,7 +20,7 @@ function getUserPreference(name) {
 function selectRow(rowid) {
   jQuery('#backlog_list').setCell(rowid, 'read', 't');
   jQuery('#' + rowid).removeClass('unread');
-  loadTask(rowid);
+  loadBacklogTask(rowid);
 }
 
 function setRowReadStatus(data) {
