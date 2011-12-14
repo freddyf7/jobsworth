@@ -48,6 +48,7 @@ class TasksController < ApplicationController
   end
 
   def backlog
+    #para que el combobox de proyecto cargue con un proyecto
     if (params[:project_id].nil? or params[:project_id] == 0)
       backlog_project = current_user.projects.find :first
       session[:id_prj] = backlog_project.id
@@ -265,7 +266,7 @@ class TasksController < ApplicationController
       respond_to do |format|
         format.html {
           #si es un edit de backlog redirecciona a backlog
-          if params[:redireccion] == 'backlog'
+          if params[:redireccion] == 'edit'
             flash['notice'] ||= notice
             redirect_to :action=> "backlog"
           else
