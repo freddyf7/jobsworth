@@ -22,6 +22,9 @@
           <%= link_to _("Product Backlog"), :controller => "tasks", :action => "backlog" %>
         </li>
         <li>
+          <%= link_to _("Sprint planning"), :controller => "sprint_planning", :action => "planning" %>
+        </li>
+        <li>
           <%= link_to _("New US"), :controller => 'tasks', :action => 'new' %>
         </li>
          <li<%= " class='active'" if active.starts_with?('clients/') %>>

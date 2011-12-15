@@ -29,6 +29,7 @@ class MilestonesController < ApplicationController
     end
   end
 
+
   # Ajax callback from milestone popup window to create a new milestone on submitting the form
   def create
 
