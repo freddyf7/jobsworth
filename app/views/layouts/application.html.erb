@@ -123,9 +123,14 @@
     <% end %>
 
     <% if controller.controller_name == "tasks" && controller.action_name == "backlog"%>
-      <%= javascript_include_tag 'backlog_list.js' -%>
+      <%= javascript_include_tag 'backlog_list.js'-%>
     <% end %>
-     <% if controller.controller_name == "tasks" && controller.action_name == "list"%>
+
+    <% if controller.controller_name == "sprint_planning" && controller.action_name == "planning"%>
+      <%= javascript_include_tag 'planning_backlog_list.js'-%>
+    <% end %>
+
+    <% if controller.controller_name == "tasks" && controller.action_name == "list"%>
       <%= javascript_include_tag 'tasklist.js' -%>
     <% end %>
 

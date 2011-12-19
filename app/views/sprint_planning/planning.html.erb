@@ -11,12 +11,18 @@
       
       <%= error_messages_for 'milestone' %>
 
-      <label for="milestone_project_name_autocomplete"><%=_ 'Project' %></label>
-      <%= text_field :project, :name, {
+      <%#*<label for="milestone_project_name_autocomplete"><%=_ 'Project' %>
+      <%#*</label>%>
+      <%#= text_field :project, :name, {
         :id => "milestone_project_name_autocomplete",
         :value => "",
         :autocomplete=>"off"
       }%>
+
+
+      <label>Project</label>
+      <select class="planning_combobox" id="project_id" name="project_id" onchange="reload_planning_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+
 
       <label for="milestone_name"><%=_ 'Name' %></label>
       <%= text_field 'milestone', 'name'  %>
@@ -39,7 +45,7 @@
       <br/>
 
       <label for="color-select"><%=_ 'Roadmap Color' %></label>
-      <select id="color-select" name="milestone[color]">
+      <select class="planning_combobox" id="color-select" name="milestone[color]">
         <% selected_color = @milestone ? @milestone.color : "blue"%>
         <option value="blue" <%= color_is_selected?(selected_color, "blue")%>><%=_ 'Blue' %></option>
         <option value="red" <%= color_is_selected?(selected_color, "red")%>><%=_ 'Red' %></option>
@@ -62,7 +68,13 @@
 
   <fieldset title="User Stories>>">
     <legend>description</legend>
-    <!-- input fields -->
+
+    <div id="groupby" style="display:none">
+      <%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
+    </div>
+
+    <%= yield(:planning_backlog_list) %>
+
   </fieldset>
 
   <fieldset title="Confirm">

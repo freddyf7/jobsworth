@@ -16,7 +16,8 @@
 .step legend { color: #2F3337; font: 14px; padding: 0 2px 3px 2px; }
 .step input { border: 1px solid #AAA; font: 12px verdana; margin-left: 7px; }
 .step textarea{margin-top: 10px; margin-left:7px;}
-.step select{border: 1px solid #AAA; font: 12px verdana; margin-left: 7px; margin-top: 10px}
+/*.step select{border: 1px solid #AAA; font: 12px verdana; margin-left: 7px; margin-top: 10px}*/
+.planning_combobox{border: 1px solid #AAA; font: 12px verdana; margin-left: 7px; margin-top: 10px}
 
 .error-image { background: url('../img/error.png') no-repeat right top; }
 
