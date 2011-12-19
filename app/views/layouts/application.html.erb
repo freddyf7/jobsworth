@@ -23,12 +23,21 @@
       "widget",
       :cache => "false"
     ) %>
+
+    <%= javascript_include_tag(
+      "wizard/jquery.stepy",
+      "wizard/jquery.validate.min"
+    )%>
+
+    <%= stylesheet_link_tag("jquery.stepy.css")%>
+    
     <%= javascript_include_tag "fullcalendar.min" %>
+
     <%= yield :head %>
+
     <% if controller.controller_name == "roadmap" %>
       <%= javascript_include_tag 'http://simile.mit.edu/timeline/api/timeline-api.js' -%>
       <%#= javascript_include_tag 'http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js' -%>
-
       <%= javascript_include_tag 'prototype' -%>
     <% end %>
 
@@ -39,9 +48,11 @@
       <!--[if IE]><%= javascript_include_tag "excanvas" %><![endif]-->
         <%= javascript_include_tag "builder", "portal", "flotr" %>
     <% end %>
+
     <% if ['tasks', 'project_files', 'projects', 'companies', 'clients', 'properties'].include? controller.controller_name %>
         <%= javascript_include_tag 'jquery.form', 'jquery.remotipart' %>
     <% end %>
+
     <% if ['schedule'].include? controller.controller_name %>
         <%= javascript_include_tag 'date', 'jquery.ganttView' %>
     <% end %>
@@ -56,9 +67,9 @@
       "fullcalendar",
       "jquery.pnotify.default",
       "jquery.ganttView",
-      "wizard",
       :cache => false
     ) %>
+
     <%= auto_discovery_link_tag(:rss, {:controller => 'feeds', :action => 'rss', :id => current_user.uuid }) %>
 
     <% if (CONFIG[:server][:production].to_s != "0") %>
@@ -66,11 +77,13 @@
       <script type="text/javascript" charset="utf-8">
         var jug = new Juggernaut;
       </script>
-      <%end%>
+    <%end%>
 
     <%= csrf_meta_tag %>
+
     <title><%= $CONFIG[:productName] %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
     <%
      @internal = current_user.company.internal_customer
            if !@internal.nil? && !@internal.css.nil? && @internal.css.length > 0
@@ -78,13 +91,13 @@
             <style type="text/css">
                 <%= @internal.css %>
             </style>
-        <% end %>
+
+    <% end %>
+
     <script type="text/javascript">
           jQuery.jgrid.no_legacy_api = true;
           jQuery.jgrid.useJSON = true;
     </script>
-
-
 
     <script type="text/javascript">
       // Ugly, yes, but gets the job done.

@@ -425,12 +425,17 @@ jQuery(document).ready(function() {
   autocomplete('#project_user_name_autocomplete', '/application/auto_complete_for_user_name', addUserToProject);
   autocomplete('#user_customer_name', '/users/auto_complete_for_customer_name', addCustomerToUser);
   autocomplete('#auto_complete_for_user_name_only_company','/application/auto_complete_for_user_name_only_company',addUserToProjectOnlyCompany);
+  autocomplete('#milestone_project_name_autocomplete','/sprint_planning/auto_complete_for_milestone_project_name',addProjectToMilestone);
 
   jQuery(".datefield").datepicker({ constrainInput: false, dateFormat: userDateFormat});
 });
 
 function addUserToProjectOnlyCompany(event, ui){
     jQuery('#project_leader_id').val(ui.item.id);
+}
+
+function addProjectToMilestone(event, ui){
+    jQuery('#project_id').val(ui.item.id);
 }
 
 /*Adds the selected customer to the new project*/
