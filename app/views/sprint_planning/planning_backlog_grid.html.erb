@@ -1,6 +1,16 @@
 <% content_for(:planning_backlog_list) do %>
 	<table id="backlog_list"></table>
 	<div id="backlog_pager"></div>
+
+        <br/>
+
+
+        <div id="sprint_groupby" style="display:none">
+          <%= select_tag("sprint_chngroup", options_for_changegroup, :onChange => "sprint_change_group()") %>
+        </div>
+        
+        <table id="sprint_backlog_list"></table>
+	<div id="sprint_backlog_pager"></div>
 <% end -%>
 
 <%= render :file => 'sprint_planning/planning' %>

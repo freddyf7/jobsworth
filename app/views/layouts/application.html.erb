@@ -109,6 +109,7 @@
         }
       });
     </script>
+
     <% if controller.controller_name == "planning_poker" && controller.action_name == "table" %>
       <%= javascript_include_tag 'jquery.flip.min.js' -%>
       <script type="text/javascript">
@@ -127,18 +128,19 @@
     <% end %>
 
     <% if controller.controller_name == "sprint_planning" && controller.action_name == "planning"%>
-      <%= javascript_include_tag 'planning_backlog_list.js'-%>
+      <%= javascript_include_tag 'sprint_planning_product_backlog.js'-%>
+      <%= javascript_include_tag 'sprint_planning_sprint_backlog.js'-%>
     <% end %>
 
     <% if controller.controller_name == "tasks" && controller.action_name == "list"%>
       <%= javascript_include_tag 'tasklist.js' -%>
     <% end %>
 
-
   </head>
     <body
       <% if controller.controller_name == "planning_poker" && controller.action_name == "table"%>
       onunload="desconectar_jug();"<% end %>>
+      
     <div id="page_header">
       <div id="loading">
         <%= image_tag('spinner.gif', :border => 0) %>

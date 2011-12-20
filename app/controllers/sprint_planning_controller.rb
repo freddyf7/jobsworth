@@ -5,7 +5,6 @@ class SprintPlanningController < ApplicationController
 
     #para que el combobox de proyecto cargue con un proyecto
     if (params[:project_id].nil? or params[:project_id] == 0)
-#      backlog_project = current_user.projects.find :first
       backlog_project = current_task_filter.tasks[0].project.id
       session[:id_prj] = backlog_project
     else
@@ -19,11 +18,15 @@ class SprintPlanningController < ApplicationController
       format.json { render :template => "tasks/backlog_list.json"}
     end
 
+  end
+  
+  def plan
+    @tasks = Task.all
 
-#    respond_to do |format|
-#      format.html  # planning.html.erb
-##     format.json  { render :json => @posts }
-#    end
+     respond_to do |format|
+      format.html { render :action => "planning_backlog_grid" }
+      format.json { render :template => "tasks/backlog_list.json"}
+    end
   end
 
   def auto_complete_for_milestone_project_name

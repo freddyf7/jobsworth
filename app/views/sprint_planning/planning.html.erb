@@ -73,7 +73,14 @@
       <%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
     </div>
 
+    
+
     <%= yield(:planning_backlog_list) %>
+
+    <a href="javascript:void(0)" id="m1">Get Selected id's</a>
+
+    <br/>
+    <br/>
 
   </fieldset>
 
@@ -98,8 +105,15 @@
   errorImage:     true,
   nextLabel:      'Siguiente',
   titleClick:     true,
-  validate:       true
+  validate:       false
 }); 
+</script>
+
+<script type="text/javascript" charset="utf-8">
+jQuery("#m1").click( function() {
+  var s;
+  s = jQuery("#backlog_list").jqGrid('getGridParam','selarrrow');
+  alert(s); });
 </script>
 
 <%#*<script type="text/javascript" charset="utf-8">%>
