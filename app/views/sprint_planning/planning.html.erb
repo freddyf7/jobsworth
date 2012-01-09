@@ -85,7 +85,7 @@
                     <br/>
                     
                     <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
-                    <select class="planning_combobox" id="milestone[milestone_id]" name="milestone[milestone_id]" onchange="reload_planning_backlog(this.value)">
+                    <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" >
                       <%= options_milestone_sprint_planning(session[:id_prj])%>
                     </select>
                   </fieldset>
@@ -94,7 +94,7 @@
                 <legend><%= _'Statistics'%></legend>
                 <br/>
 
-                  <fieldset style="width:195px;float:left;margin-left: 15px;">
+                  <fieldset style="width:40%;float:left;margin-left: 15px;">
                     <legend><%= _'Developer Stats'%></legend>
 
                     <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
@@ -110,7 +110,7 @@
                     <%= text_field 'speed', 'project_2', :size => 5  %>
                   </fieldset>
 
-                  <fieldset style="width:195px;float:right;margin-right: 15px;">
+                  <fieldset style="width:40%;float:right;margin-right: 15px;">
                     <legend><%= _'Developer Stats'%></legend>
 
                     <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
@@ -139,6 +139,8 @@
                   </div>
 
                   <%= yield(:planning_backlog_list) %>
+
+                  <button id="saveSprint" type="button" onClick="saveSprint();">Save</button>
                 </div>
               </td>
             </tr>
@@ -161,3 +163,26 @@
 	});
 </script>
 
+<script>
+	function saveSprint() {
+		var historias;
+                var result ='-';
+                historias = jQuery( "#sprint_backlog_list" ).jqGrid('getDataIDs');
+                
+
+                 for (i=0;i<historias.length;i++){
+                        result = result +'-'+historias[i]
+                 }
+
+                 iteracion = jQuery('#milestone_id').val();
+                 alert("Historias:"+historias+"Iteracion:"+iteracion);
+
+                location.href='/sprint_planning/saveSprint?historias='+ result+'&iteracion='+iteracion;
+	};
+</script>
+
+<script>
+  if (<% params[:tab]=1 %>){
+    jQuery( "#tabs" ).tabs( "option", "selected", 1 );
+  }
+</script>

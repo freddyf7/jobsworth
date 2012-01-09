@@ -48,6 +48,7 @@ class TasksController < ApplicationController
   end
 
   def backlog
+    Rails.cache.clear
     #para que el combobox de proyecto cargue con un proyecto
 #    if (params[:project_id].nil? or params[:project_id] == 0)
     if params[:project_id].nil?
@@ -67,10 +68,11 @@ class TasksController < ApplicationController
     if(params[:us_action]=='nueva')
       @task = current_company_task_new
     else
-      @task=current_task_filter.tasks[0]
+      @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
     end
-    
+    Rails.cache.clear
     @tasks = tasks_for_list
+
     @total_points = 0
     @total_business_value = 0
 

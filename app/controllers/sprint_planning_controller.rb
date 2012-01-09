@@ -3,9 +3,23 @@ class SprintPlanningController < ApplicationController
   def planning
 
     #para que el combobox de proyecto cargue con un proyecto
-    if (params[:project_id].nil? or params[:project_id] == 0)
-      backlog_project = current_task_filter.tasks[0].project.id
-      session[:id_prj] = backlog_project
+#    if (params[:project_id].nil? or params[:project_id] == 0)
+#      backlog_project = current_task_filter.tasks[0].project.id
+#      session[:id_prj] = backlog_project
+#    else
+#      session[:id_prj] = params[:project_id]
+#    end
+
+    if params[:project_id].nil?
+
+      if current_task_filter.tasks.size > 0
+        backlog_project = current_task_filter.tasks[0].project.id
+        session[:id_prj] = backlog_project
+      else
+#        roadmap_project = current_user.projects.first
+#        project_id = roadmap_project.id
+        session[:id_prj] =-1
+      end
     else
       session[:id_prj] = params[:project_id]
     end
@@ -59,6 +73,30 @@ class SprintPlanningController < ApplicationController
     end
   end
 
+  def saveSprint
+
+    historias = params[:historias]
+    sprintSave = Array.new
+    iteracion = params[:iteracion]
+
+    for i in 0..historias.size-1 do
+        if (historias[i] != '-' && historias[i] != '')
+          tarea = Task.find_by_id(historias[i].to_i)
+          sprintSave << tarea
+        end
+    end
+
+    sprintSave.each do |us|
+      us.milestone_id = iteracion
+      us.save!
+    end
+
+#    task = Task.find_by_id(5)
+#    task.milestone_id = 8
+#    task.save!
+    redirect_to '/sprint_planning/planning'
+  end
+
 
   def auto_complete_for_milestone_project_name
     text = params[:term]
@@ -87,11 +125,11 @@ class SprintPlanningController < ApplicationController
       end
 #    if total_points.size > 0 && total_stories.size > 0
       if total_points.size > 0
-        average_velocity_points = Statistics.mean(total_points)
+       average_velocity_points = Statistics.mean(total_points)
 #      average_total_stories = Statistics.mean(total_stories)
 #      result = (average_velocity_points.to_f / average_total_stories.to_f).ceil
 #      res = result.to_s
-        res = total_points
+        res = average_velocity_points
       else
         res = "2"
       end
