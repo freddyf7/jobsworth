@@ -1,0 +1,132 @@
+<br/>
+<div class="page_header">
+  <%=_ 'Sprint Planning'%>
+</div>
+<br/>
+
+<form action="/milestones/create" id="step">
+
+  <fieldset title="New Iteration>>">
+    <legend>Iteration</legend>
+      
+      <%= error_messages_for 'milestone' %>
+
+
+      <label>Project</label>
+      <select class="planning_combobox" id="project_id" name="project_id" onchange="reload_planning_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+
+
+      <label for="milestone_name"><%=_ 'Name' %></label>
+      <%= text_field 'milestone', 'name'  %>
+      
+      <br/>
+
+      <label for="milestone_init_date"><%=_ 'Begin Date' %></label>
+      <%= text_field 'milestone', 'init_date', :size => 12, :class=>:datefield%>
+
+      <br/>
+
+      <label for="milestone_due_at"><%=_ 'Due Date' %></label>
+      <%= text_field 'milestone', 'due_at', :size => 12, :class=>:datefield  %>
+
+      <br/>
+
+      <label for="milestone_budget"><%=_ 'Budget ' %></label>
+      <%= text_field 'milestone', 'budget', {:size => 12, :readOnly => true} %>
+
+      <br/>
+
+      <label for="color-select"><%=_ 'Roadmap Color' %></label>
+      <select class="planning_combobox" id="color-select" name="milestone[color]">
+        <% selected_color = @milestone ? @milestone.color : "blue"%>
+        <option value="blue" <%= color_is_selected?(selected_color, "blue")%>><%=_ 'Blue' %></option>
+        <option value="red" <%= color_is_selected?(selected_color, "red")%>><%=_ 'Red' %></option>
+        <option value="yellow" <%= color_is_selected?(selected_color, "yellow")%>><%=_ 'Yellow' %></option>
+        <option value="green" <%= color_is_selected?(selected_color, "green")%>><%=_ 'Green' %></option>
+      </select>
+
+      <br/>
+
+      <label for="milestone_description"><%=_ 'Description' %></label>
+      <%= text_area 'milestone', 'description', :rows => 10 %>
+      
+      <br/>
+
+      <%#= hidden_field_tag "milestone[project_id]" %>
+
+      <input type = "hidden" id = "milestone[project_id]" name = "milestone[project_id]">
+
+  </fieldset>
+
+  <fieldset title="User Stories>>">
+    <legend>description</legend>
+
+    <div id="groupby" style="display:none">
+      <%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
+    </div>
+
+    
+
+    <%= yield(:planning_backlog_list) %>
+
+    
+
+
+
+
+    <a href="javascript:void(0)" id="m1">Get Selected id's</a>
+
+    <br/>
+    <br/>
+
+  </fieldset>
+
+  <fieldset title="Confirm">
+    <legend>description</legend>
+    <!-- input fields -->
+  </fieldset>
+
+  <%= submit_tag _("Create"), :class => 'finish' %>
+
+</form>
+
+<script type="text/javascript">
+  jQuery("#milestone_init_date").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
+  jQuery("#milestone_due_at").datepicker({dateFormat: '<%= current_user.dateFormat %>'});
+</script>
+
+<script type="text/javascript" charset="utf-8">
+  jQuery('#step').stepy({
+  backLabel:      'Atras',
+  block:          true,
+  errorImage:     true,
+  nextLabel:      'Siguiente',
+  titleClick:     true,
+  validate:       false
+}); 
+</script>
+
+<script type="text/javascript" charset="utf-8">
+jQuery("#m1").click( function() {
+  var s;
+  s = jQuery("#backlog_list").jqGrid('getGridParam','selarrrow');
+  alert(s); });
+</script>
+
+<script type="text/javascript" charset="utf-8">
+  function cargarSprintBacklog(){
+    <%#*var s;%>
+    <%#*s = jQuery("#backlog_list").jqGrid('getGridParam','selarrrow');%>
+    window.location.href="/sprint_planning/planning";
+    <%#*myGrid.trigger('reloadGrid');%>
+
+  }
+
+  
+
+
+</script>
+
+<%#*<script type="text/javascript" charset="utf-8">%>
+<%#*jQuery('#step').stepy('step', 2);%>
+<%#*</script>%>

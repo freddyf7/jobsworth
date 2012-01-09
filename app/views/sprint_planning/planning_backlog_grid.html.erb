@@ -4,6 +4,11 @@
 
         <br/>
 
+        <button id="cargarSprint" style="float:right;" type="button" >Add</button>
+
+        <br/>
+        <br/>
+        <br/>
 
         <div id="sprint_groupby" style="display:none">
           <%= select_tag("sprint_chngroup", options_for_changegroup, :onChange => "sprint_change_group()") %>
@@ -11,6 +16,10 @@
         
         <table id="sprint_backlog_list"></table>
 	<div id="sprint_backlog_pager"></div>
+
+        <br/>
+
+        <button id="quitarSprint" style="float:right;" type="button" >Remove</button>
 <% end -%>
 
 <%= render :file => 'sprint_planning/planning' %>

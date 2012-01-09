@@ -49,10 +49,17 @@ class TasksController < ApplicationController
 
   def backlog
     #para que el combobox de proyecto cargue con un proyecto
-    if (params[:project_id].nil? or params[:project_id] == 0)
-#      backlog_project = current_user.projects.find :first
-      backlog_project = current_task_filter.tasks[0].project.id
-      session[:id_prj] = backlog_project
+#    if (params[:project_id].nil? or params[:project_id] == 0)
+    if params[:project_id].nil?
+      
+      if current_task_filter.tasks.size > 0
+        backlog_project = current_task_filter.tasks[0].project.id
+        session[:id_prj] = backlog_project
+      else
+#        roadmap_project = current_user.projects.first
+#        project_id = roadmap_project.id
+        session[:id_prj] =-1
+      end
     else
       session[:id_prj] = params[:project_id]
     end
@@ -60,11 +67,17 @@ class TasksController < ApplicationController
     if(params[:us_action]=='nueva')
       @task = current_company_task_new
     else
-#      @task = Task.accessed_by(current_user).find_by_id(session[:last_task_id])
       @task=current_task_filter.tasks[0]
     end
     
     @tasks = tasks_for_list
+    @total_points = 0
+    @total_business_value = 0
+
+    @tasks.each do |us|
+      @total_points = @total_points + us.total_points
+      @total_business_value = @total_business_value + us.business_value
+    end
 
     respond_to do |format|
       format.html { render :action => "backlog_grid" }

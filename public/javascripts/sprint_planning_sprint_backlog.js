@@ -9,7 +9,7 @@ var columnModel;
   Sends an ajax request to save the given user preference to the db
 */
 function sprint_saveUserPreference(name, value) {
-  var params = { "name": name, "value": value };
+  var params = {"name": name, "value": value};
   jQuery.post("/users/set_preference",  params);
 }
 
@@ -39,7 +39,7 @@ function sprint_taskListConfigSerialise() {
         jQuery.ajax({
                 type: "POST",
                 url: '/users/set_backloglistcols',
-                data: { model : JSON.stringify(model)},
+                data: {model : JSON.stringify(model)},
                 dataType: 'json',
                 success: function(msg) {
                         alert( "Data Saved: " + msg );
@@ -103,8 +103,8 @@ jQuery(document).ready(function() {
 });
 
 function sprint_initTaskList() {
-  jQuery('#sprint_backlog_list').jqGrid({
-        url : '/sprint_planning/plan?format=json',
+  var myGrid = jQuery('#sprint_backlog_list').jqGrid({
+        url : '/sprint_planning/planning?format=json&userh=4',
         datatype: 'json',
         jsonReader: {
                 root: "tasks.rows",
@@ -112,18 +112,30 @@ function sprint_initTaskList() {
         },
         colModel : columnModel.colModel,
         loadonce: false,
-        sortable : function(permutation) { sprint_taskListConfigSerialise(); }, // re-order columns
+        sortable : function(permutation) {sprint_taskListConfigSerialise();}, // re-order columns
         sortname: columnModel.currentSort.column,
         sortorder: columnModel.currentSort.order,
-
+        postData: {
+            user_stories:
+                function() {
+                    var s                    
+                    var result ='-'
+                    s = jQuery("#backlog_list").jqGrid('getGridParam','selarrrow')
+                    
+                    for (i=0;i<s.length;i++){                        
+                        result = result +'-'+s[i]
+                    }
+                    return result
+                }
+        },
         caption: "Sprint Backlog",
         viewrecords: true,
         multiselect: true,
 
-        onSelectRow: function(rowid, status) { sprint_selectRow(rowid); },
-        onClickGroup: function(hid, collapsed) { sprint_saveCollapsedStateToLocalStorage(hid, collapsed) },
-        resizeStop: function(newwidth, index) { sprint_taskListConfigSerialise(); },
-        loadComplete: function(data) { sprint_restoreCollapsedState();
+        onSelectRow: function(rowid, status) {sprint_selectRow(rowid);},
+        onClickGroup: function(hid, collapsed) {sprint_saveCollapsedStateToLocalStorage(hid, collapsed)},
+        resizeStop: function(newwidth, index) {sprint_taskListConfigSerialise();},
+        loadComplete: function(data) {sprint_restoreCollapsedState();
             jQuery("#load_sprint_backlog_list").hide();
             sprint_restorejqGridScrollPosition();
             sprint_setRowReadStatus(data);},
@@ -141,7 +153,7 @@ function sprint_initTaskList() {
         userdata: "userdata",
 
         height: 300,
-        width: 500,
+        width: 720,
 
         grouping: jQuery("#sprint_chngroup").val() != "clear",
         groupingView: {
@@ -149,6 +161,51 @@ function sprint_initTaskList() {
            groupColumnShow: [false]
         }
   });
+
+
+
+jQuery("#quitarSprint").click(function () {
+   var seleccionadas
+   seleccionadas = jQuery("#sprint_backlog_list").jqGrid('getGridParam','selarrrow')
+  
+
+   
+   for (  var i = seleccionadas.length-1; i>=0; i--) {
+    jQuery("#backlog_list").setSelection(seleccionadas[i].toString(),false);
+    jQuery('#sprint_backlog_list').delRowData(seleccionadas[i]);
+   }
+
+//   alert(seleccionadas_2)
+//   for (  var i = seleccionadas_2.length-1; i>=0; i--) {
+//    jQuery("#backlog_list").setSelection(seleccionadas_2[i].toString(),false);
+//   }
+//
+//   for (i=0;i<seleccionadas.length;i++){
+//    jQuery("#backlog_list").jqGrid('setSelection',seleccionadas[i]);
+//   }
+   
+});
+
+
+var myReload = function() {
+    myGrid.trigger('reloadGrid');
+};
+
+var keyupHandler = function (e,refreshFunction,obj) {
+    var keyCode = e.keyCode || e.which;
+    if (keyCode === 33 /*page up*/|| keyCode === 34 /*page down*/||
+        keyCode === 35 /*end*/|| keyCode === 36 /*home*/||
+        keyCode === 38 /*up arrow*/|| keyCode === 40 /*down arrow*/) {
+
+        if (typeof refreshFunction === "function") {
+            refreshFunction(obj);
+       }
+    }
+};
+
+jQuery("#cargarSprint").click(myReload).keyup(function (e) {
+    keyupHandler(e,myReload,this);
+});
 
   jQuery('#sprint_backlog_list').navGrid('#sprint_backlog_pager', {refresh:true, search:false, add:false, edit:false, view:false, del:false},
         {}, // use default settings for edit
@@ -223,6 +280,11 @@ function sprint_initTaskList() {
   sprint_resizeGrid();
 }
 
+function parseStories(){
+
+
+}
+
 jQuery.extend(jQuery.fn.fmatter , {
   tasktime : function(cellvalue, options, rowdata) {
     var val = timeTaskValue(cellvalue);
@@ -242,7 +304,7 @@ jQuery(window).bind('resize', function() {
 });
 
 function sprint_resizeGrid() {
-  jQuery("#sprint_backlog_list").setGridWidth(jQuery(window).width() - 220); //allow for sidebar and margins
+  jQuery("#sprint_backlog_list").setGridWidth(720); //allow for sidebar and margins
 }
 
 // -------------------------

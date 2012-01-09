@@ -1,6 +1,7 @@
 <br />
 <div class="page_header">
-  <%=_ 'Product Backlog - '+ current_task_filter.tasks[0].project.name %>
+  <%#=_ 'Product Backlog - '+ current_task_filter.tasks[0].project.name %>
+  <%=_ 'Product Backlog - ' %>
 </div>
    
 <div id="content">
@@ -16,26 +17,6 @@
 
   <%= yield(:backlog_list) %>
   
-<%#*<table class="content" id="finance_table" width="100%" style="margin-left:0;margin-right:0;">%>
-
-  <%#*<tr>%>
-      <%#*<th title="Total stories">%>
-<%#=_ 'Total stories' %>
-      <%#*</th>%>
-      <%#*<th title="Total points">%>
-<%#=_ 'Total points' %>
-      <%#*</th>%>
-      <%#*<th title="Total business value">%>
-<%#=_ "Total business value" %>
-      <%#*</th>%>
-  <%#*</tr>%>
-  <%#*<tr>%>
-      <%#*<td align="right">7</td>%>
-      <%#*<td align="right">8</td>%>
-      <%#*<td align="right">9</td>%>
-  <%#*</tr>%>
-
-<%#*</table>%>
   <br />
   <br />
 

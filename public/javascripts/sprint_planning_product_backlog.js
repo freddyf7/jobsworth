@@ -102,8 +102,8 @@ jQuery(document).ready(function() {
 });
 
 function initTaskList() {
-  jQuery('#backlog_list').jqGrid({
-        url : '/sprint_planning/planning?format=json',
+  var product_grid = jQuery('#backlog_list').jqGrid({
+        url : '/sprint_planning/product_backlog?format=json',
         datatype: 'json',
         jsonReader: {
                 root: "tasks.rows",
@@ -114,7 +114,19 @@ function initTaskList() {
         sortable : function(permutation) { taskListConfigSerialise(); }, // re-order columns
         sortname: columnModel.currentSort.column,
         sortorder: columnModel.currentSort.order,
-
+        postData: {
+            user_stories_2:
+                function() {
+                    var s_2
+                    var result_2 ='-'
+                    s_2 = jQuery("#backlog_list").jqGrid('getGridParam','selarrrow')
+                    
+                    for (i=0;i<s_2.length;i++){
+                        result_2 = result_2 +'-'+s_2[i]
+                    }
+                    return result_2
+                }
+        },
         caption: "Product Backlog",
         viewrecords: true,
         multiselect: true,
@@ -137,7 +149,7 @@ function initTaskList() {
         userdata: "userdata",
 
         height: 300,
-        width: 500,
+        width: 720,
 
         grouping: jQuery("#chngroup").val() != "clear",
         groupingView: {
@@ -145,6 +157,7 @@ function initTaskList() {
            groupColumnShow: [false]
         }
   });
+
 
   jQuery('#backlog_list').navGrid('#backlog_pager', {refresh:true, search:false, add:false, edit:false, view:false, del:false},
         {}, // use default settings for edit
@@ -238,7 +251,7 @@ jQuery(window).bind('resize', function() {
 });
 
 function resizeGrid() {
-  jQuery("#backlog_list").setGridWidth(jQuery(window).width() - 220); //allow for sidebar and margins
+  jQuery("#backlog_list").setGridWidth(720); //allow for sidebar and margins
 }
 
 // -------------------------

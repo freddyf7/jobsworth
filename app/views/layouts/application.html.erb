@@ -128,8 +128,9 @@
     <% end %>
 
     <% if controller.controller_name == "sprint_planning" && controller.action_name == "planning"%>
+      
       <%= javascript_include_tag 'sprint_planning_product_backlog.js'-%>
-      <%= javascript_include_tag 'sprint_planning_sprint_backlog.js'-%>
+    <%= javascript_include_tag 'sprint_planning_sprint_backlog.js'-%>
     <% end %>
 
     <% if controller.controller_name == "tasks" && controller.action_name == "list"%>

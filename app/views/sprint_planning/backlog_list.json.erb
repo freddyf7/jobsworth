@@ -1,0 +1,37 @@
+{"tasks": {
+"records":"<%= @sprint_tasks.size %>",
+"rows": [
+<%  total_time = 0
+    @sprint_tasks.each_with_index do |taskx, idx|
+    cache([ taskx, current_user.id, taskx.project.updated_at, taskx.milestone.try(:updated_at) ]) do
+      customer = (taskx.customers.first || taskx.project.customer)
+-%>
+{
+<%    readFlag = ""
+      total_time += taskx.minutes_left.to_i
+      if (taskx.unread?(current_user))
+        readFlag = "f" # this task is unread
+      else if (taskx.users + taskx.watchers).include?(current_user) # only users assigned to or watching a task can mark unread
+        readFlag = "t" # this task is read and can be switched to unread
+      else
+        readFlag = "x" # this task doesn't have the current user assigned/cc
+      end
+    end
+-%>
+"read":<%= readFlag.to_json.html_safe %>,
+"id":<%= taskx.task_num.to_json.html_safe %>,
+<% current_user.company.properties.each do |prop| -%>
+<% prop_query = TaskPropertyValue.find_by_task_id_and_property_id(taskx.id, prop.id).property_value rescue "" -%>
+<% prop_value = prop_query == "" ? "<span id='position_#{prop.name.downcase}_9999'></span>": "<span id='position_#{prop.name.downcase}_#{prop_query.position_to_s}'>#{prop_query.to_html}</span>" rescue "" -%>
+<%= h(prop.name.downcase).to_json.html_safe %>:<%= prop_value.to_json.html_safe %>,
+<%  end -%>
+"summary":<%= h(taskx.name).to_json.html_safe %>,
+"resolution":<%= taskx.status_type.to_json.html_safe %>,
+"points":<%= taskx.total_points.to_json.html_safe %>,
+"business_value":<%= taskx.business_value.to_json.to_i %>
+}<% end -%><%= "," unless @sprint_tasks.size - 1 == idx  %>
+    <% end -%>
+],
+"userdata":{"points":<%= total_time.to_json.html_safe %>}
+  }
+}

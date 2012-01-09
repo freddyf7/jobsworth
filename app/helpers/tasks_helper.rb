@@ -144,7 +144,11 @@ module TasksHelper
       options.last[1] << [ project.name, project.id ]
     end
 
-    return grouped_options_for_select(options, selected_project.to_i).html_safe
+    if(selected_project == -1)
+      return grouped_options_for_select(options, nil,'Select...').html_safe
+    else
+      return grouped_options_for_select(options, selected_project.to_i).html_safe
+    end
   end
 
 

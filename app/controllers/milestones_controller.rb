@@ -49,13 +49,16 @@ class MilestonesController < ApplicationController
     if @milestone.save
       unless request.xhr?
        flash[:notice] = _('Iteration was successfully created.')
-       if session[:redirect_rm].nil?
+       flash["notice"] = _('Iteration was successfully created.')
+       if !params[:redirect_planning].nil?
+          redirect_to params[:redirect_planning]
+       elsif session[:redirect_rm].nil?
           redirect_to :controller => 'projects', :action => 'edit', :id => @milestone.project
-        else
+       else
           ruta = session[:redirect_rm]
           session[:redirect_rm] = nil
           redirect_to ruta
-        end
+       end
       else
         #bind 'ajax:success' event
         #return json to provide refreshMilestones parameters

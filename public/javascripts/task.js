@@ -81,20 +81,34 @@ function addUserToTask(event, ui) {
     var userId = ui.item.id;
     var taskId = jQuery("#task_id").val();
     var url = tasks_path('add_notification');
-    var params = { user_id : userId, id : taskId };
+    var params = {user_id : userId, id : taskId};
     addUser(url, params);
     jQuery(this).val("");
     return false;
 
 }
 
+/*
+ Shows the stats for the selected developer
+*/
+function showDevStats(event, ui){
+    var url = "/sprint_planning/add_velocity_actual_project";
+    id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
+    id_developer = ui.item.id;
+    alert(id_proyecto+'dev:'+id_developer);
+    var params = {project_id : id_proyecto,developer_id : id_developer};
+
+    jQuery.get(url, params, function(data) {
+        jQuery("#speed_actual").val(data);
+    });
+}
 
 /*
   Adds any users setup as auto add to the current task.
 */
 function addAutoAddUsersToTask(clientId, taskId, projectId) {
     var url = tasks_path("add_users_for_client");
-    var params = { client_id : clientId, id : taskId, project_id : projectId };
+    var params = {client_id : clientId, id : taskId, project_id : projectId};
     addUser(url, params);
 }
 
@@ -169,7 +183,7 @@ function addCustomerToTask(event, ui) {
     var taskId = jQuery("#task_id").val();
 
     var url = tasks_path("add_client");
-    var params = { client_id : clientId, id : taskId };
+    var params = {client_id : clientId, id : taskId};
     jQuery.get(url, params, function(data) {
                 jQuery("#task_customers").append(data);
     });
@@ -187,7 +201,7 @@ function addClientLinkForTask(projectId) {
 
     if (jQuery.trim(customers) == "") {
         var url = tasks_path("add_client_for_project");
-        var params = { project_id : projectId };
+        var params = {project_id : projectId};
         jQuery.get(url, params, function(data) {
             jQuery("#task_customers").html(data);
         });
@@ -246,8 +260,8 @@ function addNewTodoKeyListener(taskId) {
           jQuery('#todo-status-' + response.task_dom_id).html(response.todos_status);
           initSortableForTodos();
         },
-        beforeSend:function() { showProgress(); },
-        complete:function() { hideProgress(); }
+        beforeSend:function() {showProgress();},
+        complete:function() {hideProgress();}
       });
       key.stopPropagation();
       return false;
@@ -272,8 +286,8 @@ function todoOpenCloseCheckForUncreatedTask(done, sender) {
     success:function(response) {
       jQuery(sender).parent().replaceWith(response);
     },
-    beforeSend: function(){ showProgress(); },
-    complete: function(){ hideProgress(); },
+    beforeSend: function(){showProgress();},
+    complete: function(){hideProgress();},
     error:function (xhr, thrownError) {
       alert("Invalid request");
     }
@@ -343,6 +357,7 @@ function init_task_form() {
     autocomplete('#dependencies_input', '/tasks/auto_complete_for_dependency_targets', addDependencyToTask);
     autocomplete('#resource_name_auto_complete', '/tasks/auto_complete_for_resource_name/customer_id='+ jQuery('#resource_name_auto_complete').attr('data-customer-id'), addResourceToTask);
     autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', addUserToTask);
+    autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', showDevStats);
     autocomplete_multiple_remote('#task_set_tags', '/tags/auto_complete_for_tags' );
 
     initSortableForTodos();
@@ -358,9 +373,9 @@ function init_task_form() {
     jQuery('#snippet ul li').click(function() {
       var id = jQuery(this).attr('id');
       id = id.split('-')[1];
-      jQuery.ajax({ url: '/pages/snippet/'+id, type:'GET', success: function(data) {
+      jQuery.ajax({url: '/pages/snippet/'+id, type:'GET', success: function(data) {
         jQuery('#comment').val(jQuery('#comment').val() + '\n' + data);
-      } });
+      }});
     });
 
     jQuery('#add_milestone img').click(add_milestone_popup);
@@ -370,7 +385,7 @@ function init_task_form() {
     });
 
     jQuery('div.file_thumbnail a').slimbox();
-    jQuery(".datefield").datepicker({ constrainInput: false, dateFormat: userDateFormat});
+    jQuery(".datefield").datepicker({constrainInput: false, dateFormat: userDateFormat});
     updateTooltips();
     jQuery('div#target_date a#override_target_date').click(function(){
         jQuery('div#target_date').hide();
@@ -443,8 +458,8 @@ function remove_file_attachment(file_id, message) {
           flash_message(response.message);
         }
       },
-      beforeSend: function(){ showProgress(); },
-      complete: function(){ hideProgress(); },
+      beforeSend: function(){showProgress();},
+      complete: function(){hideProgress();},
       error:function (xhr, thrownError) {
         alert("Error : " + thrownError);
       }
@@ -522,8 +537,8 @@ function toogleDone(sender) {
       jQuery('.todo-container').html(response.todos_html);
       jQuery('#todo-status-' + response.task_dom_id).html(response.todos_status);
     },
-    beforeSend:function() { showProgress(); },
-    complete:function() { hideProgress(); }
+    beforeSend:function() {showProgress();},
+    complete:function() {hideProgress();}
   });
 }
 
@@ -536,8 +551,8 @@ function deleteTodo(todoId, taskId) {
       jQuery('#todo-status-' + response.task_dom_id).html(response.todos_status);
       jQuery('#todos-' + todoId).remove();
     },
-    beforeSend:function() { showProgress(); },
-    complete:function() { hideProgress(); }
+    beforeSend:function() {showProgress();},
+    complete:function() {hideProgress();}
   });
 }
 
@@ -550,7 +565,7 @@ function initSortableForTodos() {
         position.val(index+1);
         todos[index]= {id: jQuery('input#todo_id', element).val(), position: index+1} ;
       });
-      jQuery.ajax({ url: '/todos/reorder', data: {task_id: jQuery('input#task_id').val(), todos: todos }, type: 'POST' });
+      jQuery.ajax({url: '/todos/reorder', data: {task_id: jQuery('input#task_id').val(), todos: todos}, type: 'POST'});
     }
   });
 }
@@ -607,7 +622,7 @@ function showUsersToNotifyPopup() {
           jQuery('#users_to_notify_list ul').slideUp();
           var userId = jQuery(this).attr("id").split("_")[1];
           var url    = tasks_path('add_notification');
-          var params = { user_id : userId, id : taskId };
+          var params = {user_id : userId, id : taskId};
           addUser(url, params);
           return false;
         });
