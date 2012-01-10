@@ -16,13 +16,13 @@
 	</ul>
 	<div id="tabs-1"> 
 
-          <fieldset style="width:400px;">
+          <fieldset style="display:inline;width:400px;">
           <legend><%= _'New Iteration'%></legend>
 
             <%#=  form_tag({:controller => "milestones", :action => "create"}, :redirect_planning => '/sprint_planning/planning') %>
             <form action="/milestones/create?redirect_planning=/sprint_planning/planning" method="post">
             <label>Project</label>
-            <select class="planning_combobox" id="milestone[project_id]" name="milestone[project_id]" onchange="reload_planning_backlog(this.value)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
+            <select class="planning_combobox" id="milestone[project_id]" name="milestone[project_id]" onchange="reload_planning_backlog(this.value,0)"><%= options_for_user_projects_backlog(session[:id_prj])%></select>
 
             <label for="milestone_name"><%=_ 'Name' %></label>
             <%= text_field 'milestone', 'name'  %>
@@ -68,6 +68,44 @@
           </form>
           </fieldset>
 
+<% if (!@project.nil?) %>
+     <div class="sprint_planning_panel">
+      <table cellpadding="0" cellspacing="0" width="95%" style="padding-left:1em;">
+        <tr>
+          <td align="left" class="page_header">            
+            <div><%=_ 'Iterations - Project:' %></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <% if @project.milestones %>
+                <%= render :partial => "activities/overall_progress", :locals => { :project => @project } %>
+                <% for milestone in @project.milestones.find(:all, :order => "due_at, milestones.name", :include => [:user]) %>
+                  <%= render :partial => "roadmap/milestone_row", :locals => { :milestone => milestone } %>
+                <% end %>
+                <% @completed_milestones = Milestone.count(:conditions => ["project_id = ? AND completed_at IS NOT NULL", @project.id])
+                if @completed_milestones.to_i > 0
+                %>#
+                  <tr>
+                    <td colspan=2 align=right class="milestone_completed">
+                        <%= link_to _('%d completed milestone', @completed_milestones), :controller => 'milestones', :action => 'list_completed', :id => @project %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr><td>&nbsp;</td></tr>
+
+              <% end %>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+<% end %>
+
+
 	</div>
 	<div id="tabs-2">
 
@@ -77,7 +115,7 @@
                   <fieldset style="width:95%;">
                   <legend><%= _'Project'%></legend>
                     <label for="milestone_project_id"><%=_ 'Project' %></label>
-                    <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_planning_backlog(this.value)">
+                    <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_planning_backlog(this.value,1)">
                     <%= options_for_user_projects_backlog(session[:id_prj])%>
                     </select>
 
@@ -104,7 +142,7 @@
                     <%= text_field 'speed', 'actual',:size => 5  %>
 
                     <label for="milestone_milestone_id"><%=_ 'Speed project x' %></label>
-                    <%= text_field 'speed', 'project_1', :size => 5  %>
+                    <%= text_field 'speed', 'prev_project', :size => 5  %>
 
                     <label for="milestone_milestone_id"><%=_ 'Speed project y' %></label>
                     <%= text_field 'speed', 'project_2', :size => 5  %>
@@ -114,15 +152,13 @@
                     <legend><%= _'Developer Stats'%></legend>
 
                     <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
-                    <select width="20px" class="planning_combobox" id="milestone[milestone_id]" name="milestone[milestone_id]" onchange="reload_planning_backlog(this.value)">
-                      <%= options_milestone_sprint_planning(session[:id_prj])%>
-                    </select>
+                    <%= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
 
                     <label for="milestone_milestone_id"><%=_ 'Speed actual project' %></label>
-                    <%= text_field 'milestone', 'name',:size => 5  %>
+                    <%= text_field 'speed', 'actual_2',:size => 5  %>
 
                     <label for="milestone_milestone_id"><%=_ 'Speed project x' %></label>
-                    <%= text_field 'milestone', 'name', :size => 5  %>
+                    <%= text_field 'speed', 'prev_project_2', :size => 5  %>
 
                     <label for="milestone_milestone_id"><%=_ 'Speed project y' %></label>
                     <%= text_field 'milestone', 'name', :size => 5  %>
@@ -163,6 +199,17 @@
 	});
 </script>
 
+
+<% if (params[:tab].to_s == "1" ) %>
+
+  <script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs( "option", "selected", 1 );
+    });
+  </script>
+
+<% end %>
+
 <script>
 	function saveSprint() {
 		var historias;
@@ -181,8 +228,3 @@
 	};
 </script>
 
-<script>
-  if (<% params[:tab]=1 %>){
-    jQuery( "#tabs" ).tabs( "option", "selected", 1 );
-  }
-</script>

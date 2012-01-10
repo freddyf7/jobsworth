@@ -12,16 +12,19 @@ class SprintPlanningController < ApplicationController
 
     if params[:project_id].nil?
 
-      if current_task_filter.tasks.size > 0
-        backlog_project = current_task_filter.tasks[0].project.id
-        session[:id_prj] = backlog_project
-      else
+#      if current_task_filter.tasks.size > 0
+#        backlog_project = current_task_filter.tasks[0].project.id
+#        session[:id_prj] = backlog_project
+#        @project = Project.find_by_id(backlog_project)
+#      else
 #        roadmap_project = current_user.projects.first
 #        project_id = roadmap_project.id
         session[:id_prj] =-1
-      end
+#      end
     else
       session[:id_prj] = params[:project_id]
+      @project = Project.find_by_id(params[:project_id])
+
     end
 
     @sprint_tasks = Array.new
@@ -75,10 +78,12 @@ class SprintPlanningController < ApplicationController
 
   def saveSprint
 
-    historias = params[:historias]
+    historias_params = params[:historias]
     sprintSave = Array.new
     iteracion = params[:iteracion]
 
+    historias = historias_params.split("-")
+    
     for i in 0..historias.size-1 do
         if (historias[i] != '-' && historias[i] != '')
           tarea = Task.find_by_id(historias[i].to_i)
@@ -141,18 +146,23 @@ class SprintPlanningController < ApplicationController
 
 
   def add_velocity_previous_project
-    proyecto_actual = params[:project_id]
+    proyecto_actual = Project.find_by_id(params[:project_id])
+    developer = User.find_by_id(params[:developer_id])
     hoy = Date.today
-    iteracion_actual = Milestone.find(:all, :conditions => ["due_at > ? and project_id = ?",hoy,proyecto_actual])
+    proyecto = Project.new
+    iterations = Array.new
+#    iteracion_actual = Milestone.find(:all, :conditions => ["due_at > ? and project_id = ?",hoy,proyecto_actual])
     if params[:project_id].to_i > 0
       average_velocity_points = 0
-      iteration = Milestone.find_by_id(iteracion_actual[0].id)
-      project = Project.find_by_id(proyecto_actual)
-      iterations_before = Milestone.find(:all, :conditions => ["due_at < ? and project_id=?",iteration.init_date,proyecto_actual])
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(1)
+#      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at)
+#      proyecto = Project.find_by_id(871498796)
+      iterations = Milestone.where("project_id=?",proyecto[0].id)
+      
       total_points = Array.new
       total_stories = Array.new
-      iterations_before.each do |iteration_s|
-      total_points << iteration_s.total_points_execute_developer
+      iterations.each do |iteration_s|
+      total_points << iteration_s.total_points_execute_developer(developer)
 #      total_stories << iteration_s.total_task_execute_developer
       end
 #    if total_points.size > 0 && total_stories.size > 0
@@ -161,7 +171,7 @@ class SprintPlanningController < ApplicationController
 #      average_total_stories = Statistics.mean(total_stories)
 #      result = (average_velocity_points.to_f / average_total_stories.to_f).ceil
 #      res = result.to_s
-        res = average_velocity_points
+       res = average_velocity_points
       else
         res = "2"
       end

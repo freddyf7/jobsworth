@@ -101,7 +101,34 @@ function showDevStats(event, ui){
     jQuery.get(url, params, function(data) {
         jQuery("#speed_actual").val(data);
     });
+    
+    url_2 = "/sprint_planning/add_velocity_previous_project";
+    jQuery.get(url_2, params, function(data) {
+        jQuery("#speed_prev_project").val(data);
+    });
+
 }
+
+
+function showDevStats_2(event, ui){
+    var url = "/sprint_planning/add_velocity_actual_project";
+    id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
+    id_developer = ui.item.id;
+    alert(id_proyecto+'dev:'+id_developer);
+    var params = {project_id : id_proyecto,developer_id : id_developer};
+
+    jQuery.get(url, params, function(data) {
+        jQuery("#speed_actual_2").val(data);
+    });
+
+    url_2 = "/sprint_planning/add_velocity_previous_project";
+    jQuery.get(url_2, params, function(data) {
+        jQuery("#speed_prev_project_2").val(data);
+    });
+
+}
+
+
 
 /*
   Adds any users setup as auto add to the current task.
@@ -358,6 +385,7 @@ function init_task_form() {
     autocomplete('#resource_name_auto_complete', '/tasks/auto_complete_for_resource_name/customer_id='+ jQuery('#resource_name_auto_complete').attr('data-customer-id'), addResourceToTask);
     autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', addUserToTask);
     autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', showDevStats);
+    autocomplete('#user_name_auto_complete_2', '/tasks/auto_complete_for_user_name', showDevStats_2);
     autocomplete_multiple_remote('#task_set_tags', '/tags/auto_complete_for_tags' );
 
     initSortableForTodos();

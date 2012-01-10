@@ -2359,6 +2359,14 @@ div#snooze_until {
     float: left;
 }
 
+.sprint_planning_panel{
+    width: 50%;
+    position: absolute;
+    left:550px;
+    top:50px;
+    
+}
+
 .row_stripe{
     background-color: #eaeaea;
 }
