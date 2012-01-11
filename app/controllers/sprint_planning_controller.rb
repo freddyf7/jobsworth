@@ -74,6 +74,7 @@ class SprintPlanningController < ApplicationController
 #      format.html { render :action => "planning_backlog_grid" }
       format.json { render :template => "tasks/backlog_list.json"}
     end
+
   end
 
   def saveSprint
@@ -125,8 +126,11 @@ class SprintPlanningController < ApplicationController
       total_points = Array.new
       total_stories = Array.new
       iterations_before.each do |iteration_s|
-      total_points << iteration_s.total_points_execute_developer(developer)
-#      total_stories << iteration_s.total_task_execute_developer
+
+      if(iteration_s.tasks.size>0)
+        total_points << iteration_s.total_points_execute_developer(developer)
+#       total_stories << iteration_s.total_task_execute_developer
+      end
       end
 #    if total_points.size > 0 && total_stories.size > 0
       if total_points.size > 0
@@ -162,8 +166,54 @@ class SprintPlanningController < ApplicationController
       total_points = Array.new
       total_stories = Array.new
       iterations.each do |iteration_s|
-      total_points << iteration_s.total_points_execute_developer(developer)
-#      total_stories << iteration_s.total_task_execute_developer
+
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute_developer(developer)
+#         total_stories << iteration_s.total_task_execute_developer
+        end
+      end
+#    if total_points.size > 0 && total_stories.size > 0
+      if total_points.size > 0
+        average_velocity_points = Statistics.mean(total_points)
+#      average_total_stories = Statistics.mean(total_stories)
+#      result = (average_velocity_points.to_f / average_total_stories.to_f).ceil
+#      res = result.to_s
+       res = average_velocity_points
+
+      else
+        res = "2"
+      end
+    else
+    res = "3"
+    end
+    render :text => res
+
+  end
+
+
+  def add_velocity_previous_project_2
+    proyecto_actual = Project.find_by_id(params[:project_id])
+    developer = User.find_by_id(params[:developer_id])
+    hoy = Date.today
+    proyecto = Project.new
+    iterations = Array.new
+#    iteracion_actual = Milestone.find(:all, :conditions => ["due_at > ? and project_id = ?",hoy,proyecto_actual])
+    if params[:project_id].to_i > 0
+      average_velocity_points = 0
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(2)
+#      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at)
+#      proyecto = Project.find_by_id(871498796)
+      iterations = Milestone.where("project_id=?",proyecto[1].id)
+
+      total_points = Array.new
+      total_stories = Array.new
+      iterations.each do |iteration_s|
+
+      if(iteration_s.tasks.size>0)
+        total_points << iteration_s.total_points_execute_developer(developer)
+#       total_stories << iteration_s.total_task_execute_developer
+      end
+      
       end
 #    if total_points.size > 0 && total_stories.size > 0
       if total_points.size > 0
@@ -178,6 +228,14 @@ class SprintPlanningController < ApplicationController
     else
     res = "3"
     end
+    render :text => res
+  end
+
+  def projectName
+    
+    project = Project.find_by_id(params[:project_id])
+    res = project.name
+
     render :text => res
   end
 

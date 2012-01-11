@@ -101,10 +101,21 @@ function showDevStats(event, ui){
     jQuery.get(url, params, function(data) {
         jQuery("#speed_actual").val(data);
     });
+
+    url_project = "/sprint_planning/projectName";
+    params_project = {project_id : id_proyecto};
+    jQuery.get(url_project, params_project, function(data) {
+        jQuery("#label_actual_project_1").text(data.toString());
+    });
     
     url_2 = "/sprint_planning/add_velocity_previous_project";
     jQuery.get(url_2, params, function(data) {
         jQuery("#speed_prev_project").val(data);
+    });
+
+    url_3 = "/sprint_planning/add_velocity_previous_project_2";
+    jQuery.get(url_3, params, function(data) {
+        jQuery("#speed_prev_prev_project").val(data);
     });
 
 }
@@ -121,9 +132,20 @@ function showDevStats_2(event, ui){
         jQuery("#speed_actual_2").val(data);
     });
 
+    url_project = "/sprint_planning/projectName";
+    params_project = {project_id : id_proyecto};
+    jQuery.get(url_project, params_project, function(data) {
+        jQuery("#label_actual_project_2").text(data.toString());
+    });
+
     url_2 = "/sprint_planning/add_velocity_previous_project";
     jQuery.get(url_2, params, function(data) {
         jQuery("#speed_prev_project_2").val(data);
+    });
+
+    url_3 = "/sprint_planning/add_velocity_previous_project_2";
+    jQuery.get(url_3, params, function(data) {
+        jQuery("#speed_prev_prev_project_2").val(data);
     });
 
 }

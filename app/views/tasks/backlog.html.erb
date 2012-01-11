@@ -53,3 +53,14 @@
   
 </td>
 
+<%  if (session[:id_prj]==-1) %>
+<script>
+
+jQuery(function() {
+          jQuery("#backlog_list").jqGrid("clearGridData", true);
+    });
+
+
+</script>
+<% end %>
+

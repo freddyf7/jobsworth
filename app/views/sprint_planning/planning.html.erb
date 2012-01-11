@@ -138,35 +138,36 @@
                     <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
                     <%= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete" ) %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed actual project' %></label>
+                    <label id="label_actual_project_1" for="milestone_milestone_id"><%=_ 'Velocity actual project' %></label>
                     <%= text_field 'speed', 'actual',:size => 5  %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed project x' %></label>
+                    <label id="label_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
                     <%= text_field 'speed', 'prev_project', :size => 5  %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed project y' %></label>
-                    <%= text_field 'speed', 'project_2', :size => 5  %>
+                    <label id="label_prev_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
+                    <%= text_field 'speed', 'prev_prev_project', :size => 5  %>
                   </fieldset>
 
                   <fieldset style="width:40%;float:right;margin-right: 15px;">
                     <legend><%= _'Developer Stats'%></legend>
 
-                    <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
+                    <label  for="milestone_milestone_id"><%=_ 'Developer:' %></label>
                     <%= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed actual project' %></label>
+                    <label  id="label_actual_project_2" for="milestone_milestone_id"><%=_ 'Velocity actual project' %></label>
                     <%= text_field 'speed', 'actual_2',:size => 5  %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed project x' %></label>
+                    <label id="label_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
                     <%= text_field 'speed', 'prev_project_2', :size => 5  %>
 
-                    <label for="milestone_milestone_id"><%=_ 'Speed project y' %></label>
-                    <%= text_field 'milestone', 'name', :size => 5  %>
+                    <label id="label_prev_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
+                    <%= text_field 'speed', 'prev_prev_project_2', :size => 5  %>
                   </fieldset>
 
 
                 </fieldset>
-              </td>
+              </td>              
+
 
               <td style="width:750px;">
                 <div id="backlogWrap" style="width:720px;float:right;">
@@ -178,6 +179,9 @@
 
                   <button id="saveSprint" type="button" onClick="saveSprint();">Save</button>
                 </div>
+
+                <div id="chart_div"></div>
+
               </td>
             </tr>
 
@@ -228,3 +232,14 @@
 	};
 </script>
 
+
+<%  if (session[:id_prj]==-1) %>
+<script>
+
+jQuery(function() {
+          jQuery("#backlog_list").jqGrid("clearGridData", true);
+    });
+
+
+</script>
+<% end %>
