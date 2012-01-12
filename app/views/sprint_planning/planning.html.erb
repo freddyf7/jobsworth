@@ -105,14 +105,13 @@
     </div>
 <% end %>
 
-
 	</div>
 	<div id="tabs-2">
 
           <table style="width:100%;">
             <tr>
               <td valign="top">              
-                  <fieldset style="width:95%;">
+                  <fieldset style="width:98%;">
                   <legend><%= _'Project'%></legend>
                     <label for="milestone_project_id"><%=_ 'Project' %></label>
                     <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_planning_backlog(this.value,1)">
@@ -128,40 +127,58 @@
                     </select>
                   </fieldset>
 
-                <fieldset style="width:95%;">
+                <fieldset style="width:98%;">
                 <legend><%= _'Statistics'%></legend>
                 <br/>
 
-                  <fieldset style="width:40%;float:left;margin-left: 15px;">
+                <fieldset style="width:95%;margin-right: 5px">
+                  <legend><%= _'Team Stats'%></legend>
+                <div id="chart_div_3"></div>
+                </fieldset>
+                <br/>
+
+                  <fieldset style="width:40%;float:left;margin-left: 5px;">
                     <legend><%= _'Developer Stats'%></legend>
 
                     <label for="milestone_milestone_id"><%=_ 'Developer:' %></label>
                     <%= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete" ) %>
+                    <br/>
+                    <div id="chart_div"></div>
 
-                    <label id="label_actual_project_1" for="milestone_milestone_id"><%=_ 'Velocity actual project' %></label>
-                    <%= text_field 'speed', 'actual',:size => 5  %>
+                    <%#*<label id="label_actual_project_1" for="milestone_milestone_id"><%=_ 'Velocity actual project' %>
+                    <%#*</label>%>
+                    <%#= text_field 'speed', 'actual',:size => 5  %>
 
-                    <label id="label_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
-                    <%= text_field 'speed', 'prev_project', :size => 5  %>
+                    <%#*<label id="label_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %>
+                    <%#*</label>%>
+                    <%#= text_field 'speed', 'prev_project', :size => 5  %>
 
-                    <label id="label_prev_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
-                    <%= text_field 'speed', 'prev_prev_project', :size => 5  %>
+                    <%#*<label id="label_prev_prev_project_1" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %>
+                    <%#*</label>%>
+
+                    <%#= text_field 'speed', 'prev_prev_project', :size => 5  %>
                   </fieldset>
 
-                  <fieldset style="width:40%;float:right;margin-right: 15px;">
+                  <fieldset style="width:40%;float:right;margin-right: 5px;">
                     <legend><%= _'Developer Stats'%></legend>
 
-                    <label  for="milestone_milestone_id"><%=_ 'Developer:' %></label>
+                    <label  for="milestone_milestone_id"><%=_ 'Developer:' %></label>                   
                     <%= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
+                    <br/>
+                    <div id="chart_div_2"></div>
 
-                    <label  id="label_actual_project_2" for="milestone_milestone_id"><%=_ 'Velocity actual project' %></label>
-                    <%= text_field 'speed', 'actual_2',:size => 5  %>
+                    <%#*<label  id="label_actual_project_2" for="milestone_milestone_id"><%=_ 'Velocity actual project' %>
+                    <%#*</label>%>
+                    <%#= text_field 'speed', 'actual_2',:size => 5  %>
 
-                    <label id="label_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
-                    <%= text_field 'speed', 'prev_project_2', :size => 5  %>
+                    <%#*<label id="label_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %>
+                    <%#*</label>%>
+                    <%#= text_field 'speed', 'prev_project_2', :size => 5  %>
 
-                    <label id="label_prev_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %></label>
-                    <%= text_field 'speed', 'prev_prev_project_2', :size => 5  %>
+                    <%#*<label id="label_prev_prev_project_2" for="milestone_milestone_id"><%=_ 'Velocity Prev. Project' %>
+                    <%#*</label>%>
+                    <%#= text_field 'speed', 'prev_prev_project_2', :size => 5  %>
+                    
                   </fieldset>
 
 
@@ -205,13 +222,11 @@
 
 
 <% if (params[:tab].to_s == "1" ) %>
-
   <script type="text/javascript" charset="utf-8">
     jQuery(function() {
       jQuery( "#tabs" ).tabs( "option", "selected", 1 );
     });
   </script>
-
 <% end %>
 
 <script>
@@ -234,12 +249,43 @@
 
 
 <%  if (session[:id_prj]==-1) %>
-<script>
-
-jQuery(function() {
+  <script>
+    jQuery(function() {
           jQuery("#backlog_list").jqGrid("clearGridData", true);
     });
-
-
-</script>
+  </script>
 <% end %>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript" charset="utf-8">
+  google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
+
+<script type="text/javascript" charset="utf-8">
+    id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
+    var params = {project_id : id_proyecto};
+    var url_prueba = "/sprint_planning/team_velocity_actual_project";
+
+    google.load("visualization", "1", {packages:["corechart"]});
+    jQuery.getJSON(url_prueba, params, function(data_json) {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Project');
+        data.addColumn('number', 'Points');
+        data.addRows([
+          [data_json.previous_project_2,parseFloat(data_json.previous_points_2)],
+          [data_json.previous_project,parseFloat(data_json.previous_points)],
+          [data_json.project,parseFloat(data_json.points)],
+        ]);
+
+        var options = {
+          width: 400, height: 240,
+          title: 'Velocity average'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div_3'));
+        chart.draw(data, options);
+    });
+</script>

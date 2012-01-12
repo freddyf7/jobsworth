@@ -92,6 +92,8 @@ function addUserToTask(event, ui) {
  Shows the stats for the selected developer
 */
 function showDevStats(event, ui){
+
+    var velocity_actual
     var url = "/sprint_planning/add_velocity_actual_project";
     id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
     id_developer = ui.item.id;
@@ -117,6 +119,30 @@ function showDevStats(event, ui){
     jQuery.get(url_3, params, function(data) {
         jQuery("#speed_prev_prev_project").val(data);
     });
+
+    var url_prueba = "/sprint_planning/graphic_velocity_actual_project";
+    jQuery.getJSON(url_prueba, params, function(data_json) {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Project');
+        data.addColumn('number', 'Points');
+        data.addRows([     
+          [data_json.previous_project_2,parseFloat(data_json.previous_points_2)],
+          [data_json.previous_project,parseFloat(data_json.previous_points)],
+          [data_json.project,parseFloat(data_json.points)],
+        ]);
+
+        var options = {
+          width: 200, height: 120,
+          title: 'Velocity average'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+
+    });
+
+    
 
 }
 
@@ -148,6 +174,28 @@ function showDevStats_2(event, ui){
         jQuery("#speed_prev_prev_project_2").val(data);
     });
 
+
+    var url_prueba = "/sprint_planning/graphic_velocity_actual_project";
+    jQuery.getJSON(url_prueba, params, function(data_json) {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Project');
+        data.addColumn('number', 'Points');
+        data.addRows([
+          [data_json.previous_project_2,parseFloat(data_json.previous_points_2)],
+          [data_json.previous_project,parseFloat(data_json.previous_points)],
+          [data_json.project,parseFloat(data_json.points)],
+        ]);
+
+        var options = {
+          width: 195, height: 120,
+          title: 'Velocity average'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div_2'));
+        chart.draw(data, options);
+
+    });
 }
 
 

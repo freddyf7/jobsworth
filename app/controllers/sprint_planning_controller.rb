@@ -47,6 +47,7 @@ class SprintPlanningController < ApplicationController
 #      flash['notice'] = _("owner:"+owner.owners[0].to_s)
       format.html { render :action => "planning_backlog_grid" }
       format.json { render :template => "sprint_planning/backlog_list.json"}
+     
     end
 
   end
@@ -201,8 +202,7 @@ class SprintPlanningController < ApplicationController
     if params[:project_id].to_i > 0
       average_velocity_points = 0
       proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(2)
-#      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at)
-#      proyecto = Project.find_by_id(871498796)
+
       iterations = Milestone.where("project_id=?",proyecto[1].id)
 
       total_points = Array.new
@@ -231,6 +231,159 @@ class SprintPlanningController < ApplicationController
     render :text => res
   end
 
+
+  def graphic_velocity_actual_project
+
+    total_points = Array.new
+    average_velocity_points = 0
+
+    if params[:project_id].to_i > 0
+
+      proyecto_actual = Project.find_by_id(params[:project_id])
+      developer = User.find_by_id(params[:developer_id])
+      hoy = Date.today
+
+      #---------------Velocity proyecto actual---------------------------------
+      
+      iteracion_actual = Milestone.find(:all, :conditions => ["due_at > ? and project_id = ?",hoy,proyecto_actual.id])
+      iteration = Milestone.find_by_id(iteracion_actual[0].id)
+      iterations_before = Milestone.find(:all, :conditions => ["due_at < ? and project_id=?",iteration.init_date,proyecto_actual.id])
+      @project_json = proyecto_actual
+
+      iterations_before.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute_developer(developer)
+        end
+      end
+
+      if total_points.size > 0
+       average_velocity_points = Statistics.mean(total_points)
+       @puntos = average_velocity_points
+      end
+
+      #---------------Velocity previous project--------------------------------
+
+      proyecto = Project.new
+      iterations = Array.new
+
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(1)
+      @previous_project = proyecto[0].name
+      iterations = Milestone.where("project_id=?",proyecto[0].id)
+      total_points.clear
+
+      iterations.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute_developer(developer)
+        end
+      end
+
+      if total_points.size > 0
+       @previous_points = Statistics.mean(total_points)
+      end
+
+      # ---------------Velocity another previous project-----------------------
+
+      
+      average_velocity_points = 0
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(2)
+      @previous_project_2 = proyecto[1].name
+      iterations = Milestone.where("project_id=?",proyecto[1].id)
+      total_points.clear
+
+      iterations.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute_developer(developer)
+        end
+      end
+
+      if total_points.size > 0
+        @previous_points_2 = Statistics.mean(total_points)
+      end
+
+    else
+      res = "0"
+    end
+    render :partial => 'sprint_planning/velocity'
+  end
+  
+
+
+
+  def team_velocity_actual_project
+
+    total_points = Array.new
+    average_velocity_points = 0
+
+    if params[:project_id].to_i > 0
+
+      proyecto_actual = Project.find_by_id(params[:project_id])
+      developer = User.find_by_id(params[:developer_id])
+      hoy = Date.today
+
+      #---------------Velocity proyecto actual---------------------------------
+
+      iteracion_actual = Milestone.find(:all, :conditions => ["due_at > ? and project_id = ?",hoy,proyecto_actual.id])
+      iteration = Milestone.find_by_id(iteracion_actual[0].id)
+      iterations_before = Milestone.find(:all, :conditions => ["due_at < ? and project_id=?",iteration.init_date,proyecto_actual.id])
+      @project_json = proyecto_actual
+
+      iterations_before.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute
+        end
+      end
+
+      if total_points.size > 0
+       average_velocity_points = Statistics.mean(total_points)
+       @puntos = average_velocity_points
+      end
+
+      #---------------Velocity previous project--------------------------------
+
+      proyecto = Project.new
+      iterations = Array.new
+
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(1)
+      @previous_project = proyecto[0].name
+      iterations = Milestone.where("project_id=?",proyecto[0].id)
+      total_points.clear
+
+      iterations.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute
+        end
+      end
+
+      if total_points.size > 0
+       @previous_points = Statistics.mean(total_points)
+      end
+
+      # ---------------Velocity another previous project-----------------------
+
+
+      average_velocity_points = 0
+      proyecto = Project.where("completed_at < ?",proyecto_actual.created_at).order("completed_at DESC").limit(2)
+      @previous_project_2 = proyecto[1].name
+      iterations = Milestone.where("project_id=?",proyecto[1].id)
+      total_points.clear
+
+      iterations.each do |iteration_s|
+        if(iteration_s.tasks.size>0)
+          total_points << iteration_s.total_points_execute
+        end
+      end
+
+      if total_points.size > 0
+        @previous_points_2 = Statistics.mean(total_points)
+      end
+
+    else
+      res = "0"
+    end
+
+    render :partial => 'sprint_planning/velocity'
+  end
+
   def projectName
     
     project = Project.find_by_id(params[:project_id])
@@ -239,11 +392,9 @@ class SprintPlanningController < ApplicationController
     render :text => res
   end
 
-
-
-
 protected
 
+  
   def tasks_for_list
     session[:jqgrid_sort_column]= params[:sidx] unless params[:sidx].nil?
     session[:jqgrid_sort_order] = params[:sord] unless params[:sord].nil?
