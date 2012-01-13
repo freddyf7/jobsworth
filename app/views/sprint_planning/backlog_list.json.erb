@@ -32,6 +32,9 @@
 }<% end -%><%= "," unless @sprint_tasks.size - 1 == idx  %>
     <% end -%>
 ],
-"userdata":{"points":<%= total_time.to_json.html_safe %>}
+"userdata":{"points":<%=  @total_points.to_json.html_safe %>,
+"business_value":<%=  @total_business_value.to_json.html_safe %>,
+"summary":<%=  @sprint_tasks.size.to_json.html_safe %>,
+"id": "Totals"}
   }
 }

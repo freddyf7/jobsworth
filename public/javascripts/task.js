@@ -93,35 +93,13 @@ function addUserToTask(event, ui) {
 */
 function showDevStats(event, ui){
 
-    var velocity_actual
-    var url = "/sprint_planning/add_velocity_actual_project";
     id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
     id_developer = ui.item.id;
-    alert(id_proyecto+'dev:'+id_developer);
+
     var params = {project_id : id_proyecto,developer_id : id_developer};
+    var url = "/sprint_planning/developer_velocity";
 
-    jQuery.get(url, params, function(data) {
-        jQuery("#speed_actual").val(data);
-    });
-
-    url_project = "/sprint_planning/projectName";
-    params_project = {project_id : id_proyecto};
-    jQuery.get(url_project, params_project, function(data) {
-        jQuery("#label_actual_project_1").text(data.toString());
-    });
-    
-    url_2 = "/sprint_planning/add_velocity_previous_project";
-    jQuery.get(url_2, params, function(data) {
-        jQuery("#speed_prev_project").val(data);
-    });
-
-    url_3 = "/sprint_planning/add_velocity_previous_project_2";
-    jQuery.get(url_3, params, function(data) {
-        jQuery("#speed_prev_prev_project").val(data);
-    });
-
-    var url_prueba = "/sprint_planning/graphic_velocity_actual_project";
-    jQuery.getJSON(url_prueba, params, function(data_json) {
+    jQuery.getJSON(url, params, function(data_json) {
 
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Project');
@@ -140,43 +118,19 @@ function showDevStats(event, ui){
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
 
-    });
-
-    
+    });    
 
 }
 
 
 function showDevStats_2(event, ui){
-    var url = "/sprint_planning/add_velocity_actual_project";
+    
     id_proyecto = jQuery('#milestone_project_id_2 option:selected').val();
     id_developer = ui.item.id;
-    alert(id_proyecto+'dev:'+id_developer);
     var params = {project_id : id_proyecto,developer_id : id_developer};
+    var url = "/sprint_planning/developer_velocity";
 
-    jQuery.get(url, params, function(data) {
-        jQuery("#speed_actual_2").val(data);
-    });
-
-    url_project = "/sprint_planning/projectName";
-    params_project = {project_id : id_proyecto};
-    jQuery.get(url_project, params_project, function(data) {
-        jQuery("#label_actual_project_2").text(data.toString());
-    });
-
-    url_2 = "/sprint_planning/add_velocity_previous_project";
-    jQuery.get(url_2, params, function(data) {
-        jQuery("#speed_prev_project_2").val(data);
-    });
-
-    url_3 = "/sprint_planning/add_velocity_previous_project_2";
-    jQuery.get(url_3, params, function(data) {
-        jQuery("#speed_prev_prev_project_2").val(data);
-    });
-
-
-    var url_prueba = "/sprint_planning/graphic_velocity_actual_project";
-    jQuery.getJSON(url_prueba, params, function(data_json) {
+    jQuery.getJSON(url, params, function(data_json) {
 
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Project');
@@ -197,7 +151,6 @@ function showDevStats_2(event, ui){
 
     });
 }
-
 
 
 /*

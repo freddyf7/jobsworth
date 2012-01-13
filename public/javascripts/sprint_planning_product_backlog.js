@@ -107,6 +107,7 @@ function initTaskList() {
         datatype: 'json',
         jsonReader: {
                 root: "tasks.rows",
+                userdata: "tasks.userdata",
                 repeatitems:false
         },
         colModel : columnModel.colModel,
