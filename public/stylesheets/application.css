@@ -125,6 +125,13 @@ a {
     font-size: 30px;
 }
 
+/*Sprint monitoring Layout*/
+
+.iteration_info{
+    
+    font-size:12px;
+}
+
 #select-vote a {
     color: #000;
 }

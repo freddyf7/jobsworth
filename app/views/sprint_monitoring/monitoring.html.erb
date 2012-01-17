@@ -1,0 +1,84 @@
+<br/>
+
+<div class="page_header">
+  <%=_ 'Sprint Monitoring'%>
+</div>
+
+<br/>
+
+<div class="demo">
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Iteration Status</a></li>
+      <li><a href="#tabs-2">Daily meeting</a></li>
+    </ul>
+
+    <div id="tabs-1">
+
+      <table width="100%">
+        <tr>
+          <th rowspan="2" style="width:25%;">
+            <fieldset>
+            <legend><%= _'Project'%></legend>
+
+            <label for="milestone_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_sprint_monitoring(this.value,1)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+
+            <br/>
+            <br/>
+
+            <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
+            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" >
+              <%= options_milestone_sprint_planning(session[:id_prj])%>
+            </select>
+          </fieldset>
+          </th>
+          <td colspan="3" align="center" valign="top">
+            <a style="font-size:17px;">Project/Iteration</a>
+          </td>
+
+        </tr>
+
+        <tr>
+          <td valign="top" align="center" style="width:25%;">
+            <fieldset style="margin-left: 20px;width:50px;height:50px;">
+              <legend><%= _'Initial Date'%></legend>
+            </fieldset>
+          </td>
+
+          <td valign="top" align="center" style="width:25%;">
+            <fieldset style="margin-left:20px;width:50px;height:50px;">
+              <legend><%= _'Due Date'%></legend>
+            </fieldset>
+          </td>
+
+          <td valign="top" align="center" style="width:25%;">
+            <fieldset style="width:50px;height:50px;">
+              <legend><%= _'Remaining Days'%></legend>
+            </fieldset>
+          </td>        
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div id="tabs-2">
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="text/javascript" charset="utf-8">
+	jQuery(function() {
+		jQuery( "#tabs" ).tabs();
+	});
+</script>
+
+  
