@@ -27,6 +27,12 @@ class SprintPlanningController < ApplicationController
 
     end
 
+    if params[:milestone_id].nil?
+      session[:id_milestone] =-1
+    else
+      session[:id_milestone] = params[:milestone_id]
+    end
+
     @sprint_tasks = Array.new
 
     arreglo = params[:user_stories]
@@ -42,12 +48,12 @@ class SprintPlanningController < ApplicationController
       end
 
       @total_points = 0
-    @total_business_value = 0
+      @total_business_value = 0
 
-    @sprint_tasks.each do |us|
+      @sprint_tasks.each do |us|
       @total_points = @total_points + us.total_points
       @total_business_value = @total_business_value + us.business_value
-    end
+      end
 
     end
 

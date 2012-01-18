@@ -117,8 +117,8 @@
             <br/>
                     
             <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
-            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" >
-              <%= options_milestone_sprint_planning(session[:id_prj])%>
+            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_milestone_planning_backlog(this.value,<%= session[:id_prj]  %>,1 )" >
+              <%= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
             </select>
           </fieldset>
 

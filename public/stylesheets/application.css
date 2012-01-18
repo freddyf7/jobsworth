@@ -350,7 +350,7 @@ a.invalid:hover {
   text-decoration: line-through underline; }
 
 fieldset {
-  background: url("/images/comment_back_public.png") repeat-y;
+/*  background: url("/images/comment_back_public.png") repeat-y;*/
   border-color: #F3F3F3;
   padding: 3px;
   margin-bottom: 10px; }

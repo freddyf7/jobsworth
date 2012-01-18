@@ -1,6 +1,6 @@
 module SprintPlanningHelper
 
-  def options_milestone_sprint_planning(project_id)
+  def options_milestone_sprint_planning(project_id,selected_milestone)
     milestones = Milestone.not_completed.
                   order('due_at, name').
                   where('company_id = ? AND project_id = ?',
@@ -18,7 +18,11 @@ module SprintPlanningHelper
         options.last[1] << [ milestone.name, milestone.id ]
       end
 
-      return grouped_options_for_select(options, milestones[0].id).html_safe
+      if(selected_milestone == -1)
+      return grouped_options_for_select(options, nil,'Select...').html_safe
+      else
+      return grouped_options_for_select(options, selected_milestone.to_i).html_safe
+    end
     else
       return 'No Iterations'
     end

@@ -18,12 +18,12 @@
 
       <table width="100%">
         <tr>
-          <th rowspan="2" style="width:25%;">
+          <td style="width:25%;">
             <fieldset>
             <legend><%= _'Project'%></legend>
 
             <label for="milestone_project_id"><%=_ 'Project' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_sprint_monitoring(this.value,1)">
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_monitoring_project(this.value)">
               <%= options_for_user_projects_backlog(session[:id_prj])%>
             </select>
 
@@ -31,35 +31,133 @@
             <br/>
 
             <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
-            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" >
-              <%= options_milestone_sprint_planning(session[:id_prj])%>
+            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_monitoring_milestone(this.value,<%= session[:id_prj] %>)">
+              <%= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
             </select>
           </fieldset>
-          </th>
-          <td colspan="3" align="center" valign="top">
-            <a style="font-size:17px;">Project/Iteration</a>
           </td>
 
+          <td colspan="2">
+
+            <table width="100%">
+              <tr>
+          <td valign="top" align="center">
+            <fieldset style="width:50px;height:50px;position: relative;">
+              <legend><%= _'Beginning Date'%></legend>
+              <a style="font-size: 15px"><%= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+            </fieldset>
+          </td>
+
+          <td valign="top" align="center">
+            <fieldset style="width:50px;height:50px;position: relative;">
+              <legend><%= _'Due Date'%></legend>
+              <a style="font-size: 15px"><%= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+            </fieldset>
+          </td>
+
+          <td valign="top" align="center">
+            <fieldset style="width:50px;height:50px;position: relative;">
+              <legend><%= _'Remaining Days'%></legend>
+              <a style="font-size: 15px"><%=  @remaining_days %></a>
+            </fieldset>
+          </td>
+              </tr>
+            </table>
+          </td>
+
+          <!--<td colspan="3" align="center" valign="top">
+            <a style="font-size:17px;">Project/Iteration</a>
+          </td>-->
         </tr>
 
+        
+
         <tr>
-          <td valign="top" align="center" style="width:25%;">
-            <fieldset style="margin-left: 20px;width:50px;height:50px;">
-              <legend><%= _'Initial Date'%></legend>
-            </fieldset>
+          <td style="width:25%;">
+            <div id="chart_div"></div>
           </td>
 
-          <td valign="top" align="center" style="width:25%;">
-            <fieldset style="margin-left:20px;width:50px;height:50px;">
-              <legend><%= _'Due Date'%></legend>
-            </fieldset>
+          <td valign="top" style="width:37.5%;border-right: 1px solid black;">
+            <table width="100%">
+              <tr>
+                <th colspan="4">
+                  Closed Stories
+                </th>
+              </tr>
+              <tr>
+                <th>Summary</th>
+                <th>Points</th>
+                <th>B.Value</th>
+                <th>Priority</th>
+              </tr>
+
+              <% @closed_us.each do |task| %>
+              <tr>
+                <td style="width: 50%;">
+                <%= task.name %>
+                </td>
+                <td>
+                 <%= task.total_points %>
+                </td>
+                <td>
+                 <%= task.business_value %>
+                </td>
+              </tr>
+              <% end %>
+            </table>
+
           </td>
 
-          <td valign="top" align="center" style="width:25%;">
-            <fieldset style="width:50px;height:50px;">
-              <legend><%= _'Remaining Days'%></legend>
-            </fieldset>
-          </td>        
+          <td valign="top" style="width:37.5%;">
+
+            <table width="100%">
+              <th colspan="4">
+                  Open Stories
+              </th>
+              <tr>
+                <th>Summary</th>
+                <th>Points</th>
+                <th>B.Value</th>
+                <th>Priority</th>
+              </tr>
+
+              <% @open_us.each do |task| %>
+              <tr>
+                <td style="width: 50%;">
+                <%= task.name %>
+                </td>
+                <td>
+                <%= task.total_points %>
+                </td>
+                <td>
+                 <%= task.business_value %>
+                </td>
+              </tr>
+              <% end %>
+            </table>
+
+          </td>
+          <!-- <td style="width: 50%"> -->
+            <%# if session[:id_milestone].to_i > 0 %>
+
+          <!--    <div> -->
+
+                
+
+              <%#*</div>%>
+            
+            <%# end %>
+
+          <%#*</td>%>
+
+          <%#*<td style="width: 50%">%>
+            <%#*<div style="float:right;">%>
+            
+              <%#*</div>%>
+          <%#*</td>%>
+
+
+
         </tr>
 
       </table>
@@ -80,5 +178,43 @@
 		jQuery( "#tabs" ).tabs();
 	});
 </script>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript" charset="utf-8">
+  google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
+<script type="text/javascript">
+
+  id_milestone = jQuery('#milestone_id option:selected').val();
+  var params = {milestone_id : id_milestone};
+  var url = "/sprint_monitoring/completed_stories";
+
+  google.load("visualization", "1", {packages:["corechart"]});
+
+  jQuery.getJSON(url, params, function(data_json) {
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Hours per Day');
+    data.addRows([
+      ["Closed Stories", parseFloat(data_json.closed_stories)],
+      ["Open Stories", parseFloat(data_json.open_stories)]
+    ]);
+
+    var options = {
+      width: 360, height: 270,
+      title: 'User Stories'
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  });
+      
+</script>
+
+
+
 
   
