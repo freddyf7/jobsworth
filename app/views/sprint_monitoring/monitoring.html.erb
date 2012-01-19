@@ -71,7 +71,7 @@
         </tr>
 
         
-
+        <% if session[:id_milestone].to_i > 0 %>
         <tr>
           <td style="width:25%;">
             <div id="chart_div"></div>
@@ -138,7 +138,7 @@
 
           </td>
           <!-- <td style="width: 50%"> -->
-            <%# if session[:id_milestone].to_i > 0 %>
+            
 
           <!--    <div> -->
 
@@ -146,7 +146,7 @@
 
               <%#*</div>%>
             
-            <%# end %>
+            
 
           <%#*</td>%>
 
@@ -157,8 +157,25 @@
           <%#*</td>%>
 
 
+        </tr>
+
+        <tr>
+          <td>
+          <div id="chart_div_2"></div>
+          </td>
+          <td colspan="2">
+          <div id="chart_div_4"></div>
+          </td>
 
         </tr>
+
+        <tr>
+          <td>
+          <div id="chart_div_3"></div>
+          </td>
+        </tr>
+
+        <% end %>
 
       </table>
 
@@ -195,12 +212,16 @@
 
   jQuery.getJSON(url, params, function(data_json) {
 
+  alert("1:"+data_json.dias[1]+" 2:"+data_json.dias[2]+" 3:"+data_json.dias[3]+" 4:"+data_json.dias[4]+" 5:"+data_json.dias[5]+" 6:"+data_json.dias[6])
+
+//---------------------Completed us graphic------------------------------------
+
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Task');
-    data.addColumn('number', 'Hours per Day');
+    data.addColumn('number', 'Quantity');
     data.addRows([
-      ["Closed Stories", parseFloat(data_json.closed_stories)],
-      ["Open Stories", parseFloat(data_json.open_stories)]
+      ["Closed U.Stories", parseFloat(data_json.closed_stories)],
+      ["Open U.Stories", parseFloat(data_json.open_stories)]
     ]);
 
     var options = {
@@ -210,7 +231,64 @@
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
     chart.draw(data, options);
+
+//---------------------Burned points graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Points');
+    data.addRows([
+      ["Burned Points", parseFloat(data_json.burned_points)],
+      ["Remaining Points", parseFloat(data_json.remaining_points)]
+    ]);
+
+    var options = {
+      width: 360, height: 270,
+      title: 'Points'
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+    chart.draw(data, options);
+
+//---------------------Business value graphic-----------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Points');
+    data.addRows([
+      ["Added B.Value", parseFloat(data_json.added_value)],
+      ["Remaining B.Value", parseFloat(data_json.remaining_value)]
+    ]);
+
+    var options = {
+      width: 360, height: 270,
+      title: 'Business Value'
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div_3'));
+    chart.draw(data, options);
+
+//--------------------------Burndown graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Days');
+        data.addColumn('number', 'Points');
+        data.addRows([
+          ['bo',15],
+          ['bo2',18]
+        ]);
+
+        var options = {
+          width: 550, height: 270,
+          title: 'Velocity average',
+          vAxis: {maxValue: 30}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div_4'));
+        chart.draw(data, options);
+
   });
+
       
 </script>
 
