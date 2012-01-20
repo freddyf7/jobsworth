@@ -23,8 +23,10 @@ class SprintMonitoringController < ApplicationController
 
       @closed_us = Array.new
       @open_us = Array.new
+      @planned_points = 0
 
       @milestone.tasks.each do |us|
+        @planned_points = @planned_points + us.total_points
         if us.status == 1
           @closed_us << us
         end
@@ -33,8 +35,50 @@ class SprintMonitoringController < ApplicationController
         end
       end
 
-    end
+#     generating data for burndown chart
 
+      milestone_id = params[:milestone_id]
+      iteration = Milestone.find_by_id(milestone_id)
+
+      init_date = Date.civil(iteration.init_date.year,iteration.init_date.month,iteration.init_date.day)
+      due_date = Date.civil(iteration.due_date.year,iteration.due_date.month,iteration.due_date.day)
+      duration_days = (due_date - init_date).to_i
+
+      @burndown_data = Array.new
+      @closed_us = Task.where("milestone_id = ? and status = 1",milestone_id)
+
+      dias = Array.new
+      for i in 0..duration_days
+        dias << init_date + i
+      end
+
+      today = Date.today
+      today = Date.civil(today.year,today.month,today.day)
+      n = 0
+      day = 1
+      remaining_points = @planned_points
+      dias.each do |dia|
+        burned_today = 0
+        @burndown_data[n] = day
+        @burndown_data[n+1] = 0
+        if (dia >= today)
+          @burndown_data[n+1]= -1
+        else
+        @closed_us.each do |us|
+          completed_at = us.completed_at.to_date
+          if(completed_at == dia)
+            burned_today = burned_today + us.total_points
+          end          
+        end
+        @burndown_data[n+1] = remaining_points - burned_today
+        end
+        remaining_points = remaining_points - burned_today
+        n = n + 2
+        day = day + 1
+      end
+
+
+    end
 
   end
 
@@ -49,7 +93,6 @@ class SprintMonitoringController < ApplicationController
       due_date = Date.civil(iteration.due_date.year,iteration.due_date.month,iteration.due_date.day)
       duration_days = (due_date - init_date).to_i
 
-      @burndown_data = Array.new
       @closed_us = Array.new
       @open_us = Array.new
       @burned_points = 0
@@ -78,27 +121,7 @@ class SprintMonitoringController < ApplicationController
           @remaining_points = @remaining_points + us.total_points
           @remaining_value = @remaining_value + us.business_value
         end
-      end
-
-      @burndown_data = Array.new
-
-      dias = Array.new
-      for i in 0..duration_days
-        dias << init_date + i
-      end
-
-      n = 1
-      dias.each do |dia|
-        @burndown_data[n] = dia
-        @burndown_data[n+1] = 0
-        @closed_us.each do |us|
-          completed_at = us.completed_at.to_date
-          if(completed_at == dia)
-            @burndown_data[n+1] = @burndown_data[n+1] + us.total_points
-          end
-        end
-        n = n + 2
-      end
+      end      
 
     end
     render :partial => 'sprint_monitoring/completed_stories'
