@@ -16,12 +16,12 @@
 
     <div id="tabs-1">
 
-      <table width="100%">
+      <table width="100%" cellspacing="0">
         <tr>
 
-          <td style="width:25%;border-top: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;">
+          <td style="width:25%;border-top:1px solid #BBBBBB;border-left:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
             <label for="milestone_project_id"><%=_ 'Project' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_monitoring_project(this.value)">
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_monitoring_project(this.value,0)">
               <%= options_for_user_projects_backlog(session[:id_prj])%>
             </select>
 
@@ -34,48 +34,43 @@
             </select>          
           </td>
 
-          <td colspan="2" style="border-top: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
+          <!--<td colspan="2" style="border-top: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
             <table width="100%">
-              <tr>
-                <td valign="top" align="center">
-                  <fieldset style="width:50px;height:50px;position: relative;">
+              <tr>-->
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
                     <legend><%= _'Beginning Date'%></legend>
-                    <a style="font-size: 15px"><%= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+                    <a style="font-size:17px; font-weight: bold;"><%= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
                   </fieldset>
                 </td>
 
-                <td valign="top" align="center">
-                  <fieldset style="width:50px;height:50px;position: relative;">
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
                     <legend><%= _'Due Date'%></legend>
-                    <a style="font-size: 15px"><%= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+                    <a style="font-size: 17px;font-weight: bold;"><%= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
                   </fieldset>
                 </td>
 
-                <td valign="top" align="center">
-                  <fieldset style="width:50px;height:50px;position: relative;">
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;border-right:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
                     <legend><%= _'Remaining Days'%></legend>
-                    <a style="font-size: 15px"><%=  @remaining_days %></a>
+                    <a style="font-size: 17px;font-weight: bold;"><%=  @remaining_days %></a>
                   </fieldset>
                 </td>
-              </tr>
+             <!-- </tr>
             </table>
-          </td>
+          </td>-->
 
         </tr>
 
         
         <% if session[:id_milestone].to_i > 0 %>
         <tr>
-          
-          <td style="width:25%;">
-            <div id="chart_div" style="padding-top:10px;"></div>
-          </td>
-
-          <td valign="top" style="width:37.5%;">
-            <div style="padding-top:10px;">
-            <table width="100%">
+                  
+          <td valign="top" colspan="2" style="padding-top:20px;" >
+              <table width="100%" class="content">
               <tr>
-                <th colspan="4">
+                <th colspan="5">
                   Closed Stories
                 </th>
               </tr>
@@ -83,7 +78,8 @@
                 <th>Summary</th>
                 <th>Points</th>
                 <th>B.Value</th>
-                <th>Priority</th>
+                <th>Assigned</th>
+                <th>Status</th>
               </tr>
 
               <% @closed_us.each do |task| %>
@@ -97,23 +93,26 @@
                 <td>
                  <%= task.business_value %>
                 </td>
+                <td>
+                 <%= task.owners.map{ |u| u.name }.join(", ") %>
+                </td>
               </tr>
               <% end %>
             </table>
-            </div>
           </td>
 
-          <td valign="top" style="width:37.5%;">
-            <div style="padding-top:10px;">
-            <table width="100%">
-              <th colspan="4">
+          <td valign="top" colspan="2" style="padding-top:20px;">
+            <div>
+            <table width="100%" class="content">
+              <th colspan="5">
                   Open Stories
               </th>
               <tr>
                 <th>Summary</th>
                 <th>Points</th>
                 <th>B.Value</th>
-                <th>Priority</th>
+                <th>Assigned</th>
+                <th>Status</th>
               </tr>
 
               <% @open_us.each do |task| %>
@@ -127,6 +126,9 @@
                 <td>
                  <%= task.business_value %>
                 </td>
+                <td>
+                 <%= task.owners.map{ |u| u.name }.join(", ") %>
+                </td>
               </tr>
               <% end %>
             </table>
@@ -135,25 +137,59 @@
 
         </tr>
 
+        <tr>          
+     
+          <td style="padding-top:30px;" colspan="1" valign="top">
+            <fieldset>
+              <legend><%= _'User Stories'%></legend>
+              <div id="chart_div" ></div>
+
+              <label for="completed_stories"><%=_ 'Completed U.Stories' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "completed_stories" ) %>
+
+              <label for="remaining_stories"><%=_ 'Remaining U.Stories' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_stories" ) %>
+            </fieldset>
+          </td>
+
+          <td align="center" colspan="1" style="padding-top:30px;">
+            <fieldset>
+              <legend><%= _'Points'%></legend>
+              <div id="chart_div_2" ></div>
+
+              <label for="burned_points"><%=_ 'Burned Points' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "burned_points" ) %>
+
+              <label for="remaining_points"><%=_ 'Remaining Points' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_points" ) %>
+            </fieldset>
+          </td>
+
+          <td style="padding-top:30px;" colspan="1">
+            <fieldset>
+              <legend><%= _'Bussiness Value'%></legend>
+              <div id="chart_div_3" ></div>
+
+              <label for="added_value"><%=_ 'Added B.Value' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "added_value" ) %>
+
+              <label for="remaining_value"><%=_ 'Remaining B.Value' %></label>
+              <%= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_value" ) %>
+            </fieldset>
+          </td>
+
+        </tr> 
+
         <tr>
 
-          <td>
-            <div id="chart_div_2" style="padding-top:15px;"></div>
+          <td colspan="3" align="left" style="padding-top:25px;">
+            <fieldset style="width: 80%;">
+              <legend><%= _'Burndown Chart'%></legend>
+              <div id="chart_div_4" style="width: 100%;"></div>
+            </fieldset>
           </td>
-
-          <td colspan="2" align="center" style="padding-top:15px;">
-            <div id="chart_div_4"></div>
-          </td>
-
-        </tr>
-
-        <tr>
-
-          <td>
-            <div id="chart_div_3" style="padding-top:15px;"></div>
-          </td>
-
-        </tr>
+         
+        </tr> 
 
         <% end %>
 
@@ -161,6 +197,38 @@
     </div>
 
     <div id="tabs-2">
+
+      <table width="100%" cellspacing="0">
+
+        <tr>
+          <td>
+            <label for="meeting_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="meeting_project_id" name="meeting_project_id" onchange="reload_meeting_project(this.value,1)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="width:40%;padding-top: 25px;">
+            <fieldset>
+              <legend><%= _'New Meeting entry'%></legend>
+              <p>Iteracion Actual</p>
+
+              <label for="meeting_developer"><%=_ 'Developer' %></label>
+              <select class="planning_combobox" id="meeting_developer" name="meeting_developer" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
+                <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
+              </select>
+            </fieldset>
+          </td>
+
+          <td style="width:60%;padding-top: 25px;">
+
+          </td>
+        </tr>
+
+      </table>
+
     </div>
 
   </div>
@@ -173,6 +241,14 @@
 		jQuery( "#tabs" ).tabs();
 	});
 </script>
+
+<% if (params[:tab].to_s == "1" ) %>
+  <script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs( "option", "selected", 1 );
+    });
+  </script>
+<% end %>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -203,9 +279,12 @@
     ]);
 
     var options = {
-      width: 360, height: 270,
-      title: 'User Stories'
+      height: 230,
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
+
+    jQuery("#completed_stories").val(parseFloat(data_json.closed_stories))
+    jQuery("#remaining_stories").val(parseFloat(data_json.open_stories))
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
     chart.draw(data, options);
@@ -221,9 +300,12 @@
     ]);
 
     var options = {
-      width: 360, height: 300,
-      title: 'Points'
+      height: 230,
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
+
+    jQuery("#burned_points").val(parseFloat(data_json.burned_points))
+    jQuery("#remaining_points").val(parseFloat(data_json.remaining_points))
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
     chart.draw(data, options);
@@ -239,9 +321,12 @@
     ]);
 
     var options = {
-      width: 360, height: 270,
-      title: 'Business Value'
+      height: 230,
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
+
+    jQuery("#added_value").val(parseFloat(data_json.added_value))
+    jQuery("#remaining_value").val(parseFloat(data_json.remaining_value))
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_3'));
     chart.draw(data, options);
@@ -268,9 +353,11 @@
     };
 
     var options = {
-      width: 750, height: 300,
+      height: 330,
       title: 'Burndown chart',
-      vAxis: {maxValue: <%=  @planned_points %>,maxAlternation: 5}
+      vAxis: {maxValue: <%=  @planned_points %>,maxAlternation: 5},
+      colors:['#31B404']
+
     };
 
     var chart = new google.visualization.LineChart(document.getElementById('chart_div_4'));
@@ -279,6 +366,8 @@
   });
       
 </script>
+
+
 
 <% end %>
 

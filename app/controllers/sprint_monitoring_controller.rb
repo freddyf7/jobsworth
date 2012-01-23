@@ -14,6 +14,12 @@ class SprintMonitoringController < ApplicationController
       session[:id_milestone] = params[:milestone_id]
     end
 
+    if params[:user_id].nil?
+      session[:user_id] =-1
+    else
+      session[:user_id] = params[:user_id]
+    end
+
     if !params[:milestone_id].nil?
       milestone_id = params[:milestone_id]
       @milestone = Milestone.find_by_id(milestone_id)
@@ -127,5 +133,7 @@ class SprintMonitoringController < ApplicationController
     render :partial => 'sprint_monitoring/completed_stories'
 
   end
+
+
 
 end
