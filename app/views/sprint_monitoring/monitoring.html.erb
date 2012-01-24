@@ -213,12 +213,72 @@
           <td style="width:40%;padding-top: 25px;">
             <fieldset>
               <legend><%= _'New Meeting entry'%></legend>
-              <p>Iteracion Actual</p>
+              <% if (!params[:project_id].nil?) %>
+                <p style="font-size:15px; font-weight: bold;"><%= 'Current Iteration: ' +  @iteracion_actual[0].name  %> </p>
+              <% else %>
+                <p style="font-size:15px; font-weight: bold;">Current Iteration:</p>
+              <% end %>
+                
+              <form class="new_meeting" id="new_meeting" action="/sprint_monitoring/save_meeting" method="post">
+                <table>
+                  <tr>
+                    <td>
+                      <label for="meeting_developer"><%=_ 'Developer' %></label>
+                    </td>
+                    <td>
+                      <select class="planning_combobox" id="meeting_user_id" name="meeting[user_id]" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
+                        <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
+                      </select>
+                    </td>
+                  </tr>
+         
+                  <tr>
+                    <td>
+                      <label for="meeting_date"><%=_ 'Meeting Date' %></label>
+                    </td>
+                    <td>
+                      <%= text_field 'meeting', 'day', :size => 12, :class=>:datefield%>
+                    </td>
+                  </tr>
 
-              <label for="meeting_developer"><%=_ 'Developer' %></label>
-              <select class="planning_combobox" id="meeting_developer" name="meeting_developer" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
-                <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
-              </select>
+                  <tr>
+                    <td valign="top">
+                      <label for="done_description"><%=_ 'Done' %></label>
+                    </td>
+                    <td>
+                      <%#= text_area 'done', 'meeting', :rows => 8 %>
+                      <%= text_area(:meeting, :done, :rows=> 8) %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td valign="top">
+                      <label for="todo_description"><%=_ 'To Do' %></label>
+                    </td>
+                    <td>
+                      <%= text_area 'meeting', 'to_do', :rows => 8 %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td valign="top">
+                      <label for="observations_description"><%=_ 'Observations' %></label>
+                    </td>
+                    <td>
+                      <%= text_area 'meeting', 'observation', :rows => 8 %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="2">
+                      <%= submit_tag _("Save"), :class => 'finish' %>
+                    </td>
+                  </tr>
+
+                </table>
+
+                <input type="hidden" id="meeting_milestone_id" name="meeting[milestone_id]" value="<%= @iteracion_actual[0].id  if !@iteracion_actual.nil? %>"  />
+            </form>
             </fieldset>
           </td>
 
@@ -235,11 +295,16 @@
 
 </div>
 
+<script type="text/javascript">
+  jQuery(function() {
+    jQuery("#meeting_day").datepicker('setDate','<%= @today_date %>' );
+  });
+</script>
 
 <script type="text/javascript" charset="utf-8">
-	jQuery(function() {
-		jQuery( "#tabs" ).tabs();
-	});
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs();
+    });
 </script>
 
 <% if (params[:tab].to_s == "1" ) %>
@@ -366,8 +431,6 @@
   });
       
 </script>
-
-
 
 <% end %>
 

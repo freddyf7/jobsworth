@@ -19,6 +19,12 @@ class SprintMonitoringController < ApplicationController
     else
       session[:user_id] = params[:user_id]
     end
+    
+    if !params[:project_id].nil?
+      hoy = Date.today
+      @today_date = hoy.strftime("%d/%m/%Y")
+      @iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
+    end
 
     if !params[:milestone_id].nil?
       milestone_id = params[:milestone_id]
@@ -134,6 +140,17 @@ class SprintMonitoringController < ApplicationController
 
   end
 
+  def save_meeting
+
+    @meeting = Meeting.new(params[:meeting])
+    
+    @meeting.save!
+
+    flash["notice"] = _('Meeting was successfully saved.')
+    redirect_to '/sprint_monitoring/monitoring'
+#    render :template => 'sprint_monitoring/monitoring'
+    
+  end
 
 
 end
