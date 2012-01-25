@@ -1,6 +1,6 @@
 class SprintMonitoringController < ApplicationController
 
-  def monitoring
+  def monitoring    
 
     if params[:project_id].nil?
       session[:id_prj] =-1
@@ -142,15 +142,36 @@ class SprintMonitoringController < ApplicationController
 
   def save_meeting
 
-    @meeting = Meeting.new(params[:meeting])
-    
-    @meeting.save!
+    @meeting = Meeting.new(params[:meeting])    
+    if @meeting.save
+      flash["notice"] = _('Meeting was successfully saved.')
+      redirect_to '/sprint_monitoring/monitoring'
+    end
 
-    flash["notice"] = _('Meeting was successfully saved.')
-    redirect_to '/sprint_monitoring/monitoring'
-#    render :template => 'sprint_monitoring/monitoring'
-    
   end
 
+  def load_meeting
+
+    @meeting = Meeting.new
+    meeting_day = params[:meeting_day]
+    developer = params[:developer_id]
+    fecha = Date.strptime(meeting_day, "%d/%m/%Y")
+
+    meetings = Meeting.where('day= ? and user_id = ?',fecha,developer)
+
+    @meeting = meetings[0]
+
+    if @meeting.nil?
+      @meeting = Meeting.new
+      @meeting.done = '-1'
+      @meeting.to_do = '-1'
+      @meeting.observation = '-1'
+      @iteration_meeting = '-1'
+    else
+      @iteration_meeting = Milestone.find_by_id(@meeting.milestone_id)
+    end
+
+    render :partial => 'sprint_monitoring/selected_meeting'    
+  end
 
 end
