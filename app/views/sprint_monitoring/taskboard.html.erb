@@ -1,0 +1,137 @@
+<style type="text/css">
+  #all-users, #selected-users, #other-users, #bo-users { list-style-type: none; margin: 0; padding: 0; float: left; background: #eee; padding: 5px; width: 200px; min-height: 40px;}
+  #all-users li, #selected-users li, #other-users li, #bo-users li { margin: 5px; padding: 5px; font-size: 1.2em; width: 178px; }
+  #all-users li img, #selected-users li img, #other-users li img, #bo-users li img {float:none; border: 0; padding: 0}
+
+  #to_do, #progress { list-style-type: none; margin: 0; padding: 0; float: left; background: #eee; padding: 5px; width: 200px; min-height: 40px;}
+  #to_do li, #progress li { margin: 5px; padding: 5px; font-size: 1.2em; width: 178px; }
+  #to_do li img, #progress li img {float:none; border: 0; padding: 0}
+
+
+</style>
+<script type="text/javascript">
+  jQuery(function() {
+    jQuery( "ul.droptrue" ).sortable({
+      connectWith: "ul"
+    });
+
+  jQuery( "ul.dropfalse" ).sortable({
+      connectWith: "ul",
+      dropOnEmpty: false
+    });
+
+  jQuery( "#all-users, #selected-users").disableSelection();
+  });
+</script>
+
+<br/>
+
+<div class="page_header">
+  <%=_ 'Taskboard'%>
+</div>
+
+<br/>
+
+<table>
+  <tr>
+    <td>
+      <label for="milestone_project_id"><%=_ 'Project' %></label>
+      <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_taskboard(this.value)">
+        <%= options_for_user_projects_backlog(session[:id_prj])%>
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+
+  <% if (!params[:project_id].nil?) %>
+    <td colspan="2">
+      <br/>
+      <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: '+@iteracion_actual[0].name %></label>
+    </td>
+  <% else %>
+    <td colspan="2">
+      <br/>
+      <label style="color:black;font-size:15px; font-weight: bold;">Current Iteration:</label>
+    </td>
+  <% end %>
+
+  </tr>
+</table>
+
+<br/>
+<br/>
+
+<table width="100%" style="border:1px solid black;">
+  <tr>
+    <th style="width:20%;">Stories</th>
+    <th style="width:20%;">To Do</th>
+    <th style="width:20%;">In Progress</th>
+    <th style="width:20%;">Verify</th>
+    <th style="width:20%;">Done</th>
+  </tr>
+
+  <% if params[:project_id] %>
+    <% @user_stories.each do |us| %>
+    <% @todo_tasks = get_todo_activities(us.id) %>
+    <% @progress_tasks = get_progress_activities(us.id) %>
+    <% @verify_tasks = get_verify_activities(us.id) %>
+    <% @done_tasks = get_done_activities(us.id) %>
+    <tr>
+      
+      <td valign="middle">
+        <%=  us.name %>
+      </td>
+
+      <td valign="top">
+        <ul id="to_do" class="droptrue">
+          <% @todo_tasks.each do |to_do| %>
+            <li class="ui-state-default">
+              <%=  to_do.name %>
+            </li>          
+          <% end %>
+        </ul>
+      </td>
+
+      <td valign="top">
+        <ul id="progress" class="droptrue">
+          <% @progress_tasks.each do |prog| %>
+            <li class="ui-state-default">
+              <%=  prog.name %>
+            </li>          
+          <% end %>
+        </ul>
+      </td>
+
+      <td valign="top">
+        <ul id="all-users" class="droptrue">
+          <% @verify_tasks.each do |verify| %>
+            <li class="ui-state-default">
+              <%=  verify.name %>
+            </li>          
+          <% end %>
+        </ul>
+      </td>
+
+      <td valign="top">
+        <ul id="all-users" class="droptrue">
+          <% @done_tasks.each do |done| %>
+            <li class="ui-state-default">
+              <%=  done.name %>
+            </li>          
+          <% end %>
+        </ul>
+      </td>
+
+    </tr>
+    <% end %>
+  <% end %>
+
+</table>
+
+
+
+
+
+
+

@@ -24,4 +24,33 @@ module SprintMonitoringHelper
     end
     end
   end
+
+  def get_todo_activities(task_id)
+     todo_tasks = Array.new
+     todo_tasks = StoryActivity.where("task_id = ? and status= 'to_do'",task_id)
+
+     return todo_tasks 
+  end
+
+  def get_progress_activities(task_id)
+     progress_tasks = Array.new
+     progress_tasks = StoryActivity.where("task_id = ? and status= 'progress'",task_id)
+
+     return progress_tasks
+  end
+
+  def get_verify_activities(task_id)
+     verify_tasks = Array.new
+     verify_tasks = StoryActivity.where("task_id = ? and status= 'verify'",task_id)
+
+     return verify_tasks
+  end
+
+  def get_done_activities(task_id)
+     done_tasks = Array.new
+     done_tasks = StoryActivity.where("task_id = ? and status= 'done'",task_id)
+
+     return done_tasks
+  end
+
 end

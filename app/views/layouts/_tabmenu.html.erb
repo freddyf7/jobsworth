@@ -28,6 +28,9 @@
           <%= link_to _("Sprint monitoring"), :controller => "sprint_monitoring", :action => "monitoring" %>
         </li>
         <li>
+          <%= link_to _("Taskboard"), :controller => "sprint_monitoring", :action => "taskboard" %>
+        </li>
+        <li>
           <%= link_to _("New US"), :controller => 'tasks', :action => 'new' %>
         </li>
          <li<%= " class='active'" if active.starts_with?('clients/') %>>

@@ -174,4 +174,23 @@ class SprintMonitoringController < ApplicationController
     render :partial => 'sprint_monitoring/selected_meeting'    
   end
 
+
+  def taskboard
+    
+    if params[:project_id].nil?
+      session[:id_prj] =-1
+    else
+      session[:id_prj] = params[:project_id]
+    end
+
+    if !params[:project_id].nil?
+      hoy = Date.today
+      @iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
+      @user_stories = Task.where("milestone_id = ?", @iteracion_actual[0].id)
+
+    end
+
+  end
+
+
 end

@@ -570,9 +570,9 @@ function reload_milestone_planning_backlog(milestone_id,project_id,tab){
     window.location = "/sprint_planning/planning?milestone_id=" + milestone_id+"&project_id="+project_id+"&tab="+tab;
 }
 
-function reload_monitoring_project(project_id,tab){
+function reload_taskboard(project_id){
 //    window.location.href = "/task_filters/update_current_filter?tab="+tab+"&task_filter[qualifiers_attributes][][qualifiable_id]="+sender+"&task_filter[qualifiers_attributes][][qualifiable_type]=Project&task_filter[qualifiers_attributes][][qualifiable_id]=0&task_filter[qualifiers_attributes][][qualifiable_type]=Milestone&backlog=planning&project_id="+sender;
-    window.location = "/sprint_monitoring/monitoring?project_id=" + project_id +"&tab="+tab;
+    window.location = "/sprint_monitoring/taskboard?project_id=" + project_id;
 }
 
 function reload_meeting_project(project_id,tab){
