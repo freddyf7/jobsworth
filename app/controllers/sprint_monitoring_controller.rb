@@ -192,5 +192,43 @@ class SprintMonitoringController < ApplicationController
 
   end
 
+  def save_taskboard
+
+    if params[:todo_tasks]
+    params[:todo_tasks].each do |act|
+      activity = StoryActivity.find_by_id(act.to_i)
+      activity.status = 'to_do'
+      activity.save!
+    end
+    end
+
+    if params[:progress_tasks]
+    params[:progress_tasks].each do |act|
+      activity = StoryActivity.find_by_id(act.to_i)
+      activity.status = 'progress'
+      activity.save!
+    end
+    end
+
+    if params[:verify_tasks]
+    params[:verify_tasks].each do |act|
+      activity = StoryActivity.find_by_id(act.to_i)
+      activity.status = 'verify'
+      activity.save!
+    end
+    end
+
+    if params[:done_tasks]
+    params[:done_tasks].each do |act|
+      activity = StoryActivity.find_by_id(act.to_i)
+      activity.status = 'done'
+      activity.save!
+    end
+    end
+
+
+    redirect_to '/sprint_monitoring/taskboard'
+  end
+
 
 end

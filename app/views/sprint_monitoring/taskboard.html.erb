@@ -1,28 +1,58 @@
 <style type="text/css">
-  #all-users, #selected-users, #other-users, #bo-users { list-style-type: none; margin: 0; padding: 0; float: left; background: #eee; padding: 5px; width: 200px; min-height: 40px;}
-  #all-users li, #selected-users li, #other-users li, #bo-users li { margin: 5px; padding: 5px; font-size: 1.2em; width: 178px; }
-  #all-users li img, #selected-users li img, #other-users li img, #bo-users li img {float:none; border: 0; padding: 0}
 
-  #to_do, #progress { list-style-type: none; margin: 0; padding: 0; float: left; background: #eee; padding: 5px; width: 200px; min-height: 40px;}
-  #to_do li, #progress li { margin: 5px; padding: 5px; font-size: 1.2em; width: 178px; }
-  #to_do li img, #progress li img {float:none; border: 0; padding: 0}
+  #to_do{ list-style-type: none; margin: 0; padding: 0; float: left; background: #E6E6E6; width: 100%; min-height: 40px;}
+  #verify{ list-style-type: none; margin: 0; padding: 0; float: left; background: #E6E6E6; width: 100%; min-height: 40px;}
+  #progress { list-style-type: none; margin: 0; padding: 0; float: left; background: #F2F2F2; width: 100%; min-height: 40px;}
+  #done { list-style-type: none; margin: 0; padding: 0; float: left; background: #F2F2F2; width: 100%; min-height: 40px;}
+  
+  #to_do li, #progress li, #verify li, #done li { margin: 5px; padding: 5px; font-size: 1.2em; width: 178px; }
+  #to_do li img, #progress li img, #verify img, #done img {float:none; border: 0; padding: 0}
 
 
 </style>
+
+<% if params[:project_id] %>
+<% @user_stories.each do |story| %>
 <script type="text/javascript">
   jQuery(function() {
-    jQuery( "ul.droptrue" ).sortable({
-      connectWith: "ul"
+    jQuery( "ul.droptrue_<%=  story.id %>" ).sortable({
+      connectWith: "ul.droptrue_<%=  story.id %>",
+      <%#*stop: function(event, ui) {%>
+        <%#*alert('element: '+jQuery(ui.sender).sortable( "widget" ).name);%>
+        <%#*alert('element: '+ jQuery(ui.sender).ui.sortable.attr("class"));%>
+
+      <%#*}%>
+        receive: function(event, ui) {
+        <%#*alert('element: '+ jQuery(ui.item.input).attr("class"))%>
+        <%#*alert('element: '+ jQuery(ui.item).children("input").attr("name"))%>
+
+        <%#*jQuery(this).children("li").children("input").attr("name")%>
+
+         if (jQuery(this).attr("id") == 'to_do'){
+          jQuery(ui.item).children("input").attr("name","todo_tasks[]")
+         }
+
+         if (jQuery(this).attr("id") == 'progress'){
+          jQuery(ui.item).children("input").attr("name","progress_tasks[]")
+         }
+
+         if (jQuery(this).attr("id") == 'verify'){
+          jQuery(ui.item).children("input").attr("name","verify_tasks[]")
+         }
+
+         if (jQuery(this).attr("id") == 'done'){
+          jQuery(ui.item).children("input").attr("name","done_tasks[]")
+         }
+         
+      }
+
+
     });
 
-  jQuery( "ul.dropfalse" ).sortable({
-      connectWith: "ul",
-      dropOnEmpty: false
-    });
-
-  jQuery( "#all-users, #selected-users").disableSelection();
   });
 </script>
+<% end %>
+<% end %>
 
 <br/>
 
@@ -47,7 +77,8 @@
   <% if (!params[:project_id].nil?) %>
     <td colspan="2">
       <br/>
-      <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: '+@iteracion_actual[0].name %></label>
+      <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: ' %></label>
+      <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @iteracion_actual[0].name %></label>
     </td>
   <% else %>
     <td colspan="2">
@@ -61,8 +92,8 @@
 
 <br/>
 <br/>
-
-<table width="100%" style="border:1px solid black;">
+<form method="POST" action="/sprint_monitoring/save_taskboard">
+<table cellspacing="0" width="100%">
   <tr>
     <th style="width:20%;">Stories</th>
     <th style="width:20%;">To Do</th>
@@ -72,62 +103,80 @@
   </tr>
 
   <% if params[:project_id] %>
+  
+
     <% @user_stories.each do |us| %>
     <% @todo_tasks = get_todo_activities(us.id) %>
     <% @progress_tasks = get_progress_activities(us.id) %>
     <% @verify_tasks = get_verify_activities(us.id) %>
     <% @done_tasks = get_done_activities(us.id) %>
+
     <tr>
       
-      <td valign="middle">
+      <td valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8">
         <%=  us.name %>
       </td>
 
-      <td valign="top">
-        <ul id="to_do" class="droptrue">
+      <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
+        <ul id="to_do" class="droptrue_<%= us.id %> ">
           <% @todo_tasks.each do |to_do| %>
-            <li class="ui-state-default">
-              <%=  to_do.name %>
-            </li>          
+            <li class="ui-state-default" title="<%=  to_do.description %> ">
+              <a style="font-size: 11px;text-decoration: none"><%=  to_do.name %></a>
+              <input type="hidden" name="todo_tasks[]" value="<%= to_do.id %>"></input>
+            </li>
           <% end %>
         </ul>
       </td>
 
-      <td valign="top">
-        <ul id="progress" class="droptrue">
+      <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
+        <ul id="progress" class="droptrue_<%= us.id %>">
           <% @progress_tasks.each do |prog| %>
-            <li class="ui-state-default">
-              <%=  prog.name %>
-            </li>          
+            <li class="ui-state-default" title="<%=  prog.description %> ">
+              <a style="font-size: 11px;text-decoration: none"><%=  prog.name %></a>
+              <input type="hidden" name="progress_tasks[]" value="<%= prog.id %>"></input>
+            </li>
           <% end %>
         </ul>
       </td>
 
-      <td valign="top">
-        <ul id="all-users" class="droptrue">
+      <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
+        <ul id="verify" class="droptrue_<%= us.id %>">
           <% @verify_tasks.each do |verify| %>
-            <li class="ui-state-default">
-              <%=  verify.name %>
-            </li>          
+            <li class="ui-state-default" title="<%=  verify.description %> ">
+              <a style="font-size: 11px;text-decoration: none"><%=  verify.name %></a>
+              <input type="hidden" name="verify_tasks[]" value="<%= verify.id %>"></input>
+            </li>
           <% end %>
         </ul>
       </td>
 
-      <td valign="top">
-        <ul id="all-users" class="droptrue">
+      <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
+        <ul id="done" class="droptrue_<%= us.id %>">
           <% @done_tasks.each do |done| %>
-            <li class="ui-state-default">
-              <%=  done.name %>
-            </li>          
+            <li class="ui-state-default" title="<%=  done.description %> ">
+              <a style="font-size: 11px;text-decoration: none"><%=  done.name %></a>
+              <input type="hidden" name="done_tasks[]" value="<%= done.id %>"></input>
+            </li>
           <% end %>
         </ul>
       </td>
 
     </tr>
+        
     <% end %>
+
+    <tr>
+      <td align="center" colspan="5">
+        <br/>
+        <%= submit_tag _("Save"), :class => 'finish' %>
+      </td>
+    </tr>
+  
+  
   <% end %>
 
 </table>
+  </form>
 
 
 
