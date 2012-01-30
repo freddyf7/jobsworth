@@ -230,5 +230,29 @@ class SprintMonitoringController < ApplicationController
     redirect_to '/sprint_monitoring/taskboard'
   end
 
+  def new_activity
+
+    @activity = StoryActivity.new
+
+    @popup, @disable_title = true, true
+    render :action => 'new_activity', :layout => false
+
+    return
+
+  end
+
+  def save_activity
+
+    @activity = StoryActivity.new(params[:story_activity])
+    @activity.status = "to_do"
+#    @activity.task_id = params[:us_id]
+
+    if @activity.save
+      flash["notice"] = _('Activity was successfully saved.')
+      redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
+    end
+
+  end
+
 
 end

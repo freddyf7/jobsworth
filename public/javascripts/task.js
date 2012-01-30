@@ -435,6 +435,8 @@ function init_task_form() {
       appendPopup("/milestones/quick_new?project_id=" + jQuery("#task_project_id").val(), "body", false);
     });
 
+    //jQuery('#add_activity img').click(add_activity_popup);
+
     jQuery('div.file_thumbnail a').slimbox();
     jQuery(".datefield").datepicker({constrainInput: false, dateFormat: userDateFormat});
     updateTooltips();
@@ -577,6 +579,45 @@ function add_milestone_popup() {
 	return false;
   }
 }
+
+function add_activity_popup() {
+
+    jQuery("#story_activity_name").val(" ");
+    jQuery("#story_activity_description").val(" ");
+
+    var popup = jQuery("span#ui_popup_dialog").dialog({
+        autoOpen: false,
+	title: 'New Activity',
+        width: 370,
+        draggable: true,
+        close: function(event, ui) {
+            jQuery('span#ui_popup_dialog').dialog('destroy');
+            jQuery("span#ui_popup_dialog").remove();
+        }
+
+	});
+	popup.dialog('open');
+//        jQuery('#add_milestone_form').submit(function(){
+//          jQuery('#errorExplanation').remove();
+//          if (jQuery("#milestone_name").val() == 0){
+//            jQuery('<div></div>').attr({'id': 'errorExplanation', 'class': 'errorExplanation'})
+//            .append('Name can not be blank').insertBefore('#add_milestone_form');
+//            return false;
+//          }
+//        });
+
+        // refresh milestone and destroy dialog after a successful milestone addition
+        jQuery('#add_new_activity').bind("ajax:success", function(event, json, xhr) {
+//             authorize_ajax_form_callback(jQuery.parseJSON(json));
+//             var project_id = jQuery.parseJSON(json).project_id;
+//             var milestone_id = jQuery.parseJSON(json).milestone_id;
+//             parent.refreshMilestones(project_id, milestone_id);
+             jQuery('span#ui_popup_dialog').dialog('destroy');
+        });
+	return false;
+
+}
+
 
 function toogleDone(sender) {
   var todoId = jQuery(sender).parent().attr("id").split("-")[1];

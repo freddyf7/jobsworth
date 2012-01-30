@@ -1,0 +1,35 @@
+
+  <form class="new_activity" id="add_new_activity" action="/sprint_monitoring/save_activity" method="post">
+    <table>
+
+      <tr>
+        <td>
+          <label for="activity_name"><%=_ 'Name' %></label>
+        </td>
+        <td>
+          <%= text_field 'story_activity', 'name', :size => 12%>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <label for="story_activity_description"><%=_ 'Activity Description' %></label>
+        </td>
+        <td>
+          <%= text_area 'story_activity', 'description', :rows => 8 %>
+        </td>
+      </tr>
+
+      <tr>
+       <td colspan="2">
+        <%= submit_tag _("Save"), :class => 'finish' %>
+       </td>
+      </tr>
+
+    </table>
+
+    <input id="us_id" type="hidden" name="story_activity[task_id]" value="<%= params[:us_id] %>"> </input>
+    <input id="project_id" type="hidden" name="project_id" value="<%= params[:us_id] %>"> </input>
+
+  </form>
+

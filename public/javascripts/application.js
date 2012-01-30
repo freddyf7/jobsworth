@@ -200,6 +200,16 @@ function appendPopup(url, selector, callback) {
     }
 }
 
+function appendActivityPopup(url, selector, callback) {
+    if (jQuery('span#ui_popup_dialog').size() == 0){
+      jQuery.get(url, { }, function(data) {
+        var html = "<span style='display: none' id='ui_popup_dialog'>"+ data +"</span>"
+        jQuery(selector).prepend(html);
+        if (callback) { callback.call(); }
+      });
+    }
+}
+
 function updatePositionFields(listSelector) {
     var list = jQuery(listSelector);
     var children = list.children();
