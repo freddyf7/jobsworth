@@ -600,6 +600,10 @@ function reload_monitoring_milestone(milestone_id,project_id){
     window.location = "/sprint_monitoring/monitoring?milestone_id=" + milestone_id +"&project_id="+project_id;
 }
 
+function reload_monitoring_project(project_id,tab){
+//    window.location.href = "/task_filters/update_current_filter?tab="+tab+"&task_filter[qualifiers_attributes][][qualifiable_id]="+sender+"&task_filter[qualifiers_attributes][][qualifiable_type]=Project&task_filter[qualifiers_attributes][][qualifiable_id]=0&task_filter[qualifiers_attributes][][qualifiable_type]=Milestone&backlog=planning&project_id="+sender;
+    window.location = "/sprint_monitoring/monitoring?project_id="+project_id;
+}
 
 function reload_estimation_settings(sender) {
     window.location ="/estimation_settings/edit?project_id=" + sender

@@ -92,14 +92,15 @@
 
 <br/>
 <br/>
-<form method="POST" action="/sprint_monitoring/save_taskboard">
+<form method="POST" action="/sprint_monitoring/save_taskboard?project_id=<%=  params[:project_id] %>">
 <table cellspacing="0" width="100%">
   <tr>
-    <th style="width:20%;">Stories</th>
-    <th style="width:20%;">To Do</th>
-    <th style="width:20%;">In Progress</th>
-    <th style="width:20%;">Verify</th>
-    <th style="width:20%;">Done</th>
+    <th style="width:22%;">Stories</th>
+    <th style="width:2%;"> </th>
+    <th style="width:19%;">To Do</th>
+    <th style="width:19%;">In Progress</th>
+    <th style="width:19%;">Verify</th>
+    <th style="width:19%;">Done</th>
   </tr>
 
   <% if params[:project_id] %>
@@ -118,10 +119,22 @@
     <tr>
       
       <td valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8">
-        <%=  us.name %>
+        <label style="font-size:14px;"><%=  us.name %></label>
         <br/>
-        <br/>
-        <span id="add_activity"><img onclick="load_popup(<%= us.id %>,<%= us.project_id %>);" src="/images/add.png" style="margin:0;padding:2px 0 0 0;cursor:pointer"/></span>        
+        <label style="font-size:10px; font-weight: bold;">Assigned to: </label>
+        <% if us.owners.size > 0 %>
+          <label style="font-style: italic"><%= us.owners.map{ |u| u.name }.join(", ") %></label>
+        <% else %>
+          <%#= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
+          <input type="text" name="<%= us.id %>" class="user_name_auto_complete_3"></input>
+          <input type="hidden" name="us_dev[]" value="<%= us.id %>"></input>
+          <input type="hidden" name="developer[]" id="valor_<%= us.id %>"></input>
+
+        <% end %>
+      </td>
+
+      <td align="center" valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8;border-left: solid 1px #D8D8D8;border-right: solid 1px #D8D8D8">
+        <span id="add_activity"><img onclick="load_popup(<%= us.id %>,<%= us.project_id %>);" src="/images/add.png" style="margin:0;padding:2px 0 0 0;cursor:pointer"/></span>
       </td>
 
       <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
@@ -173,7 +186,7 @@
     <% end %>
 
     <tr>
-      <td align="center" colspan="5">
+      <td align="center" colspan="6">
         <br/>
         <%= submit_tag _("Save"), :class => 'finish' %>
       </td>
@@ -195,13 +208,27 @@ function load_popup(us_id,project_id){
 //appendActivityPopup("/sprint_monitoring/new_activity?us_id="+us_id+"&project_id="+project_id, "body", false);
 
 
+add_activity_popup();
 jQuery("#us_id").val(us_id)
 jQuery("#project_id").val(project_id)
-add_activity_popup();
 }
 
 
 </script>
+
+<script type="text/javascript">
+  /*function assignDeveloper(us,id){
+    jQuery(function() {
+      
+              //us = jQuery(ui.item).attr('name')
+              developer = id;
+              jQuery('#valor_'+us).val(developer.toString());
+
+              alert('DEVELOPER: '+ developer)
+              alert('us:'+us)
+            });
+  }*/
+          </script>
 
 
 

@@ -152,6 +152,17 @@ function showDevStats_2(event, ui){
     });
 }
 
+function assignDeveloper(event, ui){
+
+            jQuery(function() {
+              us =jQuery(ui.item).attr('name')
+              developer = ui.item.id;
+              jQuery('#valor_'+us).val(developer.toString());             
+
+              alert('DEVELOPER: '+ developer)
+              alert('us:'+us)
+            });
+  }
 
 /*
   Adds any users setup as auto add to the current task.
@@ -409,6 +420,7 @@ function init_task_form() {
     autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', addUserToTask);
     autocomplete('#user_name_auto_complete', '/tasks/auto_complete_for_user_name', showDevStats);
     autocomplete('#user_name_auto_complete_2', '/tasks/auto_complete_for_user_name', showDevStats_2);
+    autocomplete('.user_name_auto_complete_3', '/tasks/auto_complete_for_user_name',assignDeveloper);
     autocomplete_multiple_remote('#task_set_tags', '/tags/auto_complete_for_tags' );
 
     initSortableForTodos();
@@ -584,15 +596,17 @@ function add_activity_popup() {
 
     jQuery("#story_activity_name").val(" ");
     jQuery("#story_activity_description").val(" ");
+    jQuery("#us_id").val("");
+    jQuery("#project_id").val("");
 
     var popup = jQuery("span#ui_popup_dialog").dialog({
         autoOpen: false,
 	title: 'New Activity',
+        modal:true,
         width: 370,
         draggable: true,
         close: function(event, ui) {
             jQuery('span#ui_popup_dialog').dialog('destroy');
-            jQuery("span#ui_popup_dialog").remove();
         }
 
 	});

@@ -226,8 +226,23 @@ class SprintMonitoringController < ApplicationController
     end
     end
 
+    if params[:developer].size > 0
+      developer = params[:developer]
+      story = params[:us_dev]
+      
+      for i in 0..params[:developer].size-1                
+        task_user = TaskUser.new
+        task_user.task_id = story[i]
+        task_user.user_id = developer[i]
+        task_user.type = 'TaskOwner'
+        task_user.unread = 0
+        task_user.save!
+      end
 
-    redirect_to '/sprint_monitoring/taskboard'
+    end
+
+    flash["notice"] = _('Changes were successfully saved.')
+    redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
   end
 
   def new_activity
