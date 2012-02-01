@@ -155,12 +155,9 @@ function showDevStats_2(event, ui){
 function assignDeveloper(event, ui){
 
             jQuery(function() {
-              us =jQuery(ui.item).attr('name')
-              developer = ui.item.id;
-              jQuery('#valor_'+us).val(developer.toString());             
 
-              alert('DEVELOPER: '+ developer)
-              alert('us:'+us)
+              developer = ui.item.id;
+
             });
   }
 

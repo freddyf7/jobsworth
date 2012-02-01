@@ -126,10 +126,10 @@
           <label style="font-style: italic"><%= us.owners.map{ |u| u.name }.join(", ") %></label>
         <% else %>
           <%#= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
-          <input type="text" name="<%= us.id %>" class="user_name_auto_complete_3"></input>
-          <input type="hidden" name="us_dev[]" value="<%= us.id %>"></input>
-          <input type="hidden" name="developer[]" id="valor_<%= us.id %>"></input>
+          <input type="text" class="user_name_auto_complete_3"></input>
 
+          <input type="hidden" name="us_dev[]" value="<%= us.id %>"></input>
+          <input type="hidden" name="developer[]"></input>
         <% end %>
       </td>
 
@@ -182,7 +182,7 @@
       </td>
 
     </tr>
-        
+
     <% end %>
 
     <tr>
@@ -217,11 +217,16 @@ jQuery("#project_id").val(project_id)
 </script>
 
 <script type="text/javascript">
-  /*function assignDeveloper(us,id){
+ /* function assignDeveloper(us){
     jQuery(function() {
-      
+
+              alert('id: '+ id)
+              jQuery('#'+id).autocomplete().result(function(event, data, formatted) {
+                developer = data.id;
+              });
+
               //us = jQuery(ui.item).attr('name')
-              developer = id;
+              //developer = id;
               jQuery('#valor_'+us).val(developer.toString());
 
               alert('DEVELOPER: '+ developer)
