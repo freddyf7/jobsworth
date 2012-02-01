@@ -78,7 +78,7 @@
     <td colspan="2">
       <br/>
       <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: ' %></label>
-      <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @iteracion_actual[0].name %></label>
+      <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @iteracion_actual[0].name %></label>     
     </td>
   <% else %>
     <td colspan="2">
@@ -93,6 +93,7 @@
 <br/>
 <br/>
 <form method="POST" action="/sprint_monitoring/save_taskboard?project_id=<%=  params[:project_id] %>">
+
 <table cellspacing="0" width="100%">
   <tr>
     <th style="width:22%;">Stories</th>
@@ -104,86 +105,91 @@
   </tr>
 
   <% if params[:project_id] %>
-  
+
     <script type="text/javascript">
       appendActivityPopup("/sprint_monitoring/new_activity", "body", false);
     </script>
 
     <% @user_stories.each do |us| %>
 
-    <% @todo_tasks = get_todo_activities(us.id) %>
-    <% @progress_tasks = get_progress_activities(us.id) %>
-    <% @verify_tasks = get_verify_activities(us.id) %>
-    <% @done_tasks = get_done_activities(us.id) %>
+      <% @todo_tasks = get_todo_activities(us.id) %>
+      <% @progress_tasks = get_progress_activities(us.id) %>
+      <% @verify_tasks = get_verify_activities(us.id) %>
+      <% @done_tasks = get_done_activities(us.id) %>
 
-    <tr>
+      <tr>
       
-      <td valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8">
-        <label style="font-size:14px;"><%=  us.name %></label>
-        <br/>
-        <label style="font-size:10px; font-weight: bold;">Assigned to: </label>
-        <% if us.owners.size > 0 %>
-          <label style="font-style: italic"><%= us.owners.map{ |u| u.name }.join(", ") %></label>
-        <% else %>
-          <%#= text_field(:user, :name, :size=> "12", :id => "user_name_auto_complete_2" ) %>
-          <input type="text" class="user_name_auto_complete_3"></input>
+        <td valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8">
+          <label style="font-size:14px;"><%=  us.name %></label>
+          <br/>
+          <label style="font-size:10px; font-weight: bold;">Assigned to: </label>
 
-          <input type="hidden" name="us_dev[]" value="<%= us.id %>"></input>
-          <input type="hidden" name="developer[]"></input>
-        <% end %>
-      </td>
-
-      <td align="center" valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8;border-left: solid 1px #D8D8D8;border-right: solid 1px #D8D8D8">
-        <span id="add_activity"><img onclick="load_popup(<%= us.id %>,<%= us.project_id %>);" src="/images/add.png" style="margin:0;padding:2px 0 0 0;cursor:pointer"/></span>
-      </td>
-
-      <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
-        <ul id="to_do" class="droptrue_<%= us.id %> ">
-          <% @todo_tasks.each do |to_do| %>
-            <li class="ui-state-default" title="<%=  to_do.description %> ">
-              <a style="font-size: 11px;text-decoration: none"><%=  to_do.name %></a>
-              <input type="hidden" name="todo_tasks[]" value="<%= to_do.id %>"></input>
-            </li>
+          <% if us.owners.size > 0 %>
+            <label style="font-style: italic"><%= us.owners.map{ |u| u.name }.join(", ") %></label>
+          <% else %>
+            <select style="font-size:10px;" class="planning_combobox" name="developer[]">
+              <%= options_developers_assign_us(session[:id_prj])%>
+            </select>
+            <input type="hidden" name="us_dev[]" value="<%= us.id %>"></input>
           <% end %>
-        </ul>
-      </td>
 
-      <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
-        <ul id="progress" class="droptrue_<%= us.id %>">
-          <% @progress_tasks.each do |prog| %>
-            <li class="ui-state-default" title="<%=  prog.description %> ">
-              <a style="font-size: 11px;text-decoration: none"><%=  prog.name %></a>
-              <input type="hidden" name="progress_tasks[]" value="<%= prog.id %>"></input>
-            </li>
+          <% if us.status == 1 %>
+            <br/>
+            <label style="font-size:10px;color: red;">Closed</label>
           <% end %>
-        </ul>
-      </td>
+        </td>
 
-      <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
-        <ul id="verify" class="droptrue_<%= us.id %>">
-          <% @verify_tasks.each do |verify| %>
-            <li class="ui-state-default" title="<%=  verify.description %> ">
-              <a style="font-size: 11px;text-decoration: none"><%=  verify.name %></a>
-              <input type="hidden" name="verify_tasks[]" value="<%= verify.id %>"></input>
-            </li>
-          <% end %>
-        </ul>
-      </td>
+        <td align="center" valign="middle" style="background-color: #F2F2F2; border-bottom:solid 1px #D8D8D8;border-left: solid 1px #D8D8D8;border-right: solid 1px #D8D8D8">
+          <span id="add_activity"><img title="Add new Task" onclick="load_popup(<%= us.id %>,<%= us.project_id %>);" src="/images/add.png" style="margin:0;padding:2px 0 0 0;cursor:pointer"/></span>
+        </td>
 
-      <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
-        <ul id="done" class="droptrue_<%= us.id %>">
-          <% @done_tasks.each do |done| %>
-            <li class="ui-state-default" title="<%=  done.description %> ">
-              <a style="font-size: 11px;text-decoration: none"><%=  done.name %></a>
-              <input type="hidden" name="done_tasks[]" value="<%= done.id %>"></input>
-            </li>
-          <% end %>
-        </ul>
-      </td>
+        <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
+          <ul id="to_do" class="droptrue_<%= us.id %> ">
+            <% @todo_tasks.each do |to_do| %>
+              <li class="ui-state-default" title="<%=  to_do.description %> ">
+                <a style="font-size: 11px;text-decoration: none"><%=  to_do.name %></a>
+                <input type="hidden" name="todo_tasks[]" value="<%= to_do.id %>"></input>
+              </li>
+            <% end %>
+          </ul>
+        </td>
 
-    </tr>
+        <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
+          <ul id="progress" class="droptrue_<%= us.id %>">
+            <% @progress_tasks.each do |prog| %>
+              <li class="ui-state-default" title="<%=  prog.description %> ">
+                <a style="font-size: 11px;text-decoration: none"><%=  prog.name %></a>
+                <input type="hidden" name="progress_tasks[]" value="<%= prog.id %>"></input>
+              </li>
+            <% end %>
+          </ul>
+        </td>
 
-    <% end %>
+        <td align="center" valign="top" style="background-color: #E6E6E6;border-bottom: solid 1px #D8D8D8">
+          <ul id="verify" class="droptrue_<%= us.id %>">
+            <% @verify_tasks.each do |verify| %>
+              <li class="ui-state-default" title="<%=  verify.description %> ">
+                <a style="font-size: 11px;text-decoration: none"><%=  verify.name %></a>
+                <input type="hidden" name="verify_tasks[]" value="<%= verify.id %>"></input>
+              </li>
+            <% end %>
+          </ul>
+        </td>
+
+        <td align="center" valign="top" style="background-color: #F2F2F2;border-bottom: solid 1px #D8D8D8">
+          <ul id="done" class="droptrue_<%= us.id %>">
+            <% @done_tasks.each do |done| %>
+              <li class="ui-state-default" title="<%=  done.description %> ">
+                <a style="font-size: 11px;text-decoration: none"><%=  done.name %></a>
+                <input type="hidden" name="done_tasks[]" value="<%= done.id %>"></input>
+              </li>
+            <% end %>
+          </ul>
+        </td>
+
+      </tr>
+
+    <% end %> <!-- @user_stories.each do -->
 
     <tr>
       <td align="center" colspan="6">
@@ -191,12 +197,14 @@
         <%= submit_tag _("Save"), :class => 'finish' %>
       </td>
     </tr>
-  
-  
-  <% end %>
+
+    <input type="hidden" name="current_iteration" value="<%=  @iteracion_actual[0].id %>"></input>
+
+  <% end %> <!--if params[:project_id] -->
 
 </table>
-  </form>
+  
+</form>
 
 <script type="text/javascript" charset="utf-8">
 function load_popup(us_id,project_id){

@@ -23,7 +23,8 @@ class SprintMonitoringController < ApplicationController
     if !params[:project_id].nil?
       hoy = Date.today
       @today_date = hoy.strftime("%d/%m/%Y")
-      @iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
+      iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
+      @iteracion_actual = iteracion_actual[0]
     end
 
     if !params[:milestone_id].nil?
@@ -226,19 +227,41 @@ class SprintMonitoringController < ApplicationController
     end
     end
 
+    iteration_id = params[:current_iteration]
+    stories = Task.where('milestone_id = ?',iteration_id)
+
+    stories.each do |us|
+      activities = StoryActivity.where('task_id = ?',us.id)
+      if activities.size > 0
+        done_activities = StoryActivity.where("task_id = ? and status = 'done'",us.id)
+          if activities.size == done_activities.size
+            us.status = 1
+            us.completed_at = Time.now.utc
+            us.save!
+
+            AgileMailer.closed_story_mail(us).deliver
+          else
+            us.status = 0
+            us.completed_at = nil
+            us.save!
+          end
+      end
+    end
+
     if params[:developer].size > 0
       developer = params[:developer]
       story = params[:us_dev]
       
-      for i in 0..params[:developer].size-1                
-        task_user = TaskUser.new
-        task_user.task_id = story[i]
-        task_user.user_id = developer[i]
-        task_user.type = 'TaskOwner'
-        task_user.unread = 0
-        task_user.save!
+      for i in 0..params[:developer].size-1
+        if(developer[i].to_i > 0)
+          task_user = TaskUser.new
+          task_user.task_id = story[i]
+          task_user.user_id = developer[i]
+          task_user.type = 'TaskOwner'
+          task_user.unread = 0
+          task_user.save!
+        end
       end
-
     end
 
     flash["notice"] = _('Changes were successfully saved.')

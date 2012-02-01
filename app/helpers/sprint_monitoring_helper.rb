@@ -25,6 +25,29 @@ module SprintMonitoringHelper
     end
   end
 
+  def options_developers_assign_us (selected_project)
+
+    if(selected_project.to_i > 0)
+    project = Project.find_by_id(selected_project)
+
+    users = project.users
+
+    last_customer = nil
+    options = []
+
+    options << [ h(project.customer.name), [] ]
+    last_customer = project.customer
+
+    users.each do |user|
+      options.last[1] << [ user.name, user.id ]
+    end
+
+    return grouped_options_for_select(options, nil,'Select...').html_safe
+
+    end
+    
+  end
+
   def get_todo_activities(task_id)
      todo_tasks = Array.new
      todo_tasks = StoryActivity.where("task_id = ? and status= 'to_do'",task_id)

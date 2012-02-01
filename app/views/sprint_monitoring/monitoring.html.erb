@@ -217,18 +217,22 @@
               <form class="new_meeting" id="new_meeting" action="/sprint_monitoring/save_meeting" method="post">
                 <table>
                   <tr>
-
                     <% if (!params[:project_id].nil?) %>
-                    <td colspan="2">
-                      <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: '+@iteracion_actual[0].name %></label>
-                      <%#= text_field 'selected', 'iteration', :readOnly => true, :value=> @iteracion_actual[0].name %>
+                      <td colspan="2">
+
+                      <% if !@iteracion_actual.nil? %>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: '+@iteracion_actual.name %></label>
+                        <input type="hidden" id="meeting_milestone_id" name="meeting[milestone_id]" value="<%= @iteracion_actual.id  %>"  />
+                      <% else %>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: None' %></label>
+                      <% end %>
+
                       </td>
                     <% else %>
                       <td colspan="2">
-                      <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
+                        <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
                       </td>
                     <% end %>
-
                   </tr>
        
                   <tr>
@@ -257,8 +261,7 @@
                     <td valign="top">
                       <label for="done_description"><%=_ 'Done' %></label>
                     </td>
-                    <td>
-                      <%#= text_area 'done', 'meeting', :rows => 8 %>
+                    <td>                      
                       <%= text_area(:meeting, :done, :rows=> 8) %>
                     </td>
                   </tr>
@@ -287,10 +290,8 @@
                     </td>
                   </tr>
 
-                </table>
-
-                <input type="hidden" id="meeting_milestone_id" name="meeting[milestone_id]" value="<%= @iteracion_actual[0].id  if !@iteracion_actual.nil? %>"  />
-            </form>
+                </table>                                                
+              </form>
             </fieldset>
           </td>
 
@@ -303,20 +304,19 @@
                   
                     <% if (!params[:project_id].nil?) %>
                       <td>
-                      <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Iteration' %></label>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Iteration' %></label>
                       </td>
                       <td>
-                      <%= text_field 'selected', 'iteration', :readOnly => true, :disabled => 'disabled'  %>
+                        <%= text_field 'selected', 'iteration', :readOnly => true, :disabled => 'disabled'  %>
                       </td>
                     <% else %>
                       <td>
-                      <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
+                        <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
                       </td>
                     <% end %>
                   
                 </tr>
               
-
                 <tr>
                   <td>
                     <br/>
@@ -340,32 +340,35 @@
                 </tr>
 
                 <tr>
-                    <td valign="top">
-                      <label for="done_description"><%=_ 'Done' %></label>
-                    </td>
-                    <td>
-                      <%#= text_area 'done', 'meeting', :rows => 8 %>
-                      <%= text_area(:previous_meeting, :done, :rows=> 8,:readOnly => true ) %>
-                    </td>
-                  </tr>
+                  <td valign="top">
+                    <label for="done_description"><%=_ 'Done' %></label>
+                  </td>
 
-                  <tr>
-                    <td valign="top">
-                      <label for="todo_description"><%=_ 'To Do' %></label>
-                    </td>
-                    <td>
-                      <%= text_area 'previous_meeting', 'to_do', :rows => 8,:readOnly => true %>
-                    </td>
-                  </tr>
+                  <td>                  
+                    <%= text_area(:previous_meeting, :done, :rows=> 8,:readOnly => true ) %>
+                  </td>
 
-                  <tr>
-                    <td valign="top">
-                      <label for="observations_description"><%=_ 'Observations' %></label>
-                    </td>
-                    <td>
-                      <%= text_area 'previous_meeting', 'observation', :rows => 8,:readOnly => true %>
-                    </td>
-                  </tr>
+                </tr>
+
+                <tr>
+                  <td valign="top">
+                    <label for="todo_description"><%=_ 'To Do' %></label>
+                  </td>
+
+                  <td>
+                    <%= text_area 'previous_meeting', 'to_do', :rows => 8,:readOnly => true %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td valign="top">
+                    <label for="observations_description"><%=_ 'Observations' %></label>
+                  </td>
+
+                  <td>
+                    <%= text_area 'previous_meeting', 'observation', :rows => 8,:readOnly => true %>
+                  </td>
+                </tr>
 
               </table>
 
