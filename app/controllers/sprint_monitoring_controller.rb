@@ -195,37 +195,81 @@ class SprintMonitoringController < ApplicationController
 
   def save_taskboard
 
+    #verificando cambios de status en las tareas de las historias y guardandolas
+
+    changed_activities = Array.new
+
     if params[:todo_tasks]
-    params[:todo_tasks].each do |act|
-      activity = StoryActivity.find_by_id(act.to_i)
-      activity.status = 'to_do'
-      activity.save!
-    end
+      params[:todo_tasks].each do |act|
+        activity = StoryActivity.find_by_id(act.to_i)
+        old_status_to_do = activity.status
+          if old_status_to_do != 'to_do'
+            activity.status = 'to_do'
+            activity.save!
+            changed_activities << activity
+            changed_activities << old_status_to_do
+            changed_activities << 'to_do'
+          end
+      end
     end
 
     if params[:progress_tasks]
-    params[:progress_tasks].each do |act|
-      activity = StoryActivity.find_by_id(act.to_i)
-      activity.status = 'progress'
-      activity.save!
-    end
+      params[:progress_tasks].each do |act|
+        activity = StoryActivity.find_by_id(act.to_i)
+        old_status_progress = activity.status
+          if old_status_progress != 'progress'
+            activity.status = 'progress'
+            activity.save!
+            changed_activities << activity
+            changed_activities << old_status_progress
+            changed_activities << 'progress'
+          end
+
+      end
     end
 
     if params[:verify_tasks]
-    params[:verify_tasks].each do |act|
-      activity = StoryActivity.find_by_id(act.to_i)
-      activity.status = 'verify'
-      activity.save!
-    end
+      params[:verify_tasks].each do |act|
+        activity = StoryActivity.find_by_id(act.to_i)
+        old_status_verify = activity.status
+          if old_status_verify != 'verify'
+            activity.status = 'verify'
+            activity.save!
+            changed_activities << activity
+            changed_activities << old_status_verify
+            changed_activities << 'verify'            
+          end
+      end
     end
 
     if params[:done_tasks]
-    params[:done_tasks].each do |act|
-      activity = StoryActivity.find_by_id(act.to_i)
-      activity.status = 'done'
-      activity.save!
+      params[:done_tasks].each do |act|
+        activity = StoryActivity.find_by_id(act.to_i)
+        old_status_done = activity.status
+          if old_status_done != 'done'
+            activity.status = 'done'
+            activity.save!
+            changed_activities << activity
+            changed_activities << old_status_done
+            changed_activities << 'done'            
+          end
+      end
     end
+
+    #las tareas que tuvieron cambios de status generan un email
+
+    n = 0
+    while n <= changed_activities.size-1 do
+      activity = changed_activities[n]
+      previous_status = changed_activities[n+1]
+      new_status = changed_activities[n+2]
+      us = Task.find_by_id(activity.task_id)
+      AgileMailer.changed_activity_mail(activity,previous_status,new_status,us).deliver
+      n=n+3
     end
+
+
+    # si todas las tareas estan 'done' se cierra la historia
 
     iteration_id = params[:current_iteration]
     stories = Task.where('milestone_id = ?',iteration_id)
@@ -235,18 +279,30 @@ class SprintMonitoringController < ApplicationController
       if activities.size > 0
         done_activities = StoryActivity.where("task_id = ? and status = 'done'",us.id)
           if activities.size == done_activities.size
-            us.status = 1
-            us.completed_at = Time.now.utc
-            us.save!
-
-            AgileMailer.closed_story_mail(us).deliver
+            if us.status == 0
+              us.status = 1
+              us.completed_at = Time.now.utc
+              if us.save!
+                taskuser = TaskUser.find_by_task_id(us.id)
+                user = User.find_by_id(taskuser.user_id)
+                AgileMailer.closed_story_mail(us,user).deliver
+              end
+            end
           else
-            us.status = 0
-            us.completed_at = nil
-            us.save!
+            if us.status == 1
+              us.status = 0
+              us.completed_at = nil
+              if us.save!
+                taskuser = TaskUser.find_by_task_id(us.id)
+                user = User.find_by_id(taskuser.user_id)
+                AgileMailer.reopened_story_mail(us,user).deliver
+              end
+            end
           end
       end
     end
+
+    #asignacion de developer a la historia
 
     if params[:developer].size > 0
       developer = params[:developer]
@@ -254,12 +310,16 @@ class SprintMonitoringController < ApplicationController
       
       for i in 0..params[:developer].size-1
         if(developer[i].to_i > 0)
+          user = User.find_by_id(developer[i])
+          us = Task.find_by_id(story[i])
           task_user = TaskUser.new
           task_user.task_id = story[i]
           task_user.user_id = developer[i]
           task_user.type = 'TaskOwner'
           task_user.unread = 0
-          task_user.save!
+          if task_user.save!
+            AgileMailer.assigned_story_mail(user,us).deliver
+          end
         end
       end
     end
@@ -271,7 +331,6 @@ class SprintMonitoringController < ApplicationController
   def new_activity
 
     @activity = StoryActivity.new
-
     @popup, @disable_title = true, true
     render :action => 'new_activity', :layout => false
 
@@ -283,9 +342,11 @@ class SprintMonitoringController < ApplicationController
 
     @activity = StoryActivity.new(params[:story_activity])
     @activity.status = "to_do"
-#    @activity.task_id = params[:us_id]
+    us = Task.find_by_id(@activity.task_id)
 
     if @activity.save
+      AgileMailer.new_activity_mail(us,@activity).deliver
+
       flash["notice"] = _('Activity was successfully saved.')
       redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
     end
