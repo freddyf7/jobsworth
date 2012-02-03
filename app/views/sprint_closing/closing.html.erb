@@ -1,0 +1,85 @@
+<br/>
+
+<div class="page_header">
+  <%=_ 'Sprint Closing'%>
+</div>
+
+<br/>
+
+<div class="demo">
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Iteration Closing</a></li>
+      <li><a href="#tabs-2">Daily meeting</a></li>
+    </ul>
+
+    <div id="tabs-1">
+
+      <table width="100%" cellspacing="0">
+        <tr>
+
+          <td style="width:25%;border-top:1px solid #BBBBBB;border-left:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
+            <label for="milestone_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_monitoring_project(this.value,0)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+
+            <br/>
+            <br/>
+
+            <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
+            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_monitoring_milestone(this.value,<%= session[:id_prj] %>)">
+              <%= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
+            </select>
+          </td>
+
+          <!--<td colspan="2" style="border-top: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
+            <table width="100%">
+              <tr>-->
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
+                    <legend><%= _'Beginning Date'%></legend>
+                    <a style="font-size:17px; font-weight: bold;"><%= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+                  </fieldset>
+                </td>
+
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
+                    <legend><%= _'Due Date'%></legend>
+                    <a style="font-size: 17px;font-weight: bold;"><%= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %> </a>
+                  </fieldset>
+                </td>
+
+                <td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;border-right:1px solid #BBBBBB;">
+                  <fieldset style="width:70px;height:50px;position: relative;">
+                    <legend><%= _'Remaining Days'%></legend>
+                    <a style="font-size: 17px;font-weight: bold;"><%=  @remaining_days %></a>
+                  </fieldset>
+                </td>
+             <!-- </tr>
+            </table>
+          </td>-->
+
+        </tr>
+
+
+        
+      </table>
+    </div>
+
+    <div id="tabs-2">
+
+      
+
+    </div>
+
+  </div>
+
+</div>
+
+<script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs();
+    });
+</script>

@@ -31,6 +31,9 @@
           <%= link_to _("Taskboard"), :controller => "sprint_monitoring", :action => "taskboard" %>
         </li>
         <li>
+          <%= link_to _("Sprint Closing"), :controller => "sprint_closing", :action => "closing" %>
+        </li>
+        <li>
           <%= link_to _("New US"), :controller => 'tasks', :action => 'new' %>
         </li>
          <li<%= " class='active'" if active.starts_with?('clients/') %>>
