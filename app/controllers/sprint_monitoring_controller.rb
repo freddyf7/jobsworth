@@ -23,7 +23,7 @@ class SprintMonitoringController < ApplicationController
     if !params[:project_id].nil?
       hoy = Date.today
       @today_date = hoy.strftime("%d/%m/%Y")
-      iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
+      iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",hoy,params[:project_id],hoy)
       @iteracion_actual = iteracion_actual[0]
     end
 
