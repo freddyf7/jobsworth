@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120126152526) do
+ActiveRecord::Schema.define(:version => 20120207150835) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -483,6 +483,13 @@ ActiveRecord::Schema.define(:version => 20120126152526) do
 
   add_index "resources_tasks", ["resource_id"], :name => "index_resources_tasks_on_resource_id"
   add_index "resources_tasks", ["task_id"], :name => "index_resources_tasks_on_task_id"
+
+  create_table "restrospectives", :force => true do |t|
+    t.integer  "milestone_id"
+    t.text     "observation"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "roadmap_milestones", :force => true do |t|
     t.string   "title"

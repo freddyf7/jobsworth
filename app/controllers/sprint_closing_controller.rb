@@ -8,6 +8,12 @@ class SprintClosingController < ApplicationController
       session[:id_prj] = params[:project_id]
     end
 
+    if params[:milestone_id].nil?
+      session[:id_milestone] =-1
+    else
+      session[:id_milestone] = params[:milestone_id]
+    end
+
     if !params[:project_id].nil?
       project_id = params[:project_id]
       today_date = Date.today
@@ -26,6 +32,70 @@ class SprintClosingController < ApplicationController
 
         @remaining_us = Task.where("milestone_id = ? and status = 0",iteration.id)
         @closed_us = Task.where("milestone_id = ? and status = 1",iteration.id)
+
+        #  generating data for burndown chart
+
+        if !@finished_iteration.nil?
+
+          @planned_points = 0
+
+          @finished_iteration.tasks.each do |us|
+            @planned_points = @planned_points + us.total_points
+          end
+
+          init_date = Date.civil(@finished_iteration.init_date.year,@finished_iteration.init_date.month,@finished_iteration.init_date.day)
+          due_date = Date.civil(@finished_iteration.due_date.year,@finished_iteration.due_date.month,@finished_iteration.due_date.day)
+          duration_days = (due_date - init_date).to_i
+
+          @burndown_data = Array.new
+          @closed_stories = Task.where("milestone_id = ? and status = 1",@finished_iteration.id)
+
+          dias = Array.new
+          for i in 0..duration_days
+            dias << init_date + i
+          end
+
+          today = Date.today
+          today = Date.civil(today.year,today.month,today.day)
+          n = 0
+          day = 1
+          remaining_points = @planned_points
+          
+          dias.each do |dia|
+            burned_today = 0
+            @burndown_data[n] = day
+            @burndown_data[n+1] = 0
+
+            if (dia >= today)
+              @burndown_data[n+1]= -1
+            else
+              @closed_stories.each do |us|
+                completed_at = us.completed_at.to_date
+                if(completed_at == dia)
+                  burned_today = burned_today + us.total_points
+                end
+              end
+              @burndown_data[n+1] = remaining_points - burned_today
+            end
+
+            remaining_points = remaining_points - burned_today
+            n = n + 2
+            day = day + 1
+          end
+
+          # Loading retrospectives
+          @retrospective = Array.new
+          project_iterations = Milestone.where("project_id = ?",params[:project_id])
+
+          project_iterations.each do |iter|
+            retrospective = Restrospective.where("milestone_id = ?",iter.id)
+            if !retrospective[0].nil?
+               @retrospective << retrospective[0]
+            end
+          end
+
+        end
+
       end
 
     end

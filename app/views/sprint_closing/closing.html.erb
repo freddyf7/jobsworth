@@ -11,7 +11,7 @@
   <div id="tabs">
     <ul>
       <li><a href="#tabs-1">Iteration Closing</a></li>
-      <li><a href="#tabs-2">Daily meeting</a></li>
+      <li><a href="#tabs-2">Retrospective Document</a></li>
     </ul>
 
     <div id="tabs-1">
@@ -21,7 +21,7 @@
 
           <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-bottom:20px;">
             <label for="milestone_project_id"><%=_ 'Project' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value)">
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value,0)">
               <%= options_for_user_projects_backlog(session[:id_prj])%>
             </select>
 
@@ -97,13 +97,14 @@
 
         </tr>
 
+        
         <tr>
           <td style="padding-top:15px;">
           <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-          <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name %></label>
+          <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
           <br/><br/><br/>
           
-            <% if params[:project_id] %>
+          <% if params[:project_id] and !@finished_iteration.nil? %>
 
             <div style="width:50%;float:left">
               <fieldset>
@@ -190,7 +191,7 @@
 
             </div>
 
-            <% end %> <!-- if params[:project_id] -->
+           <% end %> <!-- if params[:project_id] -->
 
           </td>
         </tr>
@@ -204,12 +205,108 @@
             </div>
           </td>
         </tr>
-                
+
+        <tr>
+          <td style="padding-top:25px;">
+            <div style="width:45%;" id="chart_div_4" ></div>
+          </td>
+        </tr>
+
       </table>
     </div>
 
     <div id="tabs-2">
-      
+
+      <table width="100%" cellspacing="0">
+        <tr>
+          <td style="width:25%;padding-top:10px;">
+            <label for="milestone_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value,1)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="width:25%;padding-top:10px;">
+            <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+            <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">
+            <a style="font-size:12px;">Add Retrospective </a><img title="Add new Task" onclick="" src="/images/add.png" style="margin:0;padding:2px 0 0 0;cursor:pointer"/>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="width:50%;padding-top:20px;">
+            <fieldset style="width:50%;padding-left:20px;padding-right:20px;padding-top:10px;padding-bottom:10px;">
+              <legend>Previous Retrospectives</legend>
+              <% if params[:project_id] and !@finished_iteration.nil? %>
+              <table style="width:100%;" cellspacing="0" width="100%" class="content">
+
+                <tr>
+                  <th style="background-color: #8A2908;color:white;width:5%;">Id</th>
+                  <th style="background-color: #8A2908;color:white;width:40%;font-size:10px;">Iteration</th>
+                  <th style="background-color: #8A2908;color:white;width:20%;font-size:10px;">Created At</th>
+                  <th style="background-color: #8A2908;color:white;width:6%;font-size:10px;">View</th>
+                  <th style="background-color: #8A2908;color:white;width:6%;font-size:10px;">Edit</th>
+                </tr>
+
+                  <% @retrospective.each do |retro| %>
+
+                  <tr>
+                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                      <%= retro.id %>
+                    </td>
+                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                      <%= Milestone.find_by_id(retro.milestone_id) %>
+                    </td>
+                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                      <%= retro.created_at.strftime("%d/%m/%Y") %>
+                    </td>
+                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;">
+                      <img title="View Retrospective" onclick="" src="/images/tuneup/magnify.png" style="padding-left:10px;cursor:pointer"/>
+                    </td>
+                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                      <img title="Edit Retrospective" onclick="" src="/images/edit.png" style="padding-left:10px;cursor:pointer"/>
+                    </td>
+                  </tr>
+
+                  <% end %>
+
+              </table>
+              <% end %>
+
+
+            </fieldset>
+          </td>
+        </tr>
+
+        <%#*<tr>%>
+          <%#*<td valign="middle" style="width:25%;padding-top: 10px;padding-bottom: 5px;">%>
+            <%#*<label for="milestone_milestone_id">%>
+            <%#=_ 'Iteration' %>
+            <%#*</label>%>
+            <%#*<select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_closing_milestone(this.value,%>
+<%#= session[:id_prj] %>
+  <%#*,1)">%>
+              <%#= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
+            <%#*</select>%>
+          <%#*</td>%>
+        <%#*</tr>%>
+
+        <%#*<tr>%>
+          <%#*<td>%>
+
+            
+
+          <%#*</td>%>
+        <%#*</tr>%>
+      </table>
+
     </div>
 
   </div>
@@ -218,9 +315,25 @@
 
 <script type="text/javascript" charset="utf-8">
     jQuery(function() {
-      jQuery( "#tabs" ).tabs();
+      jQuery( "#tabs" ).tabs(
+        {
+          select: function(event, ui) {
+             if (jQuery( "#tabs" ).tabs( "option", "selected") == '1'){
+               load_finished_iteration();
+             }
+          }
+        }
+      );
     });
 </script>
+
+<% if (params[:tab].to_s == "1" ) %>
+  <script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs( "option", "selected", 1 );
+    });
+  </script>
+<% end %>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -230,13 +343,19 @@
 
 <script type="text/javascript">
 
-  id_milestone = <%= @finished_iteration.id %>
-  var params = {milestone_id : id_milestone};
-  var url = "/sprint_closing/completed_stories";
+load_finished_iteration();
 
-  google.load("visualization", "1", {packages:["corechart"]});
+function load_finished_iteration(){
 
-  jQuery.getJSON(url, params, function(data_json) {
+  <% if(!@finished_iteration.nil?) %>
+
+    id_milestone = <%= @finished_iteration.id %>
+    var params = {milestone_id : id_milestone};
+    var url = "/sprint_closing/completed_stories";
+
+    google.load("visualization", "1", {packages:["corechart"]});
+  
+    jQuery.getJSON(url, params, function(data_json) {
 
 //---------------------Completed us graphic------------------------------------
     var data = new google.visualization.DataTable();
@@ -309,6 +428,45 @@
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_3'));
     chart.draw(data, options);
 
+
+//--------------------------Burndown graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Days');
+    data.addColumn('number', 'Points');
+    var arreglo = <%= @burndown_data %>;
+
+    for (i=0;i<arreglo.length;i++){
+      if (arreglo[i+1]==-1){
+        data.addRows([
+          [arreglo[i].toString(),null],
+        ]);
+      }
+      else{
+        data.addRows([
+          [arreglo[i].toString(),arreglo[i+1]],
+        ]);
+      }
+      i++;
+    };
+
+    var options = {
+      height: 275,
+      title: 'Burndown chart',
+      vAxis: {maxValue: <%=  @planned_points %>,maxAlternation: 5},
+      colors:['#31B404']
+
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div_4'));
+    chart.draw(data, options);
+
   });
 
+ <% end %>
+
+}
+
 </script>
+
+
