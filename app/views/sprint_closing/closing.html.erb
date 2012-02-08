@@ -276,6 +276,10 @@
                     </td>                    
                   </tr>
 
+                  <script type="text/javascript">
+                    appendViewRetrospectivePopup("/sprint_closing/view_retrospective?retrospective_id="+<%= retro.id %>, "body", false);
+                  </script>
+
                   <% end %>
 
               </table>
@@ -470,6 +474,7 @@ function load_retrospective_popup(iteration_id,iteration_name,project_id){
 
 function load_view_retrospective_popup(iteration_name,retrospective_id){
 
+alert('retro id:'+retrospective_id)
     add_view_retrospective_popup();
     jQuery("#retrospective_id").val(retrospective_id)
     jQuery("#finished_iteration_2").text(iteration_name)
@@ -482,7 +487,5 @@ function load_view_retrospective_popup(iteration_name,retrospective_id){
   appendActivityPopup("/sprint_closing/new_retrospective", "body", false);
 </script>
 
-<script type="text/javascript">
-  appendViewRetrospectivePopup("/sprint_closing/view_retrospective", "body", false);
-</script>
+
 
