@@ -85,7 +85,7 @@ class SprintClosingController < ApplicationController
 
           # Loading retrospectives
           @retrospective = Array.new
-          project_iterations = Milestone.where("project_id = ?",params[:project_id])
+          project_iterations = Milestone.where("project_id = ?",params[:project_id])         
 
           project_iterations.each do |iter|
             retrospective = Restrospective.where("milestone_id = ?",iter.id)
@@ -100,6 +100,35 @@ class SprintClosingController < ApplicationController
 
     end
 
+  end
+
+  def new_retrospective
+
+    @retrospective = Restrospective.new
+    @popup, @disable_title = true, true
+    render :action => 'new_retrospective', :layout => false
+
+    return
+
+  end  
+
+  def save_retrospective
+
+    retro = Restrospective.new(params[:retrospective])
+    if retro.save
+      flash["notice"] = _('Retrospective was successfully saved.')
+      redirect_to '/sprint_closing/closing?project_id='+params[:project_id]+'&tab=1'
+    end
+
+  end
+
+  def view_retrospective
+    @retrospective = Restrospective.find_by_id(params[:retrospective_id])
+
+    @popup, @disable_title = true, true
+    render :action => 'view_retrospective', :layout => false
+
+    return
   end
 
   def move_stories

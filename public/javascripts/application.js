@@ -210,6 +210,16 @@ function appendActivityPopup(url, selector, callback) {
     }
 }
 
+function appendViewRetrospectivePopup(url, selector, callback) {
+    if (jQuery('span#ui_popup_dialog_2').size() == 0){
+      jQuery.get(url, { }, function(data) {
+        var html = "<span style='display: none' id='ui_popup_dialog_2'>"+ data +"</span>"
+        jQuery(selector).prepend(html);
+        if (callback) { callback.call(); }
+      });
+    }
+}
+
 function updatePositionFields(listSelector) {
     var list = jQuery(listSelector);
     var children = list.children();

@@ -590,7 +590,7 @@ function add_milestone_popup() {
 }
 
 function add_activity_popup() {
-
+    
     jQuery("#story_activity_name").val(" ");
     jQuery("#story_activity_description").val(" ");
     jQuery("#us_id").val("");
@@ -628,6 +628,60 @@ function add_activity_popup() {
 	return false;
 
 }
+
+
+function add_retrospective_popup() {
+
+    jQuery("#finished_iteration").text(" ");
+    jQuery("#retrospective_observation").val(" ");
+
+    var popup = jQuery("span#ui_popup_dialog").dialog({
+        autoOpen: false,
+	title: 'New Retrospective',
+        modal:true,
+        width: 400,
+        draggable: true,
+        close: function(event, ui) {
+            jQuery('span#ui_popup_dialog').dialog('destroy');
+        }
+
+	});
+	popup.dialog('open');
+
+        // refresh milestone and destroy dialog after a successful milestone addition
+        jQuery('#add_new_retrospective').bind("ajax:success", function(event, json, xhr) {
+             jQuery('span#ui_popup_dialog').dialog('destroy');
+        });
+
+	return false;
+}
+
+function add_view_retrospective_popup() {
+
+    jQuery("#finished_iteration").text(" ");
+    jQuery("#retrospective_observation").val(" ");
+
+    var popup = jQuery("span#ui_popup_dialog_2").dialog({
+        autoOpen: false,
+	title: 'View Retrospective',
+        modal:true,
+        width: 400,
+        draggable: true,
+        close: function(event, ui) {
+            jQuery('span#ui_popup_dialog_2').dialog('destroy');
+        }
+
+	});
+	popup.dialog('open');
+
+        // refresh milestone and destroy dialog after a successful milestone addition
+        jQuery('#add_new_retrospective').bind("ajax:success", function(event, json, xhr) {
+             jQuery('span#ui_popup_dialog_2').dialog('destroy');
+        });
+
+	return false;
+}
+
 
 
 function toogleDone(sender) {

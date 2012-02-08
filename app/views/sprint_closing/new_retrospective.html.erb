@@ -1,0 +1,46 @@
+<form id="add_new_retrospective" action="/sprint_closing/save_retrospective"  method="post">
+<table>
+
+  <tr>
+    <td>
+      <label style="font-size:12px;" for="milestone_name">Iteration: </label>
+    </td>
+    <td>
+      <label id="finished_iteration" style="text-decoration: none;color:black;font-size:15px;font-style:italic"></label>
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="padding-top:15px;">
+      <label>Date: </label>
+    </td>
+    <td style="padding-top:15px;">
+      <label id="today_date"><%= Date.today.strftime("%d/%m/%Y")  %> </label>
+    </td>
+  </tr>
+
+  <tr>
+    <td valign="top" style="padding-top:15px;">
+      <label for="beginning_date">Observations: </label>
+    </td>
+    <td style="padding-top:15px;">
+      <%= text_area 'retrospective', 'observation', :rows => 10 %>
+    </td>
+  </tr>
+
+  <input id="iteration_id" type="hidden" name="retrospective[milestone_id]"> </input>
+  <input id="project_id" type="hidden" name="project_id"></input>
+
+  <tr>
+    <td>
+      <%= submit_tag _("Save"), :class => 'finish' %>
+    </td>
+  </tr>
+</table>
+
+</form>
+
+
+
+
+
