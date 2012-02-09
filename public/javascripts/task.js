@@ -658,8 +658,8 @@ function add_retrospective_popup() {
 
 function add_view_retrospective_popup() {
 
-    jQuery("#finished_iteration").text(" ");
-    jQuery("#retrospective_observation").val(" ");
+    jQuery("#finished_iteration_2").text(" ");
+    jQuery("#retrospective_observation_2").val(" ");
 
     var popup = jQuery("span#ui_popup_dialog_2").dialog({
         autoOpen: false,

@@ -25,12 +25,12 @@
     </td>
     <td style="padding-top:15px;">
       <%#= text_area 'retrospective',@retrospective.observation.to_s, 'observation', :rows => 10 %>
-      <textarea rows="10" cols="17" id="retrospective" name="retrospective[observation]"><%= @retrospective.observation %>  </textarea>
+      <textarea readonly rows="10" cols="40" id="retrospective_observation_2" name="retrospective[observation]"><%= @retrospective.observation %>  </textarea>
 
     </td>
   </tr>
 
-  <input id="retrospective_id" type="hidden" name="retrospective_id"></input>
+  <%#*<input id="retrospective_id" type="hidden" name="retrospective_id"></input>%>
 
 </table>
 
