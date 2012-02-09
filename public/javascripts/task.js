@@ -658,9 +658,6 @@ function add_retrospective_popup() {
 
 function add_view_retrospective_popup() {
 
-    jQuery("#finished_iteration_2").text(" ");
-    jQuery("#retrospective_observation_2").val(" ");
-
     var popup = jQuery("span#ui_popup_dialog_2").dialog({
         autoOpen: false,
 	title: 'View Retrospective',
@@ -677,6 +674,29 @@ function add_view_retrospective_popup() {
         // refresh milestone and destroy dialog after a successful milestone addition
         jQuery('#add_new_retrospective').bind("ajax:success", function(event, json, xhr) {
              jQuery('span#ui_popup_dialog_2').dialog('destroy');
+        });
+
+	return false;
+}
+
+function add_edit_retrospective_popup() {
+
+    var popup = jQuery("span#ui_popup_dialog_3").dialog({
+        autoOpen: false,
+	title: 'Edit Retrospective',
+        modal:true,
+        width: 400,
+        draggable: true,
+        close: function(event, ui) {
+            jQuery('span#ui_popup_dialog_3').dialog('destroy');
+        }
+
+	});
+	popup.dialog('open');
+
+        // refresh milestone and destroy dialog after a successful milestone addition
+        jQuery('#edit_retrospective').bind("ajax:success", function(event, json, xhr) {
+             jQuery('span#ui_popup_dialog_3').dialog('destroy');
         });
 
 	return false;

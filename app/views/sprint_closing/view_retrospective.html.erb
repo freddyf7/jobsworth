@@ -1,4 +1,3 @@
-<form id="add_new_retrospective" action="/sprint_closing/view_retrospective"  method="post">
 <table>
 
   <tr>
@@ -15,7 +14,7 @@
       <label>Date: </label>
     </td>
     <td style="padding-top:15px;">
-      <label id="today_date"><%= @retrospective.created_at.strftime("%d/%m/%Y")  %> </label>
+      <label id="retrospective_date_2"></label>
     </td>
   </tr>
 
@@ -23,15 +22,10 @@
     <td valign="top" style="padding-top:15px;">
       <label for="beginning_date">Observations: </label>
     </td>
-    <td style="padding-top:15px;">
-      <%#= text_area 'retrospective',@retrospective.observation.to_s, 'observation', :rows => 10 %>
-      <textarea readonly rows="10" cols="40" id="retrospective_observation_2" name="retrospective[observation]"><%= @retrospective.observation %>  </textarea>
-
+    <td style="padding-top:15px;">      
+      <textarea readonly rows="10" cols="40" id="retrospective_observation_2" name="retrospective[observation]"></textarea>
     </td>
   </tr>
 
-  <%#*<input id="retrospective_id" type="hidden" name="retrospective_id"></input>%>
-
 </table>
 
-</form>

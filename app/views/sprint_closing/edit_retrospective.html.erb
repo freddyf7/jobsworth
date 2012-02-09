@@ -1,0 +1,40 @@
+<form id="edit_retrospective" action="/sprint_closing/update_retrospective"  method="post">
+
+<table>
+
+  <tr>
+    <td>
+      <label style="font-size:12px;" for="milestone_name">Iteration: </label>
+    </td>
+    <td>
+      <label id="finished_iteration_3" style="text-decoration: none;color:black;font-size:15px;font-style:italic"></label>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding-top:15px;">
+      <label>Date: </label>
+    </td>
+    <td style="padding-top:15px;">
+      <label id="retrospective_date_3"></label>
+    </td>
+  </tr>
+
+  <tr>
+    <td valign="top" style="padding-top:15px;">
+      <label for="beginning_date">Observations: </label>
+    </td>
+    <td style="padding-top:15px;">
+      <textarea rows="10" cols="40" id="retrospective_observation_3" name="retrospective_observation"></textarea>
+    </td>
+  </tr>
+
+</table>
+
+<input id="retrospective_edit_id" type="hidden" name="retrospective_id"> </input>
+<input id="project_edit_id" type="hidden" name="project_id"></input>
+
+<%= submit_tag _("Save"), :class => 'finish' %>
+
+
+</form>

@@ -94,12 +94,17 @@ class SprintClosingController < ApplicationController
             end
           end
 
+          if !@finished_iteration.nil?
+            @actual_retrospective = Restrospective.find_by_milestone_id(@finished_iteration.id)
+          end
+
         end
 
       end
 
     end
 
+#    flash["notice"] = _('Retrospective:'+@actual_retrospective.observation)
   end
 
   def new_retrospective
@@ -122,13 +127,48 @@ class SprintClosingController < ApplicationController
 
   end
 
+
   def view_retrospective
-    @retrospective = Restrospective.find_by_id(params[:retrospective_id])
 
     @popup, @disable_title = true, true
     render :action => 'view_retrospective', :layout => false
 
     return
+  end
+
+  def update_retrospective
+
+    observation = params[:retrospective_observation]
+
+    retrospective_id = params[:retrospective_id]
+
+    retrospective = Restrospective.find_by_id(retrospective_id)
+
+    retrospective.observation = observation
+
+    if retrospective.save!
+       flash["notice"] = _('Retrospective was successfully updated.')
+       redirect_to '/sprint_closing/closing?project_id='+params[:project_id]+'&tab=1'
+    end
+  end
+
+  def edit_retrospective
+
+    @popup, @disable_title = true, true
+    render :action => 'edit_retrospective', :layout => false
+
+    return
+  end
+
+  def load_retrospective
+    iteration_id = params[:iteration_id]
+    retrospective_id = params[:retrospective_id]
+
+    @iteration = Milestone.find_by_id(iteration_id)
+    @retrospective = Restrospective.find_by_id(retrospective_id)
+
+    render :partial => 'sprint_closing/load_retrospective.json'
+
   end
 
   def move_stories
@@ -179,7 +219,7 @@ class SprintClosingController < ApplicationController
       end
 
     end
-    render :partial => 'sprint_monitoring/completed_stories'
+    render :partial => 'sprint_closing/completed_stories'
 
   end
 

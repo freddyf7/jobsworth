@@ -97,16 +97,16 @@
 
         </tr>
 
-        
+        <% if params[:project_id] %>
         <tr>
           <td style="padding-top:15px;">
-          <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-          <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
-          <br/><br/><br/>
-          
-          <% if params[:project_id] and !@finished_iteration.nil? %>
-          
+            <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+            
+ 
+          <% if !@finished_iteration.nil? %>
 
+            <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name  %></label>
+            <br/><br/><br/>
             <div style="width:50%;float:left">
               <fieldset>
                 <legend>Remaining Stories</legend>
@@ -192,11 +192,22 @@
 
             </div>
 
+           
+            <% else %>
+              <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">There's no iteration finishing today for this project</label>
            <% end %>  
-          <%#*if params[:project_id]%>
+         
 
           </td>
         </tr>
+        <% else %>
+        <tr>
+              <td style="width:25%;padding-top:10px;">
+                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+                <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">Please select a project</label>
+              </td>
+            </tr>
+        <% end %> <%#*if params[:project_id]%>
 
         <tr>
           <td style="padding-top:20px;">
@@ -229,63 +240,95 @@
           </td>
         </tr>
 
-        <tr>
-          <td style="width:25%;padding-top:10px;">
-            <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-            <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
-          </td>
-        </tr>
+        <% if params[:project_id] %>
 
-        <% if params[:project_id] and !@finished_iteration.nil? %>
+          <% if @finished_iteration.nil? %>
 
+            <tr>
+              <td style="width:25%;padding-top:10px;">
+                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+                <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">There's no iteration finishing today for this project</label>
+              </td>
+            </tr>
 
-        <tr>
-          <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">            
-              <a onclick="load_retrospective_popup(<%= @finished_iteration.id %>,'<%= @finished_iteration.name %>',<%= @finished_iteration.project_id %>);" style="cursor:pointer;font-size:12px;color:blue;">Add Retrospective + </a>            
-          </td>
-        </tr>
+          <% else %>
 
-        <tr>
-          <td style="width:50%;padding-top:20px;">
-            <fieldset style="width:50%;padding-left:20px;padding-right:20px;padding-top:10px;padding-bottom:10px;">
-              <legend>Previous Retrospectives</legend>
+            <tr>
+              <td style="width:25%;padding-top:10px;">
+                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+                <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
+              </td>
+            </tr>
+        
+            <%  if @actual_retrospective.nil? %>
+
+              <tr>
+                <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">
+                  <a onclick="new_retrospective_popup(<%= @finished_iteration.id %>,'<%= @finished_iteration.name %>',<%= @finished_iteration.project_id %>);" style="cursor:pointer;font-size:12px;color:blue;">Add Retrospective + </a>
+                </td>
+              </tr>
+
+            <% else %>
+
+              <tr>
+                <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">
+                  <a onclick="edit_retrospective_popup(<%= @actual_retrospective.id %>,<%= @finished_iteration.id %>,<%= @finished_iteration.project_id %>)" style="cursor:pointer;font-size:12px;color:blue;">Edit Retrospective + </a>
+                </td>
+              </tr>
+
+            <% end %>
+
+          <tr>
+            <td style="width:50%;padding-top:20px;">
+              <fieldset style="width:50%;padding-left:20px;padding-right:20px;padding-top:10px;padding-bottom:10px;">
+                <legend>Previous Retrospectives</legend>
               
-              <table style="width:100%;" cellspacing="0" width="100%" class="content">
+                <table style="width:100%;" cellspacing="0" width="100%" class="content">
 
-                <tr>
-                  <th style="background-color: #8A2908;color:white;width:5%;">Id</th>
-                  <th style="background-color: #8A2908;color:white;width:40%;font-size:10px;">Iteration</th>
-                  <th style="background-color: #8A2908;color:white;width:20%;font-size:10px;">Created At</th>
-                  <th style="background-color: #8A2908;color:white;width:6%;font-size:10px;">View</th>
-                </tr>
-
-                  <% @retrospective.each do |retro| %>
-                  <%= retro_iteration = Milestone.find_by_id(retro.milestone_id) %>
                   <tr>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
-                      <%= retro.id %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= retro_iteration.name %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= retro.created_at.strftime("%d/%m/%Y") %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;">
-                      <img title="View Retrospective" onclick="load_view_retrospective_popup('<%= retro_iteration.name %>',<%= retro.id %>)" src="/images/tuneup/magnify.png" style="padding-left:10px;cursor:pointer"/>
-                    </td>                    
+                    <th style="background-color: #8A2908;color:white;width:5%;">Id</th>
+                    <th style="background-color: #8A2908;color:white;width:40%;font-size:10px;">Iteration</th>
+                    <th style="background-color: #8A2908;color:white;width:20%;font-size:10px;">Created At</th>
+                    <th style="background-color: #8A2908;color:white;width:6%;font-size:10px;">View</th>
                   </tr>
 
-                  
+                  <% @retrospective.each do |retro| %>
+
+                    <% retro_iteration = Milestone.find_by_id(retro.milestone_id) %>
+                    <tr>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                        <%= retro.id %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                        <%= retro_iteration.name %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                        <%= retro.created_at.strftime("%d/%m/%Y") %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
+                        <img title="View Retrospective" onclick="view_retrospective_popup('<%= retro_iteration.id %>',<%= retro.id %>)" src="/images/tuneup/magnify.png" style="padding-left:10px;cursor:pointer"/>
+                      </td>
+                    </tr>
 
                   <% end %>
 
-              </table>
+                </table>
               
-            </fieldset>
-          </td>
-        </tr>
+              </fieldset>
+            </td>
+          </tr>
 
+         <% end %>
+
+
+        <% else %>
+
+            <tr>
+              <td style="width:25%;padding-top:10px;">
+                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
+                <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">Please select a project</label>
+              </td>
+            </tr>
         <% end %>
 
       </table>
@@ -296,7 +339,7 @@
 
 </div>
 
-<!------------------------- Generando tabs ------------------------>
+<%#*<!------------------------- Generando tabs ------------------------>%>
 
 <script type="text/javascript" charset="utf-8">
     jQuery(function() {
@@ -312,7 +355,7 @@
     });
 </script>
 
-<!------------------ Verificando cual tab debe seleccionarse ---------->
+<%#*<!------------------ Verificando cual tab debe seleccionarse ---------->%>
 
 <% if (params[:tab].to_s == "1" ) %>
   <script type="text/javascript" charset="utf-8">
@@ -323,7 +366,7 @@
 <% end %>
 
 
-<!-------------------------- Iniciando Charts --------------------------->
+<%#*<!-------------------------- Iniciando Charts --------------------------->%>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -459,25 +502,49 @@ function load_finished_iteration(){
 
 </script>
 
+<%#*<!---------------------- Funciones para cargar popups -------------------->%>
+
 <script type="text/javascript" charset="utf-8">
   
-function load_retrospective_popup(iteration_id,iteration_name,project_id){
-    
+function new_retrospective_popup(iteration_id,iteration_name,project_id){
+
     add_retrospective_popup();
     jQuery("#iteration_id").val(iteration_id)
     jQuery("#project_id").val(project_id)
     jQuery("#finished_iteration").text(iteration_name)
-    
+
 }
 
-function load_view_retrospective_popup(iteration_name,retrospective_id){
-
-
-    appendViewRetrospectivePopup("/sprint_closing/view_retrospective?retrospective_id="+retrospective_id, "body", false);
-    jQuery("#retrospective_id").val(retrospective_id)
-    jQuery("#finished_iteration_2").text(iteration_name)
+function view_retrospective_popup(id_iteration,id_retrospective){
 
     add_view_retrospective_popup();
+
+    var params = {retrospective_id : id_retrospective,iteration_id : id_iteration};
+    var url = "/sprint_closing/load_retrospective";
+
+    jQuery.getJSON(url, params, function(data_json) {
+      jQuery('#retrospective_observation_2').val(data_json.retrospective_obs)
+      jQuery('#retrospective_date_2').text(data_json.retrospective_date)
+      jQuery('#finished_iteration_2').text(data_json.iteration_name)
+      
+    });
+
+}
+
+function edit_retrospective_popup(id_retrospective,id_iteration,project_id){
+
+    add_edit_retrospective_popup();
+
+    var params = {retrospective_id : id_retrospective,iteration_id : id_iteration};
+    var url = "/sprint_closing/load_retrospective";
+
+    jQuery.getJSON(url, params, function(data_json) {
+      jQuery('#retrospective_observation_3').val(data_json.retrospective_obs)
+      jQuery('#retrospective_date_3').text(data_json.retrospective_date)
+      jQuery('#finished_iteration_3').text(data_json.iteration_name)
+      jQuery('#retrospective_edit_id').val(id_retrospective)
+      jQuery("#project_edit_id").val(project_id)
+    });
 
 }
 
@@ -485,6 +552,8 @@ function load_view_retrospective_popup(iteration_name,retrospective_id){
 
 <script type="text/javascript">
   appendActivityPopup("/sprint_closing/new_retrospective", "body", false);
+  appendViewRetrospectivePopup("/sprint_closing/view_retrospective", "body", false);
+  appendEditRetrospectivePopup("/sprint_closing/edit_retrospective", "body", false);
 </script>
 
 
