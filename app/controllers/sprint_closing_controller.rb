@@ -178,10 +178,15 @@ class SprintClosingController < ApplicationController
 
     stories.each do |us_id|
         move_to = values[us_id]
-        task = Task.find_by_id(us_id)
+        task = Task.find_by_id(us_id.to_i)
         task.milestone_id = move_to
         task.save!
     end
+
+#    task = Task.find_by_id(4)
+#
+#    task.milestone_id = 9
+#    task.save
 
     redirect_to '/sprint_closing/closing?project_id='+params[:project_id]
     

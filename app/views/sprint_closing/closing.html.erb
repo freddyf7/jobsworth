@@ -430,9 +430,9 @@ function load_finished_iteration(){
       slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
 
-    jQuery("#burned_points").text(parseFloat(data_json.burned_points))
+    /*jQuery("#burned_points").text(parseFloat(data_json.burned_points))
     jQuery("#remaining_points").text(parseFloat(data_json.remaining_points))
-    jQuery("#planified_points").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))
+    jQuery("#planified_points").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))*/
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
     chart.draw(data, options);
@@ -455,8 +455,8 @@ function load_finished_iteration(){
       slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
 
-    jQuery("#added_value").text(parseFloat(data_json.added_value))
-    jQuery("#remaining_value").text(parseFloat(data_json.remaining_value))
+    /*jQuery("#added_value").text(parseFloat(data_json.added_value))
+    jQuery("#remaining_value").text(parseFloat(data_json.remaining_value))*/
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_3'));
     chart.draw(data, options);
