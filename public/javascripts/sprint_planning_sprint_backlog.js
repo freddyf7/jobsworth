@@ -264,13 +264,13 @@ jQuery("#cargarSprint").click(myReload).keyup(function (e) {
 //    }
 //  });
 
-  jQuery("#sprint_backlog_list").jqGrid('navButtonAdd','#sprint_backlog_pager', {
-        caption: "Export",
-        title: "Export data to CSV",
-        onClickButton : function () {
-      window.location.href="/tasks/get_csv";
-        }
-  });
+//  jQuery("#sprint_backlog_list").jqGrid('navButtonAdd','#sprint_backlog_pager', {
+//        caption: "Export",
+//        title: "Export data to CSV",
+//        onClickButton : function () {
+//      window.location.href="/tasks/get_csv";
+//        }
+//  });
 
   jQuery("#sprint_backlog_list").jqGrid('navButtonAdd','#sprint_backlog_pager', {
       caption: jQuery("#sprint_groupby").html(),

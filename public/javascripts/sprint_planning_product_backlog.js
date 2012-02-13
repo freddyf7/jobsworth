@@ -216,13 +216,13 @@ function initTaskList() {
 //    }
 //  });
 
-  jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
-        caption: "Export",
-        title: "Export data to CSV",
-        onClickButton : function () {
-      window.location.href="/tasks/get_csv";
-        }
-  });
+//  jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
+//        caption: "Export",
+//        title: "Export data to CSV",
+//        onClickButton : function () {
+//      window.location.href="/tasks/get_csv";
+//        }
+//  });
 
   jQuery("#backlog_list").jqGrid('navButtonAdd','#backlog_pager', {
       caption: jQuery("#groupby").html(),

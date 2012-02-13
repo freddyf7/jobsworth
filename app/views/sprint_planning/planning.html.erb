@@ -71,7 +71,7 @@
           <table cellpadding="0" cellspacing="0" width="95%" style="padding-left:1em;">
             <tr>
               <td align="left" class="page_header">
-                <div><%=_ 'Iterations - Project:' %></div>
+                <div><%=_ 'Iterations - Project: '+@project.name %></div>
               </td>
             </tr>
             <tr>
@@ -118,7 +118,7 @@
                     
             <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
             <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_milestone_planning_backlog(this.value,<%= session[:id_prj]  %>,1 )" >
-              <%= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
+              <%= options_iteration_sprint_planning(session[:id_prj],session[:id_milestone])%>
             </select>
           </fieldset>
 
@@ -159,17 +159,18 @@
           </fieldset>
          </td>              
 
-         <td style="width:750px;">
-          <div id="backlogWrap" style="width:720px;float:right;">
+         <td style="width:750px;border:1px solid #BBBBBB;padding-top:15px;" align="center">
+          <div id="backlogWrap" style="width:720px;">
             <div id="groupby" style="display:none">
               <%= select_tag("chngroup", options_for_changegroup, :onChange => "change_group()") %>
             </div>
 
             <%= yield(:planning_backlog_list) %>
 
-            <button id="saveSprint" type="button" onClick="saveSprint();">Save</button>
+            <button style="float:right;" id="saveSprint" type="button" onClick="saveSprint();">Save</button>
+            
           </div>
-
+      
           <div id="chart_div"></div>
 
          </td>

@@ -117,6 +117,7 @@ class SprintPlanningController < ApplicationController
       us.save!
     end
 
+    flash["notice"] = _('Sprint was successfully saved.')
     redirect_to '/sprint_planning/planning'
   end
 

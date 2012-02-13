@@ -304,7 +304,7 @@
                     </td>
                     <td>
                       <br/>
-                      <select class="planning_combobox" id="meeting_user_id" name="meeting[user_id]" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
+                      <select class="planning_combobox" id="meeting_user_id" name="meeting[user_id]">
                         <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
                       </select>
                     </td>
