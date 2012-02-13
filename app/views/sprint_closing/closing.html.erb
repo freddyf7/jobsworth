@@ -26,7 +26,7 @@
             </select>
 
             <div style="float: right;width:50%;margin-right:20%">
-              <div style="width:200px;height:80px;float:left;">
+              <div style="width:200px;height:110px;float:left;">
 
                 <fieldset style="width:100%;height:100%;">
                   <legend>Finished Iteration</legend>
@@ -53,6 +53,22 @@
                       </td>
                       <td>
                         <a  id="due_date" style="color:black;font-size:11px;"><%= @finished_iteration.due_date.strftime("%d/%m/%Y") if(!@finished_iteration.nil?) %></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="due_date" style="font-size:11px;font-weight: bold;">Velocity: </label>
+                      </td>
+                      <td>
+                        <a  id="velocity" style="color:black;font-size:11px;"></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="due_date" style="font-size:11px;font-weight: bold;">Avg.Velocity(p/day): </label>
+                      </td>
+                      <td>
+                        <a  id="avg_velocity" style="color:black;font-size:11px;"></a>
                       </td>
                     </tr>
                   </table>
@@ -138,10 +154,22 @@
                       <%= task.owners.map{ |u| u.name }.join(", ") %>
                     </td>
                     <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <input title="Return to backlog" type="radio" checked name="us[<%= task.id %>]" value="0" />
+                      <% if task.split_status.nil? %>
+                        <input title="Return to backlog" type="radio" checked name="us[<%= task.id %>]" value="0" />
+                      <% else %>
+                        <% if task.split_status == 0 %>
+                          <img title="Moved to Product Backlog." src="/images/tick.png" style="padding-left:10px;"/>
+                        <% end %>
+                      <% end %>
                     </td>
                     <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <input title="Move to next iteration" type="radio" name="us[<%= task.id %>]" value="<%= @next_iteration.id %> " />
+                      <% if task.split_status.nil? %>
+                        <input title="Move to next iteration" type="radio" name="us[<%= task.id %>]" value="<%= @next_iteration.id %> " />
+                      <% else %>
+                        <% if task.split_status == 1 %>
+                          <img title="Moved to next iteration." src="/images/tick.png" style="padding-left:10px;"/>
+                        <% end %>
+                      <% end %>
                     </td>
                   </tr>
                   <input type="hidden" name="story[]" value="<%=  task.id %>" />
@@ -149,7 +177,11 @@
                   <% end %>              
                                     
               </table>
-              <button id="reassign_tasks" type="submit" style="float:right;margin-top:15px;">Save</button>
+
+              <% if @remaining_us[0].split_status.nil? %>
+                <button id="reassign_tasks" type="submit" style="float:right;margin-top:15px;">Save</button>
+              <% end %>
+                
               </form>
               </fieldset>
             </div>
@@ -221,7 +253,7 @@
 
         <tr>
           <td style="padding-top:25px;">
-            <div style="width:45%;" id="chart_div_4" ></div>
+            <div style="width:50%;" id="chart_div_4" ></div>
           </td>
         </tr>
 
@@ -430,9 +462,12 @@ function load_finished_iteration(){
       slices: [{color: '#31B404'},{color: '#DF3A01'}]
     };
 
-    /*jQuery("#burned_points").text(parseFloat(data_json.burned_points))
-    jQuery("#remaining_points").text(parseFloat(data_json.remaining_points))
-    jQuery("#planified_points").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))*/
+    jQuery("#velocity").text(parseFloat(data_json.burned_points))
+    result = parseFloat(data_json.burned_points)/<%= @iteration_duration %>
+    jQuery("#avg_velocity").text(Math.round(result*100)/100)
+
+    //jQuery("#velocity").text(parseFloat(data_json.remaining_points))
+    //jQuery("#velocity").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
     chart.draw(data, options);
@@ -466,28 +501,33 @@ function load_finished_iteration(){
 
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Days');
-    data.addColumn('number', 'Points');
+    data.addColumn('number', 'Real');
+    data.addColumn('number', 'Ideal');
     var arreglo = <%= @burndown_data %>;
-
+    var arreglo_ideal = <%= @ideal_burndown  %>
+    alert ('value: '+arreglo_ideal[1])
     for (i=0;i<arreglo.length;i++){
       if (arreglo[i+1]==-1){
         data.addRows([
-          [arreglo[i].toString(),null],
+          [arreglo[i].toString(),null,arreglo_ideal[i+1]],
         ]);
       }
       else{
         data.addRows([
-          [arreglo[i].toString(),arreglo[i+1]],
+          [arreglo[i].toString(),arreglo[i+1],arreglo_ideal[i+1]],
         ]);
       }
       i++;
     };
 
+
+
     var options = {
       height: 275,
       title: 'Burndown chart',
-      vAxis: {maxValue: <%=  @planned_points %>,maxAlternation: 5},
-      colors:['#31B404']
+      vAxis: {maxValue: <%= @planned_points %>,maxAlternation: 5,minValue:0,title:'Points'},
+      hAxis: {title:'Days'},
+      colors:['#31B404','blue']
 
     };
 

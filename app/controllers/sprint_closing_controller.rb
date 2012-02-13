@@ -47,6 +47,7 @@ class SprintClosingController < ApplicationController
           due_date = Date.civil(@finished_iteration.due_date.year,@finished_iteration.due_date.month,@finished_iteration.due_date.day)
           duration_days = (due_date - init_date).to_i
 
+          @ideal_burndown = Array.new
           @burndown_data = Array.new
           @closed_stories = Task.where("milestone_id = ? and status = 1",@finished_iteration.id)
 
@@ -55,12 +56,16 @@ class SprintClosingController < ApplicationController
             dias << init_date + i
           end
 
+          @iteration_duration = dias.size
+
           today = Date.today
           today = Date.civil(today.year,today.month,today.day)
           n = 0
           day = 1
           remaining_points = @planned_points
-          
+          ideal_remaining_points = @planned_points
+          ideal_burning = (@planned_points.to_f / dias.size.to_f)
+
           dias.each do |dia|
             burned_today = 0
             @burndown_data[n] = day
@@ -78,6 +83,15 @@ class SprintClosingController < ApplicationController
               @burndown_data[n+1] = remaining_points - burned_today
             end
 
+            @ideal_burndown[n] = day
+            ideal_remaining_points = ideal_remaining_points - ideal_burning
+
+            if(ideal_remaining_points < 0 )
+              @ideal_burndown[n+1] = (-1)*(ideal_remaining_points) + ideal_remaining_points
+            else
+              @ideal_burndown[n+1] = ideal_remaining_points
+            end
+            
             remaining_points = remaining_points - burned_today
             n = n + 2
             day = day + 1
@@ -177,17 +191,56 @@ class SprintClosingController < ApplicationController
     values = params[:us]
 
     stories.each do |us_id|
-        move_to = values[us_id]
-        task = Task.find_by_id(us_id.to_i)
-        task.milestone_id = move_to
-        task.save!
+       move_to = values[us_id]
+       old_task = Task.find_by_id(us_id.to_i)
+       new_task = old_task.clone
+       new_task.milestone_id = move_to
+       new_task.save!
+
+#      cloning task_property_values
+
+       old_property_values = TaskPropertyValue.where("task_id = ?", old_task.id)
+
+       old_property_values.each do |opv|
+        tpv = TaskPropertyValue.new
+        tpv.task_id = Task.last.id
+        tpv.property_id = opv.property_id
+        tpv.property_value_id = opv.property_value_id
+        tpv.save!
+       end
+
+#      changing_story_activities
+
+       activities = StoryActivity.where("task_id = ?", old_task)
+       if !activities.nil?
+        activities.each do |act|
+          act.task_id = Task.last.id
+          act.save!
+        end
+       end
+
+#      cloning task customers
+
+       task_customer = TaskCustomer.new
+       task_customer.task_id = Task.last.id
+       
+       customer = TaskCustomer.where("task_id = ?",old_task.id )
+       task_customer.customer_id = customer[0].customer_id
+
+       task_customer.save!
+
+#      changing task split status
+
+       if move_to == '0'
+        old_task.split_status = 0
+       else
+        old_task.split_status = 1
+       end
+       old_task.save!
+
     end
 
-#    task = Task.find_by_id(4)
-#
-#    task.milestone_id = 9
-#    task.save
-
+    flash["notice"] = _('Changes were succesfully made.')
     redirect_to '/sprint_closing/closing?project_id='+params[:project_id]
     
   end

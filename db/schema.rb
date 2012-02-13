@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120207150835) do
+ActiveRecord::Schema.define(:version => 20120213144415) do
 
   create_table "access_levels", :force => true do |t|
     t.string   "name"
@@ -709,6 +709,7 @@ ActiveRecord::Schema.define(:version => 20120207150835) do
     t.integer  "points_planning_poker",                                               :default => 0
     t.integer  "business_value"
     t.integer  "total_points",                                                        :default => 0
+    t.integer  "split_status"
   end
 
   add_index "tasks", ["company_id"], :name => "tasks_company_id_index"
