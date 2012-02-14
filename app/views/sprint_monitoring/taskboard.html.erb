@@ -100,7 +100,7 @@
     <th style="width:2%;"> </th>
     <th style="width:19%;">To Do</th>
     <th style="width:19%;">In Progress</th>
-    <th style="width:19%;">Verify</th>
+    <th style="width:19%;">To Verify</th>
     <th style="width:19%;">Done</th>
   </tr>
 
@@ -108,6 +108,7 @@
 
     <script type="text/javascript">
       appendActivityPopup("/sprint_monitoring/new_activity", "body", false);
+      appendViewRetrospectivePopup("/sprint_monitoring/edit_activity","body",false)
     </script>
 
     <% @user_stories.each do |us| %>
@@ -147,7 +148,8 @@
           <ul id="to_do" class="droptrue_<%= us.id %> ">
             <% @todo_tasks.each do |to_do| %>
               <li class="ui-state-default" title="<%=  to_do.description %> ">
-                <a style="font-size: 11px;text-decoration: none"><%=  to_do.name %></a>
+                <a onclick="load_activity_popup();" style="font-size: 11px;text-decoration: none"><%=  to_do.name %></a>
+                <img title="Edit Activity" src="/images/tuneup/edit.png" style="padding-left:10px;"/>
                 <input type="hidden" name="todo_tasks[]" value="<%= to_do.id %>"></input>
               </li>
             <% end %>
@@ -158,7 +160,8 @@
           <ul id="progress" class="droptrue_<%= us.id %>">
             <% @progress_tasks.each do |prog| %>
               <li class="ui-state-default" title="<%=  prog.description %> ">
-                <a style="font-size: 11px;text-decoration: none"><%=  prog.name %></a>
+                <a onclick="load_activity_popup();" style="font-size: 11px;text-decoration: none"><%=  prog.name %></a>
+                <img title="Edit Activity" src="/images/tuneup/edit.png" style="padding-left:10px;"/>
                 <input type="hidden" name="progress_tasks[]" value="<%= prog.id %>"></input>
               </li>
             <% end %>
@@ -169,7 +172,8 @@
           <ul id="verify" class="droptrue_<%= us.id %>">
             <% @verify_tasks.each do |verify| %>
               <li class="ui-state-default" title="<%=  verify.description %> ">
-                <a style="font-size: 11px;text-decoration: none"><%=  verify.name %></a>
+                <a onclick="load_activity_popup();" style="font-size: 11px;text-decoration: none"><%=  verify.name %></a>
+                <img title="Edit Activity" src="/images/tuneup/edit.png" style="padding-left:10px;"/>
                 <input type="hidden" name="verify_tasks[]" value="<%= verify.id %>"></input>
               </li>
             <% end %>
@@ -180,7 +184,8 @@
           <ul id="done" class="droptrue_<%= us.id %>">
             <% @done_tasks.each do |done| %>
               <li class="ui-state-default" title="<%=  done.description %> ">
-                <a style="font-size: 11px;text-decoration: none"><%=  done.name %></a>
+                <a onclick="load_activity_popup();" style="font-size: 11px;text-decoration: none"><%=  done.name %></a>
+                <img onclick="load_activity_popup();" title="Edit Activity" src="/images/tuneup/edit.png" style="padding-left:10px;"/>
                 <input type="hidden" name="done_tasks[]" value="<%= done.id %>"></input>
               </li>
             <% end %>
@@ -221,6 +226,11 @@ jQuery("#us_id").val(us_id)
 jQuery("#project_id").val(project_id)
 }
 
+function load_activity_popup(){
+
+  add_view_retrospective_popup();
+}
+
 
 </script>
 
@@ -241,7 +251,7 @@ jQuery("#project_id").val(project_id)
               alert('us:'+us)
             });
   }*/
-          </script>
+</script>
 
 
 

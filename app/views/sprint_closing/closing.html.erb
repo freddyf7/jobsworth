@@ -17,6 +17,7 @@
     <div id="tabs-1">
 
       <table width="100%" cellspacing="0">
+
         <tr>
 
           <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-bottom:20px;">
@@ -118,122 +119,130 @@
           <td style="padding-top:15px;">
             <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
             
- 
-          <% if !@finished_iteration.nil? %>
+            <% if !@finished_iteration.nil? %>
 
-            <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name  %></label>
-            <br/><br/><br/>
-            <div style="width:50%;float:left">
-              <fieldset>
-                <legend>Remaining Stories</legend>
-              <form class="new_meeting" id="new_meeting" action="/sprint_closing/move_stories?project_id=<%= params[:project_id]  %> " method="post">
-              <table cellspacing="0" width="100%" class="content">
+              <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name  %></label>
+              <br/><br/><br/>
 
-                <tr>
-                  <th style="background-color: #8A2908;color:white;width:40%;">Name</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Points</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">B.Value</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Assigned</th>
-                  <th title="Return to backlog" style="background-color: #8A2908;color:white;width:10%;font-size:10px;">P.Backlog</th>
-                  <th title="Move to next iteration" style="background-color: #8A2908;color:white;width:10%;font-size:10px;">N.Iteration</th>
-                </tr>
+              <!-- Remaining stories -->
+
+              <div style="width:50%;float:left">
+                <fieldset>
+                  <legend>Remaining Stories</legend>
+                  <form class="new_meeting" id="new_meeting" action="/sprint_closing/move_stories?project_id=<%= params[:project_id]  %> " method="post">
+                  <table cellspacing="0" width="100%" class="content">
+
+                    <tr>
+                      <th style="background-color: #8A2908;color:white;width:40%;">Name</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Points</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">B.Value</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Assigned</th>
+                      <th title="Return to backlog" style="background-color: #8A2908;color:white;width:10%;font-size:10px;">P.Backlog</th>
+                      <th title="Move to next iteration" style="background-color: #8A2908;color:white;width:10%;font-size:10px;">N.Iteration</th>
+                    </tr>
                 
-                  <% @remaining_us.each do |task| %>
+                    <% @remaining_us.each do |task| %>
 
-                  <tr>
-                    <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
-                      <%= task.name %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= task.total_points %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= task.business_value %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <%= task.owners.map{ |u| u.name }.join(", ") %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <% if task.split_status.nil? %>
-                        <input title="Return to backlog" type="radio" checked name="us[<%= task.id %>]" value="0" />
-                      <% else %>
-                        <% if task.split_status == 0 %>
-                          <img title="Moved to Product Backlog." src="/images/tick.png" style="padding-left:10px;"/>
-                        <% end %>
-                      <% end %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <% if task.split_status.nil? %>
-                        <input title="Move to next iteration" type="radio" name="us[<%= task.id %>]" value="<%= @next_iteration.id %> " />
-                      <% else %>
-                        <% if task.split_status == 1 %>
-                          <img title="Moved to next iteration." src="/images/tick.png" style="padding-left:10px;"/>
-                        <% end %>
-                      <% end %>
-                    </td>
-                  </tr>
-                  <input type="hidden" name="story[]" value="<%=  task.id %>" />
+                    <tr>
+                      <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                        <%= task.name %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                        <%= task.total_points %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                        <%= task.business_value %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                        <%= task.owners.map{ |u| u.name }.join(", ") %>
+                      </td>
 
-                  <% end %>              
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                        <% if task.split_status.nil? %>
+                          <input title="Return to backlog" type="radio" checked name="us[<%= task.id %>]" value="0" />
+                        <% else %>
+                          <% if task.split_status == 0 %>
+                            <img title="Moved to Product Backlog." src="/images/tick.png" style="padding-left:10px;"/>
+                          <% end %>
+                        <% end %>
+                      </td>
+
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                        <% if !@next_iteration.nil? %>
+
+                          <% if task.split_status.nil? %>
+                            <input title="Move to next iteration" type="radio" name="us[<%= task.id %>]" value="<%= @next_iteration.id %> " />
+                          <% else %>
+                            <% if task.split_status == 1 %>
+                              <img title="Moved to next iteration." src="/images/tick.png" style="padding-left:10px;"/>
+                            <% end %>
+                          <% end %>
+                              
+                        <% end %>
+                      </td>
+                    </tr>
+                    <input type="hidden" name="story[]" value="<%=  task.id %>" />
+
+                    <% end %>
                                     
-              </table>
+                  </table>
 
-              <% if @remaining_us[0].split_status.nil? %>
-                <button id="reassign_tasks" type="submit" style="float:right;margin-top:15px;">Save</button>
-              <% end %>
-                
-              </form>
-              </fieldset>
-            </div>
-
-            <div style="width:50%; float:right;">
-
-              <fieldset>
-                <legend>Closed Stories</legend>
-
-              <table cellspacing="0" width="100%" class="content">
-
-                <tr>
-                  <th style="background-color: #8A2908;color:white;width:40%;">Name</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Points</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">B.Value</th>
-                  <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Assigned</th>
-                </tr>
-
-                  <% @closed_us.each do |task| %>
-
-                  <tr>
-                    <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
-                      <%= task.name %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= task.total_points %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                      <%= task.business_value %>
-                    </td>
-                    <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
-                      <%= task.owners.map{ |u| u.name }.join(", ") %>
-                    </td>
-                  </tr>
+                  <% if @remaining_us[0].split_status.nil? %>
+                    <button id="reassign_tasks" type="submit" style="float:right;margin-top:15px;">Save</button>
                   <% end %>
+                
+                </form>
+                </fieldset>
+              </div>
 
-              </table>
+              <!-- Closed stories -->
 
-              </fieldset>
+              <div style="width:50%; float:right;">
+                <fieldset>
+                  <legend>Closed Stories</legend>
 
-            </div>
+                  <table cellspacing="0" width="100%" class="content">
 
-           
+                    <tr>
+                      <th style="background-color: #8A2908;color:white;width:40%;">Name</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Points</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">B.Value</th>
+                      <th style="background-color: #8A2908;color:white;width:10%;font-size:10px;">Assigned</th>
+                    </tr>
+
+                    <% @closed_us.each do |task| %>
+
+                    <tr>
+                      <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                      <%= task.name %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                      <%= task.total_points %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                      <%= task.business_value %>
+                      </td>
+                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                      <%= task.owners.map{ |u| u.name }.join(", ") %>
+                      </td>
+                    </tr>
+                    <% end %>
+
+                  </table>
+
+                </fieldset>
+              </div>                           
+
+
             <% else %>
               <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">There's no iteration finishing today for this project</label>
-           <% end %>  
-         
+            <% end %>
 
           </td>
         </tr>
+
         <% else %>
-        <tr>
+            <tr>
               <td style="width:25%;padding-top:10px;">
                 <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
                 <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">Please select a project</label>
@@ -241,21 +250,60 @@
             </tr>
         <% end %> <%#*if params[:project_id]%>
 
-        <tr>
-          <td style="padding-top:20px;">
-            <div id="graphics" style="position:relative;">
-              <div style="width:25%;float:left;" id="chart_div" ></div>
-              <div style="width:25%;position:absolute;margin-left:30%;" id="chart_div_2" ></div>
-              <div style="width:25%;position:absolute;margin-left:60%;" id="chart_div_3" ></div>
-            </div>
-          </td>
-        </tr>
 
-        <tr>
-          <td style="padding-top:25px;">
-            <div style="width:50%;" id="chart_div_4" ></div>
-          </td>
-        </tr>
+        <% if params[:project_id] %>
+            <% if !@finished_iteration.nil? %>
+
+              <tr>
+                <td style="padding-top:20px;">
+                  <div id="graphics" style="position:relative;">
+                    <div style="width:25%;float:left;" id="chart_div" ></div>
+                    <div style="width:25%;position:absolute;margin-left:30%;" id="chart_div_2" ></div>
+                    <div style="width:25%;position:absolute;margin-left:60%;" id="chart_div_3" ></div>
+                  </div>
+                </td>
+              </tr>
+
+              
+              <tr>
+                <td style="padding-top:25px;">
+                  <div style="width:50%;float:left" id="chart_div_4" ></div>
+
+                  <!-- Team stats -->
+
+                  <div style="float:right;width:45%;">
+                  <fieldset>
+                    <legend>Team Stats</legend>
+                    <table cellspacing="0" class="content" style="width:100%;">
+                      <th style="background-color: #8A2908;color:white;font-size:10px;width:40%">Developer</th>
+                      <th style="background-color: #8A2908;color:white;font-size:10px;width:30%">Burned Points</th>
+                      <th style="background-color: #8A2908;color:white;font-size:10px;width:30%">Avg.Burned Points(p/day)</th>
+
+                      <% @selected_project.users.each do |developer| %>
+                
+                      <tr>
+                        <td style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                        <%= developer.name %>
+                        </td>
+                        <td align="center" style="border-bottom: 1px solid #BBBBBB;">
+                        <a  id="burned_points_<%= developer.id %>" style="text-decoration: none;color:black;"><%= developer_avg_velocity(developer.id, @finished_iteration.id) %></a>
+                        </td>
+                        <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
+                        <a id="avg_burned_points_<%= developer.id %>" style="text-decoration: none;color:black;"><%= ((developer_avg_velocity(developer.id, @finished_iteration.id)/@iteration_duration)*10**2).round.to_f / 10**2 %></a>
+                        </td>
+                      </tr>
+
+                      <% end %>
+
+                    </table>
+                  </fieldset>
+                  </div>
+            
+                </td>
+              </tr>
+
+            <% end %>
+        <% end %>
 
       </table>
     </div>
@@ -407,6 +455,12 @@
 </script>
 
 <script type="text/javascript">
+ 
+
+
+</script>
+
+<script type="text/javascript">
 
 load_finished_iteration();
 
@@ -505,7 +559,7 @@ function load_finished_iteration(){
     data.addColumn('number', 'Ideal');
     var arreglo = <%= @burndown_data %>;
     var arreglo_ideal = <%= @ideal_burndown  %>
-    alert ('value: '+arreglo_ideal[1])
+    
     for (i=0;i<arreglo.length;i++){
       if (arreglo[i+1]==-1){
         data.addRows([
@@ -521,12 +575,12 @@ function load_finished_iteration(){
     };
 
 
-
     var options = {
       height: 275,
       title: 'Burndown chart',
       vAxis: {maxValue: <%= @planned_points %>,maxAlternation: 5,minValue:0,title:'Points'},
       hAxis: {title:'Days'},
+      legend: {position: 'right'},
       colors:['#31B404','blue']
 
     };

@@ -6,6 +6,7 @@ class SprintClosingController < ApplicationController
       session[:id_prj] =-1
     else
       session[:id_prj] = params[:project_id]
+      @selected_project = Project.find_by_id(params[:project_id])
     end
 
     if params[:milestone_id].nil?
@@ -60,18 +61,23 @@ class SprintClosingController < ApplicationController
 
           today = Date.today
           today = Date.civil(today.year,today.month,today.day)
-          n = 0
+          n = 2
           day = 1
           remaining_points = @planned_points
           ideal_remaining_points = @planned_points
           ideal_burning = (@planned_points.to_f / dias.size.to_f)
 
+          @burndown_data[0] = 0
+          @burndown_data[1] = @planned_points
+          @ideal_burndown[0] = 0
+          @ideal_burndown[1] = @planned_points
+          
           dias.each do |dia|
             burned_today = 0
             @burndown_data[n] = day
             @burndown_data[n+1] = 0
 
-            if (dia >= today)
+            if (dia > today)
               @burndown_data[n+1]= -1
             else
               @closed_stories.each do |us|
@@ -119,7 +125,8 @@ class SprintClosingController < ApplicationController
     end
 
 #    flash["notice"] = _('Retrospective:'+@actual_retrospective.observation)
-  end
+  end  
+
 
   def new_retrospective
 
