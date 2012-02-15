@@ -151,7 +151,7 @@
                 <a onclick="load_activity_popup(<%= to_do.id %>,<%= params[:project_id] %>)" style="font-size: 11px;color:black;cursor:pointer;"><%=  to_do.name %></a>
                 <br/>
                 <a style="text-decoration: none;font-size:10px;">Owner: </a>
-                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(to_do.user_id).name  %>  </a>
+                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(to_do.user_id).name if !to_do.user_id.nil?  %>  </a>
                 <input type="hidden" name="todo_tasks[]" value="<%= to_do.id %>"></input>
               </li>
             <% end %>
@@ -165,7 +165,7 @@
                 <a onclick="load_activity_popup(<%= prog.id %>,<%= params[:project_id] %> )" style="cursor:pointer;font-size: 11px;color:black"><%=  prog.name %></a>
                 <br/>
                 <a style="text-decoration: none;font-size:10px;">Owner: </a>
-                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(prog.user_id).name  %>  </a>
+                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(prog.user_id).name if !prog.user_id.nil?  %>  </a>
                 <input type="hidden" name="progress_tasks[]" value="<%= prog.id %>"></input>
               </li>
             <% end %>
@@ -179,7 +179,7 @@
                 <a onclick="load_activity_popup(<%= verify.id %>,<%= params[:project_id] %> )" style="cursor:pointer;font-size: 11px;color:black"><%=  verify.name %></a>
                 <br/>
                 <a style="text-decoration: none;font-size:10px;">Owner: </a>
-                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(verify.user_id).name  %>  </a>
+                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(verify.user_id).name if !verify.user_id.nil?  %>  </a>
                 <input type="hidden" name="verify_tasks[]" value="<%= verify.id %>"></input>
               </li>
             <% end %>
@@ -193,7 +193,7 @@
                 <a onclick="load_activity_popup(<%= done.id %>,<%= params[:project_id] %> )" style="cursor:pointer;font-size: 11px;color:black"><%=  done.name %></a>
                 <br/>
                 <a style="text-decoration: none;font-size:10px;">Owner: </a>
-                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(done.user_id).name  %>  </a>
+                <a style="text-decoration: none;font-style: italic;font-size:10px"> <%= User.find_by_id(done.user_id).name if !done.user_id.nil?  %>  </a>
                 <input type="hidden" name="done_tasks[]" value="<%= done.id %>"></input>
               </li>
             <% end %>

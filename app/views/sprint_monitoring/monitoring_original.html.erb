@@ -1,0 +1,623 @@
+<br/>
+
+<div class="page_header">
+  <%=_ 'Sprint Monitoring'%>
+</div>
+
+<br/>
+
+<div class="demo">
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Iteration Status</a></li>
+      <li><a href="#tabs-2">Daily meeting</a></li>
+    </ul>
+
+    <div id="tabs-1">
+
+      <table width="100%" cellspacing="0">
+        <tr>
+          <td colspan="4" style="border-bottom: 1px solid #BBBBBB;padding-bottom: 10px;">
+            <label for="milestone_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_monitoring_project(this.value,0)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td valign="middle" style="width:25%;padding-top: 10px;padding-bottom: 5px;">
+            <label for="milestone_milestone_id"><%=_ 'Iteration' %></label>
+            <select class="planning_combobox" id="milestone_id" name="milestone[milestone_id]" onchange="reload_monitoring_milestone(this.value,<%= session[:id_prj] %>)">
+              <%= options_milestone_sprint_planning(session[:id_prj],session[:id_milestone])%>
+            </select>
+            <br/><br/>
+            <label style="font-size:12px; font-weight: bold;padding-left: 0px;">Beginning date: </label>
+            <label style="font-size:12px;"><%= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %></label>
+            <br/>
+            <label style="font-size:12px; font-weight: bold;padding-left: 0px;">Due date: </label>
+            <label  style="font-size:12px;"><%= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %></label>
+            <br/>
+            <label style="font-size:12px; font-weight: bold;padding-left: 0px;">Remaining Days: </label>
+            <label  style="font-size:12px;"><%=  @remaining_days %></label>
+            <br/>
+            <label style="font-size:12px; font-weight: bold;padding-left: 0px;">Planified Points: </label>
+            <label id="planified_points"  style="font-size:12px;"></label>
+                        
+          </td>
+
+                <td valign="middle" align="center" style="width:25%;">
+                
+                  <%#*<div style="background-color: white;width:100px;height:40px;">%>
+                  <%#*<label style="font-size:12px; font-weight: bold;">Beginning date</label> <br/>%>
+                    <%#*<label style="font-size:12px;">%>
+<%#= @milestone.init_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %>
+                    <%#*</label>%>
+
+                  <%#*</div>%>
+                </td>
+
+          <%#*<td valign="top" align="center" style="width:25%;border-top:1px solid #BBBBBB;border-bottom:1px solid #BBBBBB;">%>
+            <%#*Beginning Date%>
+            <%#*<div style="background-image: url('/images/calendar_day.png');background-repeat: no-repeat;width:60px;height:60px;"></div>%>
+          <%#*</td>%>
+
+                <td valign="top" align="center" style="width:25%;">
+            
+                  <%#*<div style="background-color: white;width:100px;height:40px;">%>
+                  <%#*<label style="font-size:12px; font-weight: bold;">Due date</label> <br/>%>
+                    <%#*<label  style="font-size:12px;">%>
+<%#= @milestone.due_date.strftime("%d/%m/%Y") if(!@milestone.nil?) %>
+                    <%#*</label>%>
+      
+                   <%#*</div>%>
+                </td>
+
+                <td valign="top" align="center" style="width:25%;">
+    
+                  <%#*<div style="background-color: white;width:100px;height:40px;">%>
+                  <%#*<label style="font-size:12px; font-weight: bold;">Remaining Days</label> <br/>%>
+                    <%#*<label  style="font-size:12px;">%>
+<%#=  @remaining_days %>
+                    <%#*</label>%>
+   
+                    <%#*</div>%>
+                </td>
+
+        </tr>
+
+        
+        <% if session[:id_milestone].to_i > 0 %>
+        
+        <tr>
+                  
+          <td valign="top" colspan="2" style="padding-top:30px;padding-right:10px;" >
+
+            <label>Closed Stories</label>
+            <div style="padding-top:5px;">
+              <table cellspacing="0" width="100%" class="content">
+              <%#*<tr>%>
+                <%#*<th colspan="5">%>
+                  <%#*Closed Stories%>
+                <%#*</th>%>
+              <%#*</tr>%>
+              <tr>
+                <th style="background-color: #8A2908;color:white;">Name</th>
+                <th style="background-color: #8A2908;color:white;">Points</th>
+                <th style="background-color: #8A2908;color:white;">B.Value</th>
+                <th style="background-color: #8A2908;color:white;">Assigned</th>
+              </tr>
+
+              <% @closed_us.each do |task| %>
+              <tr>
+                <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                <%= task.name %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                 <%= task.total_points %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                 <%= task.business_value %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                 <%= task.owners.map{ |u| u.name }.join(", ") %>
+                </td>
+              </tr>
+              <% end %>
+            </table>
+            </div>
+
+          </td>
+         
+          <td valign="top" colspan="2" style="padding-top:30px;padding-left:10px;">
+            
+            <label>Remaining Stories</label>
+            <div style="padding-top:5px;">
+            <table cellspacing="0" width="100%" class="content">
+              <%#*<th colspan="5">%>
+                  <%#*Open Stories%>
+              <%#*</th>%>
+              <tr>
+                <th style="background-color: #8A2908;color:white;">Name</th>
+                <th style="background-color: #8A2908;color:white;">Points</th>
+                <th style="background-color: #8A2908;color:white;">B.Value</th>
+                <th style="background-color: #8A2908;color:white;">Assigned</th>
+              </tr>
+
+              <% @open_us.each do |task| %>
+              <tr>
+                <td align="left" style="width: 50%;border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                <%= task.name %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                <%= task.total_points %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB">
+                 <%= task.business_value %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB">
+                 <%= task.owners.map{ |u| u.name }.join(", ") %>
+                </td>
+              </tr>
+              <% end %>
+            </table>
+            </div>
+           
+          </td>
+                  
+        </tr>
+
+        <tr>          
+     
+          <td style="padding-top:35px;padding-right: 15px;" colspan="1" valign="top">
+            
+            <%#*<fieldset>%>
+              <%#*<legend>%>
+<%#= _'User Stories'%>
+              <%#*</legend>%>
+              <div id="chart_div" ></div>
+
+              <%#*<label for="completed_stories">%>
+<%#=_ 'Completed U.Stories: ' %>
+              <%#*</label>%>
+              <%#*<label id="completed_stories"></label>%>
+
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "completed_stories" ) %>
+              
+
+
+              <%#*<label for="remaining_stories">%>
+<%#=_ 'Remaining U.Stories: ' %>
+              <%#*</label>%>
+              <%#*<label id="remaining_stories"></label>%>
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_stories" ) %>
+               
+            <%#*</fieldset>%>
+        
+          </td>
+
+          <td colspan="1" style="padding-top:35px;padding-right: 15px;"valign="top">
+            <%#*<fieldset>%>
+              <%#*<legend><%= _'Points'%>
+            <%#*</legend>%>
+              <div id="chart_div_2" ></div>
+
+              <%#*<label for="burned_points">%>
+<%#=_ 'Burned Points: ' %>
+              <%#*</label>%>
+              <%#*<label id="burned_points"></label>%>
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "burned_points" ) %>
+              
+              <%#*<label for="remaining_points">%>
+<%#=_ 'Remaining Points: ' %>
+              <%#*</label>%>
+              <%#*<label id="remaining_points"></label>%>
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_points" ) %>
+            <%#*</fieldset>%>
+          </td>
+
+          <td  colspan="1" valign="top" style="padding-top:35px;padding-right: 15px;">
+            <%#*<fieldset>%>
+              <%#*<legend><%= _'Bussiness Value'%>
+            <%#*</legend>%>
+              <div id="chart_div_3" ></div>
+
+              <%#*<label for="added_value">%>
+<%#=_ 'Added B.Value: ' %>
+              <%#*</label>%>
+              <%#*<label id="added_value"></label>%>
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "added_value" ) %>
+              
+              <br/>
+
+              <%#*<label for="remaining_value">%>
+<%#=_ 'Remaining B.Value: ' %>
+              <%#*</label>%>
+              <%#*<label id="remaining_value"></label>%>
+
+              <%#= text_field(:user, :name, :size=> "12",:readOnly => true, :id => "remaining_value" ) %>
+            <%#*</fieldset>%>
+          </td>
+
+        </tr> 
+
+        <tr>
+
+          <td valign="top"colspan="2" align="left" style="padding-top:35px;padding-right:100px;">
+            
+     
+              <div id="chart_div_4" style="width: 100%;"></div>
+            
+          </td>
+         
+        </tr> 
+
+        <% end %>
+
+      </table>
+    </div>
+
+    <div id="tabs-2">
+
+      <table width="100%" cellspacing="0">
+
+        <tr>
+          <td>
+            <label for="meeting_project_id"><%=_ 'Project' %></label>
+            <select class="planning_combobox" id="meeting_project_id" name="meeting_project_id" onchange="reload_meeting_project(this.value,1)">
+              <%= options_for_user_projects_backlog(session[:id_prj])%>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="width:40%;padding-top: 25px;">
+            <fieldset>
+              <legend><%= _'New Meeting entry'%></legend>
+
+              <form class="new_meeting" id="new_meeting" action="/sprint_monitoring/save_meeting" method="post">
+                <table>
+                  <tr>
+                    <% if (!params[:project_id].nil?) %>
+                      <td colspan="2">
+
+                      <% if !@iteracion_actual.nil? %>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: '+@iteracion_actual.name %></label>
+                        <input type="hidden" id="meeting_milestone_id" name="meeting[milestone_id]" value="<%= @iteracion_actual.id  %>"  />
+                      <% else %>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: None' %></label>
+                      <% end %>
+
+                      </td>
+                    <% else %>
+                      <td colspan="2">
+                        <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
+                      </td>
+                    <% end %>
+                  </tr>
+       
+                  <tr>
+                    <td>
+                      <br/>
+                      <label for="meeting_developer"><%=_ 'Developer' %></label>
+                    </td>
+                    <td>
+                      <br/>
+                      <select class="planning_combobox" id="meeting_user_id" name="meeting[user_id]">
+                        <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
+                      </select>
+                    </td>
+                  </tr>
+         
+                  <tr>
+                    <td>
+                      <label for="meeting_date"><%=_ 'Meeting Date' %></label>
+                    </td>
+                    <td>
+                      <%= text_field 'meeting', 'day', :size => 12, :class=>:datefield%>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td valign="top">
+                      <label for="done_description"><%=_ 'Done' %></label>
+                    </td>
+                    <td>                      
+                      <%= text_area(:meeting, :done, :rows=> 8) %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td valign="top">
+                      <label for="todo_description"><%=_ 'To Do' %></label>
+                    </td>
+                    <td>
+                      <%= text_area 'meeting', 'to_do', :rows => 8 %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td valign="top">
+                      <label for="observations_description"><%=_ 'Observations' %></label>
+                    </td>
+                    <td>
+                      <%= text_area 'meeting', 'observation', :rows => 8 %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="2">
+                      <%= submit_tag _("Save"), :class => 'finish' %>
+                    </td>
+                  </tr>
+
+                </table>                                                
+              </form>
+            </fieldset>
+          </td>
+
+          <td style="width:60%;padding-top: 25px;" valign="top">
+            <fieldset style="height:100%;">
+              <legend><%= _'Previous Meetings'%></legend>
+
+              <table>
+                <tr>
+                  
+                    <% if (!params[:project_id].nil?) %>
+                      <td>
+                        <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Iteration' %></label>
+                      </td>
+                      <td>
+                        <%= text_field 'selected', 'iteration', :readOnly => true, :disabled => 'disabled'  %>
+                      </td>
+                    <% else %>
+                      <td>
+                        <label style="color:black;font-size:15px; font-weight: bold;">Iteration:</label>
+                      </td>
+                    <% end %>
+                  
+                </tr>
+              
+                <tr>
+                  <td>
+                    <br/>
+                    <label for="meeting_developer"><%=_ 'Developer' %></label>
+                  </td>
+                  <td>
+                    <br/>
+                    <select class="planning_combobox" id="previous_meeting_user_id" name="meeting[user_id]" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
+                      <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
+                    </select>
+                  </td>
+                </tr>               
+
+                <tr>
+                  <td>
+                    <label for="meeting_date"><%=_ 'Meeting Date' %></label>
+                  </td>
+                  <td>
+                    <%= text_field 'previous_meeting', 'day', :size => 12, :class=>:datefield, :onchange => 'load_meeting(this.value)' %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td valign="top">
+                    <label for="done_description"><%=_ 'Done' %></label>
+                  </td>
+
+                  <td>                  
+                    <%= text_area(:previous_meeting, :done, :rows=> 8,:readOnly => true ) %>
+                  </td>
+
+                </tr>
+
+                <tr>
+                  <td valign="top">
+                    <label for="todo_description"><%=_ 'To Do' %></label>
+                  </td>
+
+                  <td>
+                    <%= text_area 'previous_meeting', 'to_do', :rows => 8,:readOnly => true %>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td valign="top">
+                    <label for="observations_description"><%=_ 'Observations' %></label>
+                  </td>
+
+                  <td>
+                    <%= text_area 'previous_meeting', 'observation', :rows => 8,:readOnly => true %>
+                  </td>
+                </tr>
+
+              </table>
+
+            </fieldset>
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script type="text/javascript">
+  jQuery(function() {
+    jQuery("#meeting_day").datepicker('setDate','<%= @today_date %>' );
+  });
+</script>
+
+<script type="text/javascript">
+  function load_meeting(meeting_date){
+    
+    user_id = jQuery('#previous_meeting_user_id option:selected').val();
+    meeting_day = meeting_date;
+
+    var params = {meeting_day : meeting_day,developer_id : user_id};
+    var url = "/sprint_monitoring/load_meeting";
+
+    jQuery.getJSON(url, params, function(data_json) {
+      if (data_json.done == '-1'){
+        alert("No meeting found for selected user and date")
+        jQuery('#previous_meeting_done').val('');
+        jQuery('#previous_meeting_to_do').val('');
+        jQuery('#previous_meeting_observation').val('');
+        jQuery('#selected_iteration').val('');
+      }else{
+        jQuery('#previous_meeting_done').val(data_json.done);
+        jQuery('#previous_meeting_to_do').val(data_json.to_do);
+        jQuery('#previous_meeting_observation').val(data_json.observation);
+        jQuery('#selected_iteration').val(data_json.iteration);
+      }
+    });
+  }
+
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs();
+    });
+</script>
+
+<% if (params[:tab].to_s == "1" ) %>
+  <script type="text/javascript" charset="utf-8">
+    jQuery(function() {
+      jQuery( "#tabs" ).tabs( "option", "selected", 1 );
+    });
+  </script>
+<% end %>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript" charset="utf-8">
+  google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
+<%  if (!params[:milestone_id].nil?) %>
+
+<script type="text/javascript">
+
+  id_milestone = jQuery('#milestone_id option:selected').val();
+  var params = {milestone_id : id_milestone};
+  var url = "/sprint_monitoring/completed_stories";
+
+  google.load("visualization", "1", {packages:["corechart"]});
+
+  jQuery.getJSON(url, params, function(data_json) {
+
+//---------------------Completed us graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Quantity');
+    data.addRows([
+      ["Closed", parseFloat(data_json.closed_stories)],
+      ["Remaining", parseFloat(data_json.open_stories)]
+    ]);
+
+    var options = {
+      height: 200,
+      chartArea:{left:30},
+      title:'User Stories',
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+    };
+
+    jQuery("#completed_stories").text(parseFloat(data_json.closed_stories))
+    jQuery("#remaining_stories").text(parseFloat(data_json.open_stories))
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+
+//---------------------Burned points graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Points');
+    data.addRows([
+      ["Burned", parseFloat(data_json.burned_points)],
+      ["Remaining", parseFloat(data_json.remaining_points)]
+    ]);
+
+    var options = {
+      title: 'Points',
+      chartArea:{left:30},
+      height: 200,
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+    };
+
+    jQuery("#burned_points").text(parseFloat(data_json.burned_points))
+    jQuery("#remaining_points").text(parseFloat(data_json.remaining_points))
+    jQuery("#planified_points").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+    chart.draw(data, options);
+
+//---------------------Business value graphic-----------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Task');
+    data.addColumn('number', 'Points');
+    data.addRows([
+      ["Added", parseFloat(data_json.added_value)],
+      ["Remaining", parseFloat(data_json.remaining_value)]
+    ]);
+
+    var options = {
+      title:'Business Value',
+      height: 200,
+      chartArea:{left:30},
+      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+    };
+
+    jQuery("#added_value").text(parseFloat(data_json.added_value))
+    jQuery("#remaining_value").text(parseFloat(data_json.remaining_value))
+
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div_3'));
+    chart.draw(data, options);
+
+//--------------------------Burndown graphic------------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Days');
+    data.addColumn('number', 'Points');
+    var arreglo = <%= @burndown_data %>;
+
+    for (i=0;i<arreglo.length;i++){
+      if (arreglo[i+1]==-1){
+        data.addRows([
+          [arreglo[i].toString(),null],
+        ]);
+      }
+      else{
+        data.addRows([
+          [arreglo[i].toString(),arreglo[i+1]],
+        ]);
+      }
+      i++;
+    };
+
+    var options = {
+      height: 275,
+      title: 'Burndown chart',
+      vAxis: {maxValue: <%=  @planned_points %>,maxAlternation: 5},
+      colors:['#31B404']
+
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div_4'));
+    chart.draw(data, options);
+
+  });
+      
+</script>
+
+<% end %>
+
+
+  

@@ -27,18 +27,16 @@ class SprintMonitoringController < ApplicationController
       @iteracion_actual = iteracion_actual[0]
     end
 
-    if !params[:milestone_id].nil?
-      milestone_id = params[:milestone_id]
-      @milestone = Milestone.find_by_id(milestone_id)
+    if !@iteracion_actual.nil?
       today_date = Date.today
-      due_date = Date.civil(@milestone.due_date.year,@milestone.due_date.month,@milestone.due_date.day)
+      due_date = Date.civil(@iteracion_actual.due_date.year,@iteracion_actual.due_date.month,@iteracion_actual.due_date.day)
       @remaining_days = (due_date - today_date).to_i
 
       @closed_us = Array.new
       @open_us = Array.new
       @planned_points = 0
 
-      @milestone.tasks.each do |us|
+      @iteracion_actual.tasks.each do |us|
         @planned_points = @planned_points + us.total_points
         if us.status == 1
           @closed_us << us
@@ -50,7 +48,7 @@ class SprintMonitoringController < ApplicationController
 
 #     generating data for burndown chart
 
-      milestone_id = params[:milestone_id]
+      milestone_id = @iteracion_actual.id
       iteration = Milestone.find_by_id(milestone_id)
 
       init_date = Date.civil(iteration.init_date.year,iteration.init_date.month,iteration.init_date.day)
@@ -59,6 +57,7 @@ class SprintMonitoringController < ApplicationController
 
       @burndown_data = Array.new
       @closed_us = Task.where("milestone_id = ? and status = 1",milestone_id)
+      @ideal_burndown = Array.new
 
       dias = Array.new
       for i in 0..duration_days
@@ -67,14 +66,24 @@ class SprintMonitoringController < ApplicationController
 
       today = Date.today
       today = Date.civil(today.year,today.month,today.day)
-      n = 0
+      n = 2
       day = 1
       remaining_points = @planned_points
+
+      ideal_remaining_points = @planned_points
+      ideal_burning = (@planned_points.to_f / dias.size.to_f)
+
+      @burndown_data[0] = 0
+      @burndown_data[1] = @planned_points
+      @ideal_burndown[0] = 0
+      @ideal_burndown[1] = @planned_points
+
       dias.each do |dia|
         burned_today = 0
         @burndown_data[n] = day
         @burndown_data[n+1] = 0
-        if (dia >= today)
+
+        if (dia > today)
           @burndown_data[n+1]= -1
         else
         @closed_us.each do |us|
@@ -85,6 +94,16 @@ class SprintMonitoringController < ApplicationController
         end
         @burndown_data[n+1] = remaining_points - burned_today
         end
+
+        @ideal_burndown[n] = day
+        ideal_remaining_points = ideal_remaining_points - ideal_burning
+
+        if(ideal_remaining_points < 0 )
+          @ideal_burndown[n+1] = (-1)*(ideal_remaining_points) + ideal_remaining_points
+        else
+          @ideal_burndown[n+1] = ideal_remaining_points
+        end
+        
         remaining_points = remaining_points - burned_today
         n = n + 2
         day = day + 1
