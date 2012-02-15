@@ -304,7 +304,8 @@ class SprintMonitoringController < ApplicationController
 
     #asignacion de developer a la historia
 
-    if params[:developer].size > 0
+#    if params[:developer].size > 0
+    if params[:developer]
       developer = params[:developer]
       story = params[:us_dev]
       
@@ -351,6 +352,39 @@ class SprintMonitoringController < ApplicationController
       redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
     end
 
+  end
+
+  def edit_activity
+    
+    @popup, @disable_title = true, true
+    render :action => 'edit_activity', :layout => false
+
+    return
+
+  end
+
+  def load_activity
+    activity_id = params[:activity_id]
+    activity = StoryActivity.find_by_id(activity_id)
+    @activity_name = activity.name
+    @activity_description = activity.description
+    @activity_developer = activity.user_id
+
+    render :partial => 'sprint_monitoring/selected_activity.json'
+  end
+
+  def update_activity
+    activity_id = params[:activity_id]
+    activity = StoryActivity.find_by_id(activity_id)
+
+    activity.name = params[:activity_name]
+    activity.description = params[:activity_description]
+    activity.user_id = params[:activity_developer]
+
+    if activity.save!
+      flash["notice"] = _('Activity was successfully updated.')
+      redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
+    end
   end
 
 

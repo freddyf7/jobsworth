@@ -702,6 +702,28 @@ function add_edit_retrospective_popup() {
 	return false;
 }
 
+function add_edit_activity_popup() {
+
+    var popup = jQuery("span#ui_popup_dialog_2").dialog({
+        autoOpen: false,
+	title: 'Edit',
+        modal:true,
+        width: 400,
+        draggable: true,
+        close: function(event, ui) {
+            jQuery('span#ui_popup_dialog_2').dialog('destroy');
+        }
+
+	});
+	popup.dialog('open');
+
+        // refresh milestone and destroy dialog after a successful milestone addition
+        jQuery('#edit_activity_form').bind("ajax:success", function(event, json, xhr) {
+             jQuery('span#ui_popup_dialog_2').dialog('destroy');
+        });
+
+	return false;
+}
 
 
 function toogleDone(sender) {
