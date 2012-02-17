@@ -420,6 +420,12 @@ class ProjectsController < ApplicationController
   end
 
 
+  def dashboard
+
+    
+  end
+
+
 
   private
 
