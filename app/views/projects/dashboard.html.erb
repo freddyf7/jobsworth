@@ -5,3 +5,129 @@
 </div>
 
 <br/>
+
+<% i = 0 %>
+<% alternate = 3 %>
+<% activate_margin_top = 0 %>
+
+<div id="projectsWrapper" style="float:left;width:90%">
+
+  <% @projects.each do |project| %>
+
+    <%  if (i == alternate) %>
+      <br/><br/><br/>
+      <%  activate_margin_top = 1 %>
+      <%  i = -1 %>
+    <% end %>
+
+    <%  if (i > 0) %>
+      <%  if activate_margin_top == 1 %>
+        <div style="width:30%;float:right;margin-left:5%;margin-top: 40px;">
+      <% else %>
+        <div style="width:30%;float:right;margin-left:5%;">
+      <% end %>    
+    <% else %>
+      <% if activate_margin_top == 1 %>
+        <div style="width:30%;float:left;margin-top: 40px;">
+      <% else %>
+        <div style="width:30%;float:left;">
+      <% end %>
+    <% end %>
+          <table style="width:100%;" cellspacing="0" cellpadding="2">
+
+        <tr>
+          <td colspan="2" style="background-color: #BBBBBB">
+            <label style="color:black;font-size:15px;font-weight: bold;" ><%= project.name  %> </label>
+          </td>
+        </tr>
+
+        <%= render :partial => "projects/overall_progress", :locals => { :project => project } %>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Velocity: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  team_velocity_actual_project(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Planified Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_total_points(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Burned Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_burned_points(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Remaining Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_remaining_points(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Planified Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_total_business_value(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Added Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_added_business_value(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Remaining Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_remaining_business_value(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Current Iteration: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_current_iteration(project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Previous Iteration: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_previous_iteration(project.id) %>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+
+    <%  i = i + 1 %>
+  <% end %>
+
+</div>

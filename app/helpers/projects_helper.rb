@@ -19,4 +19,122 @@ module ProjectsHelper
     end
   end
 
+  def get_project_total_points(project_id)
+    total_points = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL",project_id)
+
+    stories.each do |us|
+      total_points = total_points + us.total_points
+    end
+
+    return total_points
+  end
+  
+  def get_project_burned_points(project_id)
+    burned_points = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL AND status = 1",project_id)
+
+    stories.each do |us|
+      burned_points = burned_points + us.total_points
+    end
+
+    return burned_points
+  end
+
+  def get_project_remaining_points(project_id)
+    remaining_points = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL AND status =0",project_id)
+
+    stories.each do |us|
+      remaining_points = remaining_points + us.total_points
+    end
+
+    return remaining_points
+  end
+
+  def get_project_total_business_value(project_id)
+    total_value = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL",project_id)
+
+    stories.each do |us|
+      total_value = total_value + us.business_value
+    end
+
+    return total_value
+  end
+
+  def get_project_added_business_value(project_id)
+    added_value = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL AND status = 1",project_id)
+
+    stories.each do |us|
+      added_value = added_value + us.business_value
+    end
+
+    return added_value
+  end
+
+  def get_project_remaining_business_value(project_id)
+    remaining_value = 0
+    stories = Task.where("project_id = ? AND split_status IS NULL AND status = 0",project_id)
+
+    stories.each do |us|
+      remaining_value = remaining_value + us.business_value
+    end
+
+    return remaining_value
+  end
+
+  def team_velocity_actual_project(project_id)
+
+      total_points = Array.new
+      average_velocity_points = 0
+      today_date = Date.today
+
+
+      iterations_before = Milestone.where("project_id = ? AND due_at <= ?",project_id,today_date)
+
+      if iterations_before
+
+        iterations_before.each do |iteration_s|
+          if(iteration_s.tasks.size>0)
+            total_points << iteration_s.total_points_execute
+          end
+        end
+
+        if total_points.size > 0
+          average_velocity_points = Statistics.mean(total_points)
+        end
+
+      end
+
+      return average_velocity_points
+  end
+
+  def get_project_current_iteration(project_id)
+
+    today_date = Date.today
+    actual_iteration = Milestone.where("project_id = ? and due_at >= ? and init_date <= ?", project_id,today_date,today_date)
+
+    if actual_iteration and actual_iteration.size > 0
+      return actual_iteration[0].name
+    else
+      return "No current iteration"
+    end
+
+  end
+
+  def get_project_previous_iteration(project_id)
+
+    today_date = Date.today
+    previous_iteration = Milestone.where("project_id = ? and due_at <= ? and init_date < ?", project_id,today_date,today_date).order("due_at DESC").limit(1)
+
+    if previous_iteration and previous_iteration.size > 0
+      return previous_iteration[0].name
+    else
+      return "No previous iteration"
+    end
+  end
+
+
 end
