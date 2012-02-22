@@ -426,6 +426,103 @@ class ProjectsController < ApplicationController
 
   end
 
+  def dashboard_detail
+
+    @project = Project.find_by_id(params[:project_id])
+    @planned_points = 0
+
+    project_tasks = Task.where("project_id = ? and split_status IS NULL",@project.id)
+
+    project_tasks.each do |task|
+      @planned_points = @planned_points + task.total_points
+    end
+
+#   ----------------------Data para burndown chart----------------------------
+
+    @burndown_data = Array.new
+    @ideal_burndown = Array.new
+    iterations = Milestone.where("project_id = ?",@project.id)
+
+    @burndown_data[0] = 0
+    @burndown_data[1] = @planned_points
+    @ideal_burndown[0] = 0
+    @ideal_burndown[1] = @planned_points
+    ideal_remaining_points = @planned_points
+    remaining_points = @planned_points
+    n = 2
+    ideal_burning = (@planned_points.to_f / iterations.size.to_f)
+
+    iterations.each do |iteration|
+
+      @closed_stories = Task.where("milestone_id = ? and status = 1",iteration.id)
+      burned = 0
+      @burndown_data[n] = iteration.id
+      @burndown_data[n+1] = 0
+
+      @closed_stories.each do |us|
+        burned = burned + us.total_points
+      end
+
+      @burndown_data[n+1] = remaining_points - burned
+
+      @ideal_burndown[n] = iteration.id
+      ideal_remaining_points = ideal_remaining_points - ideal_burning
+
+      if(ideal_remaining_points < 0 )
+        @ideal_burndown[n+1] = (-1)*(ideal_remaining_points) + ideal_remaining_points
+      else
+        @ideal_burndown[n+1] = ideal_remaining_points
+      end
+
+      remaining_points = remaining_points - burned
+      n = n + 2
+
+    end
+
+#   -----------------------Data para burnup chart-----------------------------
+
+
+    @burnup_data = Array.new
+    @ideal_burnup = Array.new
+
+    @burnup_data[0] = 0
+    @burnup_data[1] = 0
+    @ideal_burnup[0] = 0
+    @ideal_burnup[1] = 0
+
+    ideal_burned_points = 0
+    burned_points = 0
+    n = 2
+
+    ideal_burning_up = (@planned_points.to_f / iterations.size.to_f)
+
+    iterations.each do |iteration|
+
+      @closed_stories = Task.where("milestone_id = ? and status = 1",iteration.id)
+      burned_iteration = 0
+      @burnup_data[n] = iteration.id
+      @burnup_data[n+1] = 0
+
+      @closed_stories.each do |us|
+        burned_iteration = burned_iteration + us.total_points
+      end
+
+      @burnup_data[n+1] = burned_iteration + burned_points
+
+      @ideal_burnup[n] = iteration.id
+      ideal_burned_points = ideal_burned_points + ideal_burning_up
+
+      @ideal_burnup[n+1] = ideal_burned_points
+
+      burned_points = burned_points + burned_iteration
+      n = n + 2
+
+    end
+
+
+
+  end
+
 
 
   private

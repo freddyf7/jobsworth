@@ -22,7 +22,7 @@
 
     <%  if (i > 0) %>
       <%  if activate_margin_top == 1 %>
-        <div style="width:30%;float:right;margin-left:5%;margin-top: 40px;">
+        <div style="width:30%;float:right;margin-left:5%;margin-top:40px;<%= 'margin-right:35%;' if ((i == 1) && (@projects.last == project))  %> ">
       <% else %>
         <div style="width:30%;float:right;margin-left:5%;">
       <% end %>    
@@ -33,11 +33,11 @@
         <div style="width:30%;float:left;">
       <% end %>
     <% end %>
-          <table style="width:100%;" cellspacing="0" cellpadding="2">
+      <table style="width:100%;" cellspacing="0" cellpadding="2">
 
         <tr>
           <td colspan="2" style="background-color: #BBBBBB">
-            <label style="color:black;font-size:15px;font-weight: bold;" ><%= project.name  %> </label>
+            <a href="/projects/dashboard_detail?project_id=<%= project.id %>" style="color:black;font-size:15px;font-weight: bold;" ><%= project.name %> </a>
           </td>
         </tr>
 
@@ -126,8 +126,11 @@
 
       </table>
     </div>
-
-    <%  i = i + 1 %>
+    <% if i == -1 %>
+      <%  i = i + 2 %>
+    <% else %>
+      <%  i = i + 1 %>
+    <% end %>
   <% end %>
 
 </div>

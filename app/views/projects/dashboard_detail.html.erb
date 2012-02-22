@@ -1,0 +1,239 @@
+<br/>
+
+<div class="page_header">
+  <%=_ 'Dashboard - '+@project.name%>
+</div>
+
+<br/>
+
+<table style="width:100%">
+  <tr>
+    <td style="width:50%;">
+
+      <table style="width:65%;" cellspacing="0" cellpadding="2">
+
+        <tr>
+          <td colspan="2" style="background-color: #BBBBBB">
+            <label style="color:black;font-size:15px;font-weight: bold;" >Summary </label>
+          </td>
+        </tr>
+
+        <%= render :partial => "projects/overall_progress", :locals => { :project => @project } %>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Velocity: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  team_velocity_actual_project(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Planified Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_total_points(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Burned Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_burned_points(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Remaining Points: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%= get_project_remaining_points(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Planified Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_total_business_value(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Added Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_added_business_value(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Remaining Business Value: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_remaining_business_value(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Current Iteration: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_current_iteration(@project.id) %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border-left: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Previous Iteration: </label>
+          </td>
+          <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
+            <%=  get_project_previous_iteration(@project.id) %>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+
+    
+    
+  </tr>
+
+  <tr>
+    <td valign="top" style="width:50%;padding-top:30px;">
+      <div style="width:80%;">
+      <fieldset>
+        <legend>Team Stats</legend>
+          <table cellspacing="0" class="content" style="width:100%;">
+            <th style="background-color: #8A2908;color:white;font-size:10px;width:30%">Developer</th>
+            <th style="background-color: #8A2908;color:white;font-size:10px;width:30%">Burned Points</th>
+            <th style="background-color: #8A2908;color:white;font-size:10px;width:40%">Avg.Burned Points(p/iteration)</th>
+
+            <% @project.users.each do |developer| %>
+
+              <tr>
+                <td style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
+                  <%= developer.name %>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB;">
+                  <a  id="burned_points_<%= developer.id %>" style="text-decoration: none;color:black;"><%= developer_burned_points_project(developer.id, @project.id) %></a>
+                </td>
+                <td align="center" style="border-bottom: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
+                  <a id="avg_burned_points_<%= developer.id %>" style="text-decoration: none;color:black;"><%= (developer_avg_burned_points_project(developer.id, @project.id)).round.to_f%></a>
+                </td>
+              </tr>
+
+            <% end %>
+
+          </table>
+      </fieldset>
+      </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="width:50%;">
+      <div style="width:95%;margin-top:30px" id="chart_div_4" ></div>
+    </td>
+    <td style="width:50%;">
+      <div style="width:95%;margin-top:30px" id="chart_div_5" ></div>
+    </td>
+  </tr>
+
+</table>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript" charset="utf-8">
+  google.load("visualization", "1", {packages:["corechart"]});
+</script>
+
+<script type="text/javascript">
+
+    // ----------------------- Burndown chart----------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Iterations');
+    data.addColumn('number', 'Real');
+    data.addColumn('number', 'Ideal');
+    var arreglo = <%= @burndown_data %>;
+    var arreglo_ideal = <%= @ideal_burndown  %>
+    arreglo[0] = 'Beginning'
+
+    for (i=0;i<arreglo.length;i++){
+      if (arreglo[i+1]==-1){
+        data.addRows([
+          [arreglo[i].toString(),null,arreglo_ideal[i+1]],
+        ]);
+      }
+      else{
+        data.addRows([
+          [arreglo[i].toString(),arreglo[i+1],arreglo_ideal[i+1]],
+        ]);
+      }
+      i++;
+    };
+
+
+    var options = {
+      height: 300,
+      title: 'BurnDown chart',
+      vAxis: {maxValue: <%= @planned_points %>,maxAlternation: 5,minValue:0,title:'Points'},
+      hAxis: {title:'Iterations'},
+      legend: {position: 'right'},
+      backgroundColor: {strokeWidth: 1},
+      colors:['#31B404','blue']
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div_4'));
+    chart.draw(data, options);
+
+    //-------------------------- Burnup chart--------------------------------
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Iterations');
+    data.addColumn('number', 'Real');
+    data.addColumn('number', 'Ideal');
+    var arreglo = <%= @burnup_data %>;
+    var arreglo_ideal = <%= @ideal_burnup  %>
+
+
+    for (i=0;i<arreglo.length;i++){
+      if (arreglo[i+1]==-1){
+        data.addRows([
+          [arreglo[i].toString(),null,arreglo_ideal[i+1]],
+        ]);
+      }
+      else{
+        data.addRows([
+          [arreglo[i].toString(),arreglo[i+1],arreglo_ideal[i+1]],
+        ]);
+      }
+      i++;
+    };
+
+
+    var options = {
+      height: 300,
+      title: 'BurnUp chart',
+      vAxis: {maxAlternation: 5,minValue:0,title:'Points'},
+      hAxis: {title:'Iterations'},
+      legend: {position: 'right'},
+      backgroundColor: {strokeWidth: 1},
+      colors:['#31B404','blue']
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div_5'));
+    chart.draw(data, options);
+
+</script>

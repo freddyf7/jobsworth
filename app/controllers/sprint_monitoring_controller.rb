@@ -23,7 +23,7 @@ class SprintMonitoringController < ApplicationController
     if !params[:project_id].nil?
       hoy = Date.today
       @today_date = hoy.strftime("%d/%m/%Y")
-      iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",hoy,params[:project_id],hoy)
+      iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",@today_date,params[:project_id],@today_date)
       @iteracion_actual = iteracion_actual[0]
     end
 
@@ -86,12 +86,14 @@ class SprintMonitoringController < ApplicationController
         if (dia > today)
           @burndown_data[n+1]= -1
         else
+        
         @closed_us.each do |us|
           completed_at = us.completed_at.to_date
-          if(completed_at == dia)
-            burned_today = burned_today + us.total_points
-          end          
+            if(completed_at == dia)
+              burned_today = burned_today + us.total_points
+            end
         end
+        
         @burndown_data[n+1] = remaining_points - burned_today
         end
 

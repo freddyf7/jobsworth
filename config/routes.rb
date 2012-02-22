@@ -9,6 +9,7 @@ Jobsworth::Application.routes.draw do
   match '/projects/full_report', :controller => 'projects', :action => 'full_report'
   match '/tasks/backlog', :controller => 'tasks', :action => 'backlog'
   match '/projects/dashboard', :controller => 'projects', :action => 'dashboard'
+  match '/projects/dashboard_detail', :controller => 'projects', :action => 'dashboard_detail'
 
   devise_for  :users, 
               :controllers => { :sessions  => "auth/sessions", 

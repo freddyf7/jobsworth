@@ -85,6 +85,36 @@ module ProjectsHelper
     return remaining_value
   end
 
+  def developer_burned_points_project(developer_id,project_id)
+
+    burned_points = 0
+    developer = User.find_by_id(developer_id)
+
+    iterations = Milestone.where("project_id = ?", project_id)
+
+    iterations.each do |iteration|
+        burned_points = burned_points + iteration.total_points_execute_developer(developer)
+    end
+
+    return burned_points
+  end
+
+  def developer_avg_burned_points_project(developer_id,project_id)
+
+    burned_points = 0
+    developer = User.find_by_id(developer_id)
+
+    iterations = Milestone.where("project_id = ?", project_id)
+
+    iterations.each do |iteration|
+        burned_points = burned_points + iteration.total_points_execute_developer(developer)
+    end
+
+    avg_burned_points = burned_points/iterations.size
+
+    return avg_burned_points
+  end
+
   def team_velocity_actual_project(project_id)
 
       total_points = Array.new
