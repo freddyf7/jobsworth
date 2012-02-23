@@ -19,10 +19,12 @@
       <%= link_to(_("Plan"), :controller => "tasks", :action => "list") %>
       <ul>
         <li>
-          <%= link_to _("Product Backlog"), :controller => "tasks", :action => "backlog" %>
+          <%#= link_to _("Product Backlog"), :controller => "tasks", :action => "backlog" %>
+          <a href="/task_filters/update_current_filter?task_filter[qualifiers_attributes][][qualifiable_id]=0&task_filter[qualifiers_attributes][][qualifiable_type]=Project&backlog=init_backlog">Product Backlog </a>
         </li>
         <li>
-          <%= link_to _("Sprint planning"), :controller => "sprint_planning", :action => "planning" %>
+          <%#= link_to _("Sprint planning"), :controller => "sprint_planning", :action => "planning" %>
+          <a href="/task_filters/update_current_filter?task_filter[qualifiers_attributes][][qualifiable_id]=0&task_filter[qualifiers_attributes][][qualifiable_type]=Project&backlog=init_planning">Sprint Planning </a>          
         </li>
         <li>
           <%= link_to _("Sprint monitoring"), :controller => "sprint_monitoring", :action => "monitoring" %>

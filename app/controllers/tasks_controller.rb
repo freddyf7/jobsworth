@@ -51,16 +51,8 @@ class TasksController < ApplicationController
     Rails.cache.clear
     #para que el combobox de proyecto cargue con un proyecto
 #    if (params[:project_id].nil? or params[:project_id] == 0)
-    if params[:project_id].nil?
-      
-      if current_task_filter.tasks.size > 0
-        backlog_project = current_task_filter.tasks[0].project.id
-        session[:id_prj] = backlog_project
-      else
-#        roadmap_project = current_user.projects.first
-#        project_id = roadmap_project.id
-        session[:id_prj] =-1
-      end
+    if params[:project_id].nil?     
+      session[:id_prj] =-1
     else
       session[:id_prj] = params[:project_id]
     end

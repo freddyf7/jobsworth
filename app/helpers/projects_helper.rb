@@ -143,8 +143,10 @@ module ProjectsHelper
 
   def get_project_current_iteration(project_id)
 
-    today_date = Date.today
-    actual_iteration = Milestone.where("project_id = ? and due_at >= ? and init_date <= ?", project_id,today_date,today_date)
+    hoy = Date.today
+    init_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,23,59,59)
+    finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,0,0,1)
+    actual_iteration = Milestone.where("project_id = ? and due_at >= ? and init_date <= ?", project_id,finish_hoy,init_hoy)
 
     if actual_iteration and actual_iteration.size > 0
       return actual_iteration[0].name
@@ -156,13 +158,14 @@ module ProjectsHelper
 
   def get_project_previous_iteration(project_id)
 
-    today_date = Date.today
-    previous_iteration = Milestone.where("project_id = ? and due_at <= ? and init_date < ?", project_id,today_date,today_date).order("due_at DESC").limit(1)
+    hoy = Date.today
+    finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,0,0,1)
+    previous_iteration = Milestone.where("project_id = ? and due_at <= ? and init_date < ?", project_id,finish_hoy,hoy).order("due_at DESC").limit(1)
 
     if previous_iteration and previous_iteration.size > 0
-      return previous_iteration[0].name
-    else
-      return "No previous iteration"
+      return previous_iteration[0]
+#    else
+#      return "No previous iteration"
     end
   end
 

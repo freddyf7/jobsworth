@@ -129,8 +129,12 @@ class TaskFiltersController < ApplicationController
     else
       if params[:backlog] == 'backlog'
         redirect_to(params[:redirect_action] || "/tasks/backlog?project_id="+params[:project_id])
+      elsif params[:backlog] == 'init_backlog'
+        redirect_to(params[:redirect_action] || "/tasks/backlog")
       elsif params[:backlog] == 'planning'
         redirect_to(params[:redirect_action] || "/sprint_planning/planning?project_id="+params[:project_id]+"&tab="+params[:tab])
+      elsif params[:backlog] == 'init_planning'
+        redirect_to(params[:redirect_action] || "/sprint_planning/planning")
       else
         redirect_to(params[:redirect_action] || "/tasks/list")
       end

@@ -23,7 +23,9 @@ class SprintMonitoringController < ApplicationController
     if !params[:project_id].nil?
       hoy = Date.today
       @today_date = hoy.strftime("%d/%m/%Y")
-      iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",@today_date,params[:project_id],@today_date)
+      init_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,23,59,59)
+      finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,0,0,1)
+      iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",finish_hoy,params[:project_id],init_hoy)
       @iteracion_actual = iteracion_actual[0]
     end
 
@@ -207,9 +209,12 @@ class SprintMonitoringController < ApplicationController
 
     if !params[:project_id].nil?
       hoy = Date.today
-      @iteracion_actual = Milestone.where("due_at >= ? and project_id = ?",hoy,params[:project_id])
-      @user_stories = Task.where("milestone_id = ?", @iteracion_actual[0].id)
-
+      init_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,23,59,59)
+      finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,0,0,1)
+      @iteracion_actual = Milestone.where("due_at >= ? and project_id = ? and init_date <= ?",finish_hoy,params[:project_id],init_hoy)
+      if !@iteracion_actual[0].nil?
+        @user_stories = Task.where("milestone_id = ?", @iteracion_actual[0].id)
+      end
     end
 
   end

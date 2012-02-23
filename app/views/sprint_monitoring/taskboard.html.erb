@@ -11,7 +11,7 @@
 
 </style>
 
-<% if params[:project_id] %>
+<% if params[:project_id] && !@iteracion_actual[0].nil? %>
 <% @user_stories.each do |story| %>
 <script type="text/javascript">
   jQuery(function() {
@@ -78,12 +78,16 @@
     <td colspan="2">
       <br/>
       <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Current Iteration: ' %></label>
-      <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @iteracion_actual[0].name %></label>     
+      <% if !@iteracion_actual[0].nil? %>
+        <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @iteracion_actual[0].name %></label>
+      <% else %>
+        <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">There's no current iteration for this project</label>
+      <% end %>
     </td>
   <% else %>
     <td colspan="2">
       <br/>
-      <label style="color:black;font-size:15px; font-weight: bold;">Current Iteration:</label>
+      <label style="color:black;font-size:15px; font-weight: bold;">Current Iteration:</label>      
     </td>
   <% end %>
 
@@ -104,7 +108,7 @@
     <th style="width:19%;">Done</th>
   </tr>
 
-  <% if params[:project_id] %>
+  <% if params[:project_id] && !@iteracion_actual[0].nil?%>
 
     <script type="text/javascript">
       appendActivityPopup("/sprint_monitoring/new_activity", "body", false);

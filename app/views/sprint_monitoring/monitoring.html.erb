@@ -470,7 +470,7 @@ function load_finished_iteration(){
       height: 200,
       chartArea:{left:30},
       title:'User Stories',
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
@@ -491,7 +491,7 @@ function load_finished_iteration(){
       title: 'Points',
       chartArea:{left:30},
       height: 200,
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     jQuery("#planified_points").text(parseFloat(data_json.remaining_points)+parseFloat(data_json.burned_points))
@@ -514,7 +514,7 @@ function load_finished_iteration(){
       title:'Business Value',
       height: 200,
       chartArea:{left:30},
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     /*jQuery("#added_value").text(parseFloat(data_json.added_value))

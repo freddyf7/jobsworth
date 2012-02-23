@@ -3,28 +3,12 @@ class SprintPlanningController < ApplicationController
   def planning
 
     #para que el combobox de proyecto cargue con un proyecto
-#    if (params[:project_id].nil? or params[:project_id] == 0)
-#      backlog_project = current_task_filter.tasks[0].project.id
-#      session[:id_prj] = backlog_project
-#    else
-#      session[:id_prj] = params[:project_id]
-#    end
 
     if params[:project_id].nil?
-
-#      if current_task_filter.tasks.size > 0
-#        backlog_project = current_task_filter.tasks[0].project.id
-#        session[:id_prj] = backlog_project
-#        @project = Project.find_by_id(backlog_project)
-#      else
-#        roadmap_project = current_user.projects.first
-#        project_id = roadmap_project.id
-        session[:id_prj] =-1
-#      end
+      session[:id_prj] =-1
     else
       session[:id_prj] = params[:project_id]
       @project = Project.find_by_id(params[:project_id])
-
     end
 
     if params[:milestone_id].nil?
@@ -33,7 +17,13 @@ class SprintPlanningController < ApplicationController
       session[:id_milestone] = params[:milestone_id]
     end
 
-    @sprint_tasks = Array.new
+#    @sprint_tasks = Array.new
+
+    if params[:milestone_id] == -1
+      @sprint_tasks = Array.new
+    else
+      @sprint_tasks = Task.where("milestone_id=?",params[:milestone_id])
+    end
 
     arreglo = params[:user_stories]
     i=0

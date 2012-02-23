@@ -117,6 +117,19 @@ function sprint_initTaskList() {
         sortname: columnModel.currentSort.column,
         sortorder: columnModel.currentSort.order,
         postData: {
+            milestone_id:
+                function() {
+                     iteration = jQuery("#milestone_id").val()
+                     
+                     if (iteration == null || jQuery("#milestone_id option:selected").text() == 'Select...'){
+                         result = -1
+                     }else{
+                         result = iteration
+                     }
+
+                     return result
+
+                },
             user_stories:
                 function() {
                     var s                    

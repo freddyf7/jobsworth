@@ -111,7 +111,7 @@
             <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Current Iteration: </label>
           </td>
           <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
-            <%=  get_project_current_iteration(project.id) %>
+            <a href="/sprint_monitoring/monitoring?project_id=<%= project.id %>" > <%=  get_project_current_iteration(project.id) %> </a>
           </td>
         </tr>
 
@@ -120,7 +120,7 @@
             <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Previous Iteration: </label>
           </td>
           <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
-            <%=  get_project_previous_iteration(project.id) %>
+            <a href="/sprint_closing/closing?project_id=<%= project.id %>&milestone_id=<%=  iteracion_previa = get_project_previous_iteration(project.id).id if !iteracion_previa.nil? %>" > <%= get_project_previous_iteration(project.id).name if !iteracion_previa.nil? %> </a>
           </td>
         </tr>
 

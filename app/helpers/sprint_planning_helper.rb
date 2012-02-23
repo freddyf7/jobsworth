@@ -2,10 +2,11 @@ module SprintPlanningHelper
 
   def options_iteration_sprint_planning(project_id,selected_milestone)
     hoy = Date.today
-    milestones = Milestone.not_completed.
+    finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,0,0,1)
+    milestones = Milestone.
                   order('due_at, name').
-                  where('company_id = ? AND project_id = ? AND due_at > ?',
-                    current_user.company.id, project_id, hoy)
+                  where('company_id = ? AND project_id = ? AND due_at >= ?',
+                    current_user.company.id, project_id, finish_hoy)
     if milestones.size > 0
       last_project = nil
       options = []
