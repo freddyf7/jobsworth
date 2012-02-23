@@ -151,6 +151,36 @@ module TasksHelper
     end
   end
 
+  def finished_iteration_options(project_id,selected_milestone)
+    hoy = Date.today
+    finish_hoy = DateTime.new(hoy.year,hoy.month,hoy.day,23,59,59)
+    milestones = Milestone.
+                  order('due_at, name').
+                  where('company_id = ? AND project_id = ? AND due_at <= ?',
+                    current_user.company.id, project_id, finish_hoy)
+    if milestones.size > 0
+      last_project = nil
+      options = []
+
+      milestones.each do |milestone|
+        if milestone.project.name != last_project
+          options << [ h(milestone.project.name), [] ]
+          last_project = milestone.project.name
+        end
+
+        options.last[1] << [ milestone.name, milestone.id ]
+      end
+
+      if(selected_milestone == -1)
+      return grouped_options_for_select(options, nil,'Select...').html_safe
+      else
+      return grouped_options_for_select(options, selected_milestone.to_i).html_safe
+    end
+    else
+      return 'No Iterations'
+    end
+  end
+
 
   # Returns html to display the due date selector for task
   def due_date_field(task, permissions)

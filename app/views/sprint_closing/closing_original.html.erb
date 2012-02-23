@@ -26,14 +26,6 @@
               <%= options_for_user_projects_backlog(session[:id_prj])%>
             </select>
 
-            <br/>
-            <br/>
-
-            <label for="milestone_project_id"><%=_ 'Iteration' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value,0)">
-              <%= finished_iteration_options(session[:id_prj],session[:milestone_id])%>
-            </select>
-
             <div style="float: right;width:50%;margin-right:20%">
               <div style="width:200px;height:110px;float:left;">
 
