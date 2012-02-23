@@ -120,7 +120,7 @@
             <label style="color:black;font-size:11px;font-weight: bold;" for="milestone_name">Previous Iteration: </label>
           </td>
           <td style="border-right: 1px solid #BBBBBB;border-bottom: 1px solid #BBBBBB;">
-            <a href="/sprint_closing/closing?project_id=<%= project.id %>&milestone_id=<%=  iteracion_previa = get_project_previous_iteration(project.id).id if !iteracion_previa.nil? %>" > <%= get_project_previous_iteration(project.id).name if !iteracion_previa.nil? %> </a>
+            <a href="/sprint_closing/previous_closing?project_id=<%= project.id %>&milestone_id=<%= get_project_previous_iteration(project.id).id if !get_project_previous_iteration(project.id).nil? %>" > <%= get_project_previous_iteration(project.id).name if !get_project_previous_iteration(project.id).nil? %> </a>
           </td>
         </tr>
 

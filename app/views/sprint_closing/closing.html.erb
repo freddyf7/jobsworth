@@ -26,13 +26,9 @@
               <%= options_for_user_projects_backlog(session[:id_prj])%>
             </select>
 
-            <br/>
-            <br/>
+            <br/><br/>
 
-            <label for="milestone_project_id"><%=_ 'Iteration' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value,0)">
-              <%= finished_iteration_options(session[:id_prj],session[:milestone_id])%>
-            </select>
+            <a href="/sprint_closing/previous_closing" style="cursor:pointer;font-size:12px;color:blue;">Previous Iterations </a>
 
             <div style="float: right;width:50%;margin-right:20%">
               <div style="width:200px;height:110px;float:left;">
@@ -497,7 +493,7 @@ function load_finished_iteration(){
       height: 200,
       chartArea:{left:30},
       title:'User Stories',
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     /*jQuery("#completed_stories").text(parseFloat(data_json.closed_stories))
@@ -521,7 +517,7 @@ function load_finished_iteration(){
       title: 'Points',
       chartArea:{left:30},
       height: 200,
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     jQuery("#velocity").text(parseFloat(data_json.burned_points))
@@ -549,7 +545,7 @@ function load_finished_iteration(){
       title:'Business Value',
       height: 200,
       chartArea:{left:30},
-      slices: [{color: '#31B404'},{color: '#DF3A01'}]
+      slices: [{color: '#31B404'},{color: '#58ACFA'}]
     };
 
     /*jQuery("#added_value").text(parseFloat(data_json.added_value))

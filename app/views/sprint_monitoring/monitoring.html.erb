@@ -315,18 +315,21 @@
           </td>
 
           <td style="width:60%;padding-top: 25px;" valign="top">
-            <fieldset style="height:100%;">
+            <fieldset style="height:100%;width:80%">
               <legend><%= _'Previous Meetings'%></legend>
 
               <table>
                 <tr>
                   
-                    <% if (!params[:project_id].nil?) %>
+                    <% if (!session[:id_prj].nil?) %>
                       <td>
                         <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Iteration' %></label>
                       </td>
                       <td>
-                        <%= text_field 'selected', 'iteration', :readOnly => true, :disabled => 'disabled'  %>
+                        <%#= text_field 'selected', 'iteration', :readOnly => true, :disabled => 'disabled'  %>
+                        <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_iteration_meeting(this.value,1,<%=  params[:project_id] %>)">
+                          <%= options_meeting_iteration(session[:id_prj],session[:id_milestone])%>
+                        </select>
                       </td>
                     <% else %>
                       <td>
@@ -335,7 +338,7 @@
                     <% end %>
                   
                 </tr>
-              
+
                 <tr>
                   <td>
                     <br/>
@@ -343,11 +346,11 @@
                   </td>
                   <td>
                     <br/>
-                    <select class="planning_combobox" id="previous_meeting_user_id" name="meeting[user_id]" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1)">
+                    <select class="planning_combobox" id="previous_meeting_user_id" name="meeting[user_id]" onchange="reload_meeting_developer(this.value,<%= session[:id_prj] %>,1,<%= params[:milestone_id]  %> )">
                       <%= options_developers_meeting(session[:id_prj],session[:user_id])%>
                     </select>
                   </td>
-                </tr>               
+                </tr>
 
                 <tr>
                   <td>
@@ -357,7 +360,7 @@
                     <%= text_field 'previous_meeting', 'day', :size => 12, :class=>:datefield, :onchange => 'load_meeting(this.value)' %>
                   </td>
                 </tr>
-
+                
                 <tr>
                   <td valign="top">
                     <label for="done_description"><%=_ 'Done' %></label>
@@ -387,6 +390,10 @@
                   <td>
                     <%= text_area 'previous_meeting', 'observation', :rows => 8,:readOnly => true %>
                   </td>
+                </tr>
+
+                <tr>
+                  <td><br/><br/></td>
                 </tr>
 
               </table>
@@ -602,6 +609,15 @@ function load_finished_iteration(){
   }
 
 </script>
+
+<% if @meeting_iteration %>
+<script type="text/javascript">
+	jQuery(function() {
+                jQuery( "#previous_meeting_day" ).datepicker( "option", "minDate", '<%=  @meeting_iteration.init_date.strftime("%d/%m/%Y") %>' );
+                jQuery( "#previous_meeting_day" ).datepicker( "option", "maxDate", '<%=  @meeting_iteration.due_at.strftime("%d/%m/%Y") %>' );
+	});
+</script>
+<% end %>
 
 
 

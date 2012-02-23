@@ -127,6 +127,129 @@ class SprintClosingController < ApplicationController
 #    flash["notice"] = _('Retrospective:'+@actual_retrospective.observation)
   end  
 
+  def previous_closing
+
+    if params[:project_id].nil?
+      session[:id_prj] =-1
+    else
+      session[:id_prj] = params[:project_id]
+      @selected_project = Project.find_by_id(params[:project_id])
+    end
+
+    if params[:milestone_id].nil?
+      session[:id_milestone] =-1
+    else
+      session[:id_milestone] = params[:milestone_id]
+      iteration = Milestone.find_by_id(params[:milestone_id])
+    end
+
+    if !params[:project_id].nil?
+      project_id = params[:project_id]
+      today_date = Date.today
+      
+      if iteration
+
+        @finished_iteration = iteration
+
+        next_iteration = Milestone.where("init_date >= ?",iteration.due_at).limit(1)
+        @next_iteration = next_iteration[0]
+
+        @remaining_us = Task.where("milestone_id = ? and status = 0",iteration.id)
+        @closed_us = Task.where("milestone_id = ? and status = 1",iteration.id)
+
+        #  generating data for burndown chart
+
+        if !@finished_iteration.nil?
+
+          @planned_points = 0
+
+          @finished_iteration.tasks.each do |us|
+            @planned_points = @planned_points + us.total_points
+          end
+
+          init_date = Date.civil(@finished_iteration.init_date.year,@finished_iteration.init_date.month,@finished_iteration.init_date.day)
+          due_date = Date.civil(@finished_iteration.due_date.year,@finished_iteration.due_date.month,@finished_iteration.due_date.day)
+          duration_days = (due_date - init_date).to_i
+
+          @ideal_burndown = Array.new
+          @burndown_data = Array.new
+          @closed_stories = Task.where("milestone_id = ? and status = 1",@finished_iteration.id)
+
+          dias = Array.new
+          for i in 0..duration_days
+            dias << init_date + i
+          end
+
+          @iteration_duration = dias.size
+
+          today = Date.today
+          today = Date.civil(today.year,today.month,today.day)
+          n = 2
+          day = 1
+          remaining_points = @planned_points
+          ideal_remaining_points = @planned_points
+          ideal_burning = (@planned_points.to_f / dias.size.to_f)
+
+          @burndown_data[0] = 0
+          @burndown_data[1] = @planned_points
+          @ideal_burndown[0] = 0
+          @ideal_burndown[1] = @planned_points
+
+          dias.each do |dia|
+            burned_today = 0
+            @burndown_data[n] = day
+            @burndown_data[n+1] = 0
+
+            if (dia > today)
+              @burndown_data[n+1]= -1
+            else
+              @closed_stories.each do |us|
+                completed_at = us.completed_at.to_date
+                if(completed_at == dia)
+                  burned_today = burned_today + us.total_points
+                end
+              end
+              @burndown_data[n+1] = remaining_points - burned_today
+            end
+
+            @ideal_burndown[n] = day
+            ideal_remaining_points = ideal_remaining_points - ideal_burning
+
+            if(ideal_remaining_points < 0 )
+              @ideal_burndown[n+1] = (-1)*(ideal_remaining_points) + ideal_remaining_points
+            else
+              @ideal_burndown[n+1] = ideal_remaining_points
+            end
+
+            remaining_points = remaining_points - burned_today
+            n = n + 2
+            day = day + 1
+          end
+
+          # Loading retrospectives
+          @retrospective = Array.new
+          project_iterations = Milestone.where("project_id = ?",params[:project_id])
+
+          project_iterations.each do |iter|
+            retrospective = Restrospective.where("milestone_id = ?",iter.id)
+            if !retrospective[0].nil?
+               @retrospective << retrospective[0]
+            end
+          end
+
+          if !@finished_iteration.nil?
+            @actual_retrospective = Restrospective.find_by_milestone_id(@finished_iteration.id)
+          end
+
+        end
+
+      end
+
+    end
+
+    
+
+  end
 
   def new_retrospective
 

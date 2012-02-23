@@ -12,6 +12,7 @@ class SprintMonitoringController < ApplicationController
       session[:id_milestone] =-1
     else
       session[:id_milestone] = params[:milestone_id]
+      @meeting_iteration = Milestone.find_by_id(params[:milestone_id])
     end
 
     if params[:user_id].nil?
@@ -370,6 +371,11 @@ class SprintMonitoringController < ApplicationController
     @activity = StoryActivity.new(params[:story_activity])
     @activity.status = "to_do"
     us = Task.find_by_id(@activity.task_id)
+    assign = TaskUser.where("task_id = ?", us.id)
+
+    if !assign[0].nil?
+      @activity.user_id = assign[0].user_id
+    end
 
     if @activity.save
       AgileMailer.new_activity_mail(us,@activity).deliver
