@@ -1,16 +1,16 @@
 class AgileMailer < ActionMailer::Base
-  default :from => "freddyucab@gmail.com"
+  default :from => "asgard.agileclockingit@gmail.com"
 
   def closed_story_mail(us,user)
     @user_story = us
     @user = user
-    mail(:to => "freddyucab@gmail.com", :subject => "Historia de usuario cerrada")
+    mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Historia de usuario cerrada")
   end
 
   def reopened_story_mail(us,user)
     @user_story = us
     @user = user
-    mail(:to => "freddyucab@gmail.com", :subject => "Historia de usuario Re-abierta")
+    mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Historia de usuario Re-abierta")
   end
 
   def changed_activity_mail(activity, previous_status, new_status,us)
@@ -20,9 +20,9 @@ class AgileMailer < ActionMailer::Base
     @us = us
 
     if (new_status == 'verify')
-      mail(:to => "freddyucab@gmail.com", :subject => "Tarea por verificar")
+      mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Tarea por verificar")
     else
-      mail(:to => "freddyucab@gmail.com", :subject => "Notificacion de avance")
+      mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Notificacion de avance")
     end
     
   end
@@ -30,20 +30,20 @@ class AgileMailer < ActionMailer::Base
   def new_activity_mail(us,activity)
     @activity= activity
     @us = us
-    mail(:to => "freddyucab@gmail.com", :subject => "Nueva tarea agregada")
+    mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Nueva tarea agregada")
   end
 
   def assigned_story_mail(user,us)
     @us = us
     @user = user
-    mail(:to => "freddyucab@gmail.com", :subject => "Historia de usuario asignada")
+    mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Historia de usuario asignada")
   end
 
   def edited_activity_mail(user,us,activity)
     @us = us
     @user = user
     @activity= activity
-    mail(:to => "freddyucab@gmail.com", :subject => "Tarea ha sido editada.")
+    mail(:to => "asgard.ti@grupoasgard.com.ve", :subject => "Tarea ha sido editada.")
   end
 
 end
