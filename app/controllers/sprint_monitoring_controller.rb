@@ -291,7 +291,8 @@ class SprintMonitoringController < ApplicationController
       previous_status = changed_activities[n+1]
       new_status = changed_activities[n+2]
       us = Task.find_by_id(activity.task_id)
-      AgileMailer.changed_activity_mail(activity,previous_status,new_status,us).deliver
+      project = Project.find_by_id(us.project_id)
+      AgileMailer.changed_activity_mail(activity,previous_status,new_status,us,project).deliver
       n=n+3
     end
 
@@ -312,7 +313,8 @@ class SprintMonitoringController < ApplicationController
               if us.save!
                 taskuser = TaskUser.find_by_task_id(us.id)
                 user = User.find_by_id(taskuser.user_id)
-                AgileMailer.closed_story_mail(us,user).deliver
+                project = Project.find_by_id(us.project_id)
+                AgileMailer.closed_story_mail(us,user,project).deliver
               end
             end
           else
@@ -322,7 +324,8 @@ class SprintMonitoringController < ApplicationController
               if us.save!
                 taskuser = TaskUser.find_by_task_id(us.id)
                 user = User.find_by_id(taskuser.user_id)
-                AgileMailer.reopened_story_mail(us,user).deliver
+                project = Project.find_by_id(us.project_id)
+                AgileMailer.reopened_story_mail(us,user,project).deliver
               end
             end
           end
@@ -345,8 +348,9 @@ class SprintMonitoringController < ApplicationController
           task_user.user_id = developer[i]
           task_user.type = 'TaskOwner'
           task_user.unread = 0
+          project = Project.find_by_id(us.project_id)
           if task_user.save!
-            AgileMailer.assigned_story_mail(user,us).deliver
+            AgileMailer.assigned_story_mail(user,us,project).deliver
           end
         end
       end
@@ -378,7 +382,8 @@ class SprintMonitoringController < ApplicationController
     end
 
     if @activity.save
-      AgileMailer.new_activity_mail(us,@activity).deliver
+      project = Project.find_by_id(us.project_id)
+      AgileMailer.new_activity_mail(us,@activity,project).deliver
 
       flash["notice"] = _('Activity was successfully saved.')
       redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
@@ -423,7 +428,8 @@ class SprintMonitoringController < ApplicationController
 
     if activity.save!
       activity = StoryActivity.find_by_id(activity_id)
-      AgileMailer.edited_activity_mail(user,us,activity).deliver
+      project = Project.find_by_id(us.project_id)
+      AgileMailer.edited_activity_mail(user,us,activity,project).deliver
       flash["notice"] = _('Activity was successfully updated.')
       redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
     end
