@@ -244,10 +244,8 @@ function load_activity_popup(id_activity,project_id){
 
   var params = {activity_id : id_activity};
   var url = "/sprint_monitoring/load_activity";
-//alert("Name:"+data_json.activity_name+" Desc:"+data_json.activity_description+" activity_id:"+id_activity)
-alert("Flag_1")
+
     jQuery.getJSON(url, params, function(data_json) {
-      alert("Flag")
       jQuery('#edit_activity_name').val(data_json.activity_name)
       jQuery('#edit_activity_description').text(data_json.activity_description)
       jQuery('#edit_activity_id').val(id_activity)
