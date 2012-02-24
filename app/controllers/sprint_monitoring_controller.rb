@@ -408,12 +408,22 @@ class SprintMonitoringController < ApplicationController
   def update_activity
     activity_id = params[:activity_id]
     activity = StoryActivity.find_by_id(activity_id)
+    us = Task.find_by_id(activity.task_id)
 
     activity.name = params[:activity_name]
     activity.description = params[:activity_description]
     activity.user_id = params[:activity_developer]
+    
+    if params[:activity_developer] == ""
+      user = 'Not assigned'
+    else
+      user = User.find_by_id(params[:activity_developer]).name
+    end
+
 
     if activity.save!
+      activity = StoryActivity.find_by_id(activity_id)
+      AgileMailer.edited_activity_mail(user,us,activity).deliver
       flash["notice"] = _('Activity was successfully updated.')
       redirect_to '/sprint_monitoring/taskboard?project_id='+params[:project_id]
     end

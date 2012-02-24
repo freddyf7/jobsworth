@@ -39,4 +39,11 @@ class AgileMailer < ActionMailer::Base
     mail(:to => "freddyucab@gmail.com", :subject => "Historia de usuario asignada")
   end
 
+  def edited_activity_mail(user,us,activity)
+    @us = us
+    @user = user
+    @activity= activity
+    mail(:to => "freddyucab@gmail.com", :subject => "Tarea ha sido editada.")
+  end
+
 end

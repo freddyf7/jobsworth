@@ -10,13 +10,16 @@
       <br/>
 
       <label style="font-size: 15px;font-weight: bold; ">Dueño de la historia: </label>
-      
+
       <label style="font-style: italic"><%= @us.owners.map{ |u| u.name }.join(", ") %></label>
       <br/><br/>
-      
-      La tarea <label style="font-weight: bold;">'<%= @activity.name %>' </label> ha cambiado su estado
 
-      de '<%= @previous_status %>' a '<%= @new_status %>'
+      <label style="font-size: 15px;font-weight: bold; ">Dueño de la tarea: </label>
+
+      <label style="font-style: italic"><%= @user %></label>
+      <br/><br/>
+
+      La tarea <label style="font-weight: bold;">'<%= @activity.name %>' </label> ha sido editada.
 
     </p>
 

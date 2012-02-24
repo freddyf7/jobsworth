@@ -16,17 +16,8 @@
 <script type="text/javascript">
   jQuery(function() {
     jQuery( "ul.droptrue_<%=  story.id %>" ).sortable({
-      connectWith: "ul.droptrue_<%=  story.id %>",
-      <%#*stop: function(event, ui) {%>
-        <%#*alert('element: '+jQuery(ui.sender).sortable( "widget" ).name);%>
-        <%#*alert('element: '+ jQuery(ui.sender).ui.sortable.attr("class"));%>
-
-      <%#*}%>
+      connectWith: "ul.droptrue_<%=  story.id %>",     
         receive: function(event, ui) {
-        <%#*alert('element: '+ jQuery(ui.item.input).attr("class"))%>
-        <%#*alert('element: '+ jQuery(ui.item).children("input").attr("name"))%>
-
-        <%#*jQuery(this).children("li").children("input").attr("name")%>
 
          if (jQuery(this).attr("id") == 'to_do'){
           jQuery(ui.item).children("input").attr("name","todo_tasks[]")
@@ -102,10 +93,10 @@
   <tr>
     <th style="width:22%;">Stories</th>
     <th style="width:2%;"> </th>
-    <th style="width:19%;">To Do</th>
-    <th style="width:19%;">In Progress</th>
-    <th style="width:19%;">To Verify</th>
-    <th style="width:19%;">Done</th>
+    <th style="width:19%;background-color:#DF3A01">To Do</th>
+    <th style="width:19%;background-color:#D7DF01 ">In Progress</th>
+    <th style="width:19%;background-color:#DF7401">To Verify</th>
+    <th style="width:19%; background-color:#04B404 ">Done</th>
   </tr>
 
   <% if params[:project_id] && !@iteracion_actual[0].nil?%>
