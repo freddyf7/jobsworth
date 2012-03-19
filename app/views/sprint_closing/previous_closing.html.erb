@@ -11,7 +11,6 @@
   <div id="tabs">
     <ul>
       <li><a href="#tabs-1">Iteration Closing</a></li>
-      <li><a href="#tabs-2">Retrospective Document</a></li>
     </ul>
 
     <div id="tabs-1">
@@ -34,8 +33,13 @@
               <%= finished_iteration_options(session[:id_prj],session[:id_milestone])%>
             </select>
 
+            <% if params[:milestone_id] && @actual_retrospective %>
+              <br/><br/>
+              <a onclick="edit_retrospective_popup(<%= @actual_retrospective.id %>,<%= @finished_iteration.id %>,<%= @finished_iteration.project_id %>)" style="cursor:pointer;font-size:12px;color:blue;">View Retrospective </a>
+            <% end %>
+              
             <div style="float: right;width:50%;margin-right:20%">
-              <div style="width:200px;height:110px;float:left;">
+              <div style="width:200px;height:auto;float:left;">
 
                 <fieldset style="width:100%;height:100%;">
                   <legend>Finished Iteration</legend>
@@ -85,7 +89,7 @@
 
               </div>
 
-              <div style="width:200px;height:80px;float:right;">
+              <div style="width:200px;height:auto;float:right;">
                 <fieldset style="width:100%;height:100%;">
                   <legend>Next Iteration</legend>
                   <table>
@@ -194,10 +198,8 @@
                     <% end %>
                                     
                   </table>
-
-                  <% if @remaining_us[0].split_status.nil? %>
-                    <button id="reassign_tasks" type="submit" style="float:right;margin-top:15px;">Save</button>
-                  <% end %>
+                  
+                  
                 
                 </form>
                 </fieldset>
@@ -316,112 +318,6 @@
       </table>
     </div>
 
-    <div id="tabs-2">      
-
-      <table width="100%" cellspacing="0">
-        <tr>
-          <td style="width:25%;padding-top:10px;">
-            <label for="milestone_project_id"><%=_ 'Project' %></label>
-            <select class="planning_combobox" id="milestone_project_id_2" name="milestone[project_id_2]" onchange="reload_closing_project(this.value,1)">
-              <%= options_for_user_projects_backlog(session[:id_prj])%>
-            </select>
-          </td>
-        </tr>
-
-        <% if params[:project_id] %>
-
-          <% if @finished_iteration.nil? %>
-
-            <tr>
-              <td style="width:25%;padding-top:10px;">
-                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-                <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">Please select an iteration</label>
-              </td>
-            </tr>
-
-          <% else %>
-
-            <tr>
-              <td style="width:25%;padding-top:10px;">
-                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-                <label style="text-decoration: none;color:black;font-size:15px;font-style:italic"><%=  @finished_iteration.name if(!@finished_iteration.nil?) %></label>
-              </td>
-            </tr>
-        
-            <%  if @actual_retrospective.nil? %>
-
-              <tr>
-                <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">
-                  <a onclick="new_retrospective_popup(<%= @finished_iteration.id %>,'<%= @finished_iteration.name %>',<%= @finished_iteration.project_id %>);" style="cursor:pointer;font-size:12px;color:blue;">Add Retrospective + </a>
-                </td>
-              </tr>
-
-            <% else %>
-
-              <tr>
-                <td style="width:25%;border-bottom:1px solid #BBBBBB;padding-top:10px;padding-bottom:10px;">
-                  <a onclick="edit_retrospective_popup(<%= @actual_retrospective.id %>,<%= @finished_iteration.id %>,<%= @finished_iteration.project_id %>)" style="cursor:pointer;font-size:12px;color:blue;">Edit Retrospective + </a>
-                </td>
-              </tr>
-
-            <% end %>
-
-          <tr>
-            <td style="width:50%;padding-top:20px;">
-              <fieldset style="width:50%;padding-left:20px;padding-right:20px;padding-top:10px;padding-bottom:10px;">
-                <legend>Previous Retrospectives</legend>
-              
-                <table style="width:100%;" cellspacing="0" width="100%" class="content">
-
-                  <tr>
-                    <th style="background-color: #8A2908;color:white;width:5%;">Id</th>
-                    <th style="background-color: #8A2908;color:white;width:40%;font-size:10px;">Iteration</th>
-                    <th style="background-color: #8A2908;color:white;width:20%;font-size:10px;">Created At</th>
-                    <th style="background-color: #8A2908;color:white;width:6%;font-size:10px;">View</th>
-                  </tr>
-
-                  <% @retrospective.each do |retro| %>
-
-                    <% retro_iteration = Milestone.find_by_id(retro.milestone_id) %>
-                    <tr>
-                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB">
-                        <%= retro.id %>
-                      </td>
-                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                        <%= retro_iteration.name %>
-                      </td>
-                      <td align="center" style="border-bottom: 1px solid #BBBBBB">
-                        <%= retro.created_at.strftime("%d/%m/%Y") %>
-                      </td>
-                      <td align="center" style="border-bottom: 1px solid #BBBBBB;border-left: 1px solid #BBBBBB;border-right: 1px solid #BBBBBB;">
-                        <img title="View Retrospective" onclick="view_retrospective_popup('<%= retro_iteration.id %>',<%= retro.id %>)" src="/images/tuneup/magnify.png" style="padding-left:10px;cursor:pointer"/>
-                      </td>
-                    </tr>
-
-                  <% end %>
-
-                </table>
-              
-              </fieldset>
-            </td>
-          </tr>
-
-         <% end %>
-
-
-        <% else %>
-
-            <tr>
-              <td style="width:25%;padding-top:10px;">
-                <label style="color:black;font-size:15px;font-weight: bold;" for="milestone_name"><%=_ 'Finished Iteration: ' %></label>
-                <label style="text-decoration: none;color:red;font-size:14px;font-style:italic">Please select a project</label>
-              </td>
-            </tr>
-        <% end %>
-
-      </table>
-
-    </div>
 
   </div>
 
