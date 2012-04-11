@@ -28,7 +28,7 @@ class SprintClosingController < ApplicationController
           @finished_iteration = nil
         end
 
-        next_iteration = Milestone.where("init_date >= ?",iteration.due_at).limit(1)
+        next_iteration = Milestone.where("init_date >= ? and project_id = ?",iteration.due_at,params[:project_id]).limit(1)
         @next_iteration = next_iteration[0]
 
         @remaining_us = Task.where("milestone_id = ? and status = 0",iteration.id)
@@ -103,16 +103,7 @@ class SprintClosingController < ApplicationController
             day = day + 1
           end
 
-          # Loading retrospectives
-          @retrospective = Array.new
-          project_iterations = Milestone.where("project_id = ?",params[:project_id])         
-
-          project_iterations.each do |iter|
-            retrospective = Restrospective.where("milestone_id = ?",iter.id)
-            if !retrospective[0].nil?
-               @retrospective << retrospective[0]
-            end
-          end
+          
 
           if !@finished_iteration.nil?
             @actual_retrospective = Restrospective.find_by_milestone_id(@finished_iteration.id)
@@ -120,6 +111,17 @@ class SprintClosingController < ApplicationController
 
         end
 
+      end
+
+      # Loading retrospectives
+      @retrospective = Array.new
+      project_iterations = Milestone.where("project_id = ?",params[:project_id])
+
+      project_iterations.each do |iter|
+        retrospective = Restrospective.where("milestone_id = ?",iter.id)
+          if !retrospective[0].nil?
+            @retrospective << retrospective[0]
+          end
       end
 
     end
@@ -151,7 +153,7 @@ class SprintClosingController < ApplicationController
 
         @finished_iteration = iteration
 
-        next_iteration = Milestone.where("init_date >= ?",iteration.due_at).limit(1)
+        next_iteration = Milestone.where("init_date >= ? and project_id = ?",iteration.due_at, params[:project_id]).limit(1)
         @next_iteration = next_iteration[0]
 
         @remaining_us = Task.where("milestone_id = ? and status = 0",iteration.id)
